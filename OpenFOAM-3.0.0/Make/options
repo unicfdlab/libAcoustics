@@ -11,6 +11,9 @@ EXE_INC = \
 	-I$(LIB_SRC)/TurbulenceModels/incompressible/lnInclude \
 	-I$(LIB_SRC)/TurbulenceModels/compressible/lnInclude \
 	-I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+	-InoiseFFTDriver \
+	-I$(LIB_SRC)/conversion/lnInclude \
+	-I$(LIB_SRC)/randomProcesses/lnInclude \
 	-I$(fftw_root)/include
 
 LIB_LIBS = \
@@ -24,5 +27,7 @@ LIB_LIBS = \
     -lmeshTools \
     -lsampling \
     -L$(fftw_root)/lib \
+    -lconversion \
+    -lrandomProcesses \
     -lfftw3
 

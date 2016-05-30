@@ -1,7 +1,9 @@
+noiseFFTDriver/noiseFFTDriver.C
+
 Curle/SoundObserver.C
 Curle/Curle.C
 Curle/CurleFunctionObject.C
 
 FoamFourierAnalysis/FoamFftwDriver.C
 
-LIB = $(FOAM_USER_LIBBIN)/libAcoustics
+LIB = $(FOAM_USER_LIBBIN)/libAcousticsDev

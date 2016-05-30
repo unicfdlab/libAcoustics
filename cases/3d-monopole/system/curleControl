@@ -1,0 +1,50 @@
+    CurleAnalogy1
+    {
+	functionObjectLibs ("libAcoustics.so");
+	
+	type		Curle;
+	
+	log		true;
+	
+	probeFrequency	1;
+	
+	patchNames	(piston);
+	
+	timeStart	0.01;
+	
+	timeEnd		0.3;
+	
+	c0		300;
+	
+	dRef		1e-5;
+	
+	pName		p;
+	
+	rhoName		none;
+	
+	rhoRef		0.2;
+	
+	observers
+	{
+	    microphone-A
+	    {
+		position	(-0.5223 1.7441 0.5e-3);
+		pRef		2.0e-5;
+		fftFreq		1024;
+	    }
+
+	    microphone-B
+	    {
+		position	(0.5710 2.032 0.5e-3);
+		pRef		2.0e-5;
+		fftFreq		1024;
+	    }
+	
+	    microphone-C
+	    {
+		position	(1.664 2.032 0.5e-3);
+		pRef		2.0e-5;
+		fftFreq		1024;
+	    }
+	}
+    }
