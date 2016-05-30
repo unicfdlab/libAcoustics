@@ -71,41 +71,6 @@ class Curle
 {
 public:
 
-//    // Tuple for pressure (.first()) and viscous (.second()) Curle
-//    typedef Tuple2<vector, vector> pressureViscous;
-//
-//    // Tuple for Curle (.first()) and moment (.second())
-//    // pressure/viscous Curle Tuples.
-//    typedef Tuple2<pressureViscous, pressureViscous> CurleMoments;
-//
-//    //- Sum operation class to accumulate pressure/viscous Curle and moments
-//    class sumOp
-//    {
-//    public:
-//
-//        CurleMoments operator()
-//        (
-//            const CurleMoments& fm1,
-//            const CurleMoments& fm2
-//        ) const
-//        {
-//            return CurleMoments
-//            (
-//                pressureViscous
-//                (
-//                    fm1.first().first()  + fm2.first().first(),
-//                    fm1.first().second() + fm2.first().second()
-//                ),
-//                pressureViscous
-//                (
-//                    fm1.second().first()  + fm2.second().first(),
-//                    fm1.second().second() + fm2.second().second()
-//                )
-//            );
-//        }
-//    };
-
-
 protected:
 
     // Private data
@@ -169,8 +134,7 @@ protected:
         //-
         label probeI_;
 
-
-    // Private Member Functions
+// Private Member Functions
 
         //- If the Curle file has not been created create it
         void makeFile();
@@ -186,12 +150,6 @@ protected:
         
         //-
         void writeFft();
-//
-//        //- Return the effective viscous stress (laminar + turbulent).
-//        tmp<volSymmTensorField> devRhoReff() const;
-//
-//        //- Return rho if rhoName is specified otherwise rhoRef
-//        tmp<volScalarField> rho(const volScalarField& p) const;
 
 	//- Returns normal stresses using pressure (and optionally density) field
 	tmp<scalarField> normalStress(const word& patchName) const;
@@ -207,7 +165,6 @@ public:
 
     //- Runtime type information
     TypeName("Curle");
-
 
     // Constructors
 

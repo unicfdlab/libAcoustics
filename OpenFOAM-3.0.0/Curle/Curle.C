@@ -29,12 +29,10 @@ License
 #include "Time.H"
 #include "wordReList.H"
 
-//#include "singlePhaseTransportModel.H"
 #include "RASModel.H"
 #include "LESModel.H"
 
 #include "basicThermo.H"
-
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 namespace Foam
@@ -44,80 +42,6 @@ namespace Foam
 
 }
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
-
-//Foam::tmp<Foam::volSymmTensorField> Foam::Curle::devRhoReff() const
-//{
-//    if (obr_.foundObject<compressible::RASModel>("RASProperties"))
-//    {
-//        const compressible::RASModel& ras
-//            = obr_.lookupObject<compressible::RASModel>("RASProperties");
-//
-//        return ras.devRhoReff();
-//    }
-//    else if (obr_.foundObject<incompressible::RASModel>("RASProperties"))
-//    {
-//        const incompressible::RASModel& ras
-//            = obr_.lookupObject<incompressible::RASModel>("RASProperties");
-//
-//        return rho()*ras.devReff();
-//    }
-//    else if (obr_.foundObject<compressible::LESModel>("LESProperties"))
-//    {
-//        const compressible::LESModel& les =
-//        obr_.lookupObject<compressible::LESModel>("LESProperties");
-//
-//        return les.devRhoBeff();
-//    }
-//    else if (obr_.foundObject<incompressible::LESModel>("LESProperties"))
-//    {
-//        const incompressible::LESModel& les
-//            = obr_.lookupObject<incompressible::LESModel>("LESProperties");
-//
-//        return rho()*les.devBeff();
-//    }
-//    else if (obr_.foundObject<basicThermo>("thermophysicalProperties"))
-//    {
-//        const basicThermo& thermo =
-//             obr_.lookupObject<basicThermo>("thermophysicalProperties");
-//
-//        const volVectorField& U = obr_.lookupObject<volVectorField>(UName_);
-//
-//        return -thermo.mu()*dev(twoSymm(fvc::grad(U)));
-//    }
-//    else if
-//    (
-//        obr_.foundObject<singlePhaseTransportModel>("transportProperties")
-//    )
-//    {
-//        const singlePhaseTransportModel& laminarT =
-//            obr_.lookupObject<singlePhaseTransportModel>
-//            ("transportProperties");
-//
-//        const volVectorField& U = obr_.lookupObject<volVectorField>(UName_);
-//
-//        return -rho()*laminarT.nu()*dev(twoSymm(fvc::grad(U)));
-//    }
-//    else if (obr_.foundObject<dictionary>("transportProperties"))
-//    {
-//        const dictionary& transportProperties =
-//             obr_.lookupObject<dictionary>("transportProperties");
-//
-//        dimensionedScalar nu(transportProperties.lookup("nu"));
-//
-//        const volVectorField& U = obr_.lookupObject<volVectorField>(UName_);
-//
-//        return -rho()*nu*dev(twoSymm(fvc::grad(U)));
-//    }
-//    else
-//    {
-//        FatalErrorIn("Curle::devRhoReff()")
-//            << "No valid model for viscous stress calculation."
-//            << exit(FatalError);
-//
-//        return volSymmTensorField::null();
-//    }
-//}
-
 
 Foam::tmp<Foam::scalarField> Foam::Curle::normalStress(const word& patchName) const
 {
@@ -155,38 +79,6 @@ Foam::tmp<Foam::scalarField> Foam::Curle::normalStress(const word& patchName) co
 	new scalarField(pPatch)
     );
 }
-
-//Foam::tmp<Foam::volScalarField> Foam::Curle::rho(const volScalarField& p) const
-//{
-//    if (p.dimensions() == dimPressure)
-//    {
-//	if (rhoRef
-//    
-//    
-//    
-//	return(obr_.lookupObject<volScalarField>(rhoName_));
-//    }
-//    else
-//    {
-//	const fvMesh& mesh = refCast<const fvMesh>(obr_);
-//
-//	return tmp<volScalarField>
-//	(
-//	    new volScalarField
-//	    (
-//		IOobject
-//		(
-//		    "rho",
-//		    mesh.time().timeName(),
-//		    mesh
-//		),
-//		mesh,
-//		dimensionedScalar("rho", dimDensity, rhoRef_)
-//            )
-//        );
-//    }
-//}
-
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -243,7 +135,6 @@ Foam::Curle::Curle
 Foam::Curle::~Curle()
 {}
 
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 void Foam::Curle::read(const dictionary& dict)
@@ -282,7 +173,7 @@ void Foam::Curle::read(const dictionary& dict)
     dict.lookup("rhoName") >> rhoName_;
     
     dict.lookup("rhoRef") >> rhoRef_;
-    
+
     //read observers
     {
 	const dictionary& obsDict = dict.subDict("observers");
@@ -310,44 +201,7 @@ void Foam::Curle::read(const dictionary& dict)
 	}
     }
     
-    calcDistances();
-    
-//            UName_ = dict.lookupOrDefault<word>("UName", "U");
-//            rhoName_ = dict.lookupOrDefault<word>("rhoName", "rho");
-//
-//            // Check whether UName, pName and rhoName exists,
-//            // if not deactivate Curle
-//            if
-//            (
-//                !obr_.foundObject<volVectorField>(UName_)
-//             || !obr_.foundObject<volScalarField>(pName_)
-//             || (
-//                    rhoName_ != "rhoInf"
-//                 && !obr_.foundObject<volScalarField>(rhoName_)
-//                )
-//            )
-//            {
-//                active_ = false;
-//
-//                WarningIn("void Curle::read(const dictionary&)")
-//                    << "Could not find " << UName_ << ", " << pName_;
-//
-//                if (rhoName_ != "rhoInf")
-//                {
-//                    Info<< " or " << rhoName_;
-//                }
-//
-//                Info<< " in database." << nl
-//                    << "    De-activating Curle." << endl;
-//            }
-//
-//            // Reference density needed for incompressible calculations
-//            rhoRef_ = readScalar(dict.lookup("rhoInf"));
-//
-//            // Reference pressure, 0 by default
-//            pRef_ = dict.lookupOrDefault<scalar>("pRef", 0.0);
-//        }
-//
+    calcDistances();   
 }
 
 void Foam::Curle::correct()
@@ -418,14 +272,20 @@ void Foam::Curle::correct()
 	forAll (observers_, iObs)
 	{
 	    SoundObserver& obs = observers_[iObs];
+	    //Vector from observer to center
 	    vector l = obs.position() - c_;
+	    //Calculate distance
 	    scalar r = mag(l);
+	    //Calculate ObservedAcousticPressure
 	    scalar oap = l & (dFdT + c0_ * F / r) * coeff1 / r / r;
 	    if (dRef_ > 0.0)
 	    {
 		oap /= dRef_;
 	    }
-	    obs.apressure(oap);
+	    obs.apressure(oap); //appends new calculated acoustic pressure
+	    
+	    //noiseFFT addition
+	    obs.atime(mesh.time().value());
 	}
 	
     }
@@ -433,7 +293,6 @@ void Foam::Curle::correct()
 
 void Foam::Curle::makeFile()
 {
-
     fileName CurleDir;
 
     if (Pstream::master() && Pstream::parRun())
@@ -449,7 +308,6 @@ void Foam::Curle::makeFile()
     else
     {
     }
-
     // File update
     if (Pstream::master() || !Pstream::parRun())
     {
@@ -538,7 +396,9 @@ void Foam::Curle::writeFft()
     if (Pstream::master() || !Pstream::parRun())
     {
 	const fvMesh& mesh = refCast<const fvMesh>(obr_);
-	scalar tau = (mesh.time().value() - timeStart_);
+	//Save timestep for FFT transformation in tau
+	scalar tau = probeFreq_*mesh.time().deltaT().value();
+        Info << "Executing fft for obs: " << name_ << endl;
 	forAll(observers_, iObserver)
 	{
 	    SoundObserver& obs = observers_[iObserver];
@@ -547,9 +407,9 @@ void Foam::Curle::writeFft()
 	    
 	    List<List<scalar> >& obsFft = obsFftPtr();
 	    
-	    if (obsFft[0].size() > 0)
+  	    if (obsFft[0].size() > 0)
 	    {
-		Info << "Executing fft for obs: " << name_ << endl;
+
 		fileName fftFile = CurleDir + "/fft-" + name_ + "-" + obs.name() + ".dat";
 		
 		OFstream fftStream (fftFile);
@@ -630,12 +490,10 @@ void Foam::Curle::execute()
     }
 }
 
-
 void Foam::Curle::end()
 {
     // Do nothing - only valid on execute
 }
-
 
 void Foam::Curle::timeSet()
 {
@@ -646,7 +504,5 @@ void Foam::Curle::write()
 {
     // Do nothing - only valid on execute
 }
-
-
 
 // ************************************************************************* //

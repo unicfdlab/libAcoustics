@@ -40,7 +40,6 @@ SourceFiles
 #include "OFstream.H"
 #include "vector.H"
 #include "Tuple2.H"
-#include "FoamFftwDriver.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -64,12 +63,20 @@ class SoundObserver
     
     //-
     scalar apressure_;
-    
+
+    //-
+    scalar atime_;
+
     //-
     List<scalar> p_;
-    
+        
+    //-
+    List<scalar> time_; 
+   
     //-
     label fftFreq_;
+
+    bool checkOrder(scalar size) const;
 
 public:
 
@@ -83,7 +90,7 @@ public:
     
     //-
     SoundObserver(const SoundObserver&);
-    
+
     /// Access
     
     //-
@@ -94,6 +101,11 @@ public:
     
     //-
     const scalar& apressure() const;
+
+//noiseFFT stuff
+    const scalar& atime() const;
+//-
+    const scalar& pref() const; 
     
     //-
     void name(word name);
@@ -103,6 +115,14 @@ public:
     
     //-
     void apressure(scalar apressure);
+
+//noiseFFT stuff
+    void atime(scalar atime);
+//
+    const List<scalar>& p() const;
+    
+//-
+    const List<scalar>& time() const;
     
     //-
     autoPtr<List<List<scalar> > > fft (scalar tau) const;
