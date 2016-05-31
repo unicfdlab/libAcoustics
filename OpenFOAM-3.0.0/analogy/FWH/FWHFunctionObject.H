@@ -22,10 +22,10 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Typedef
-    Foam::CurleFunctionObject
+    Foam::FWHFunctionObject
 
 Description
-    FunctionObject wrapper around Curle to allow them to be created via the
+    FunctionObject wrapper around FWH to allow them to be created via the
     functions entry within controlDict.
 
 SourceFiles

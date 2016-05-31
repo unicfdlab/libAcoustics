@@ -1,5 +1,9 @@
 soundObserver/SoundObserver.C
-Curle/Curle.C
-Curle/CurleFunctionObject.C
+analogy/Curle/Curle.C
+analogy/Curle/CurleFunctionObject.C
+
+analogy/FWH/FWH.C
+analogy/FWH/FWHFunctionObject.C
+
 
 LIB = $(FOAM_USER_LIBBIN)/libAcousticsDev1

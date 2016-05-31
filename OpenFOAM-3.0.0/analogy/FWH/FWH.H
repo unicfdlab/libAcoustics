@@ -26,7 +26,7 @@ Class
 
 Description
     
-    Calculatates acoustic pressure using FW-H analogy
+    Calculatates acoustic pressure using FWH analogy
     
     Writes data to specified file
 
@@ -49,13 +49,16 @@ SourceFiles
 #include "OFstream.H"
 #include "Switch.H"
 #include "pointFieldFwd.H"
-#include "SoundObserverM.H"
+#include "SoundObserver.H"
 #include "polyMesh.H"
 #include "mapPolyMesh.H"
-#include "volFields.H"
-#include "FWHSampledTriSurfaceMesh.H"
-#include "writer.H"
-#include "noiseFFTDriver.H"
+
+//control surfaces stuff
+#include "sampledSurface.H"
+#include "surfaceWriter.H"
+#include "surfaceFieldsFwd.H"
+#include "wordReList.H"
+#include "IOobjectList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -68,7 +71,7 @@ class dictionary;
 class mapPolyMesh;
 
 /*---------------------------------------------------------------------------*\
-                           Class FW-H Declaration
+                           Class FWH Declaration
 \*---------------------------------------------------------------------------*/
 
 class FWH
@@ -79,13 +82,13 @@ protected:
 
     // Private data
 
-        //- Name of this set of FW-H,
+        //- Name of this set of FWH,
         //  Also used as the name of the probes directory.
         word name_;
 
         const objectRegistry& obr_;
-	
-	//- on/off switch
+
+        //- on/off switch
         bool active_;
         
         //- probe frequency
@@ -93,19 +96,17 @@ protected:
 
         //- Switch to send output to Info as well as to file
         Switch log_;
-        
-        bool bigdate_;
 
-        //- fwh cells
-//	FWHSampledTriSurfaceMesh fwhSampledSurface_;
+        // Read from dictionary
 
-	//- Patch to integrate FW-H over
+	//- Patch to integrate FWH over
+        List<word> patchNames_;
 
-	word	fwhSurfaceType_;
-
-	word	fwhSurfaceName_;
-
-//	word 	patchNames_;
+        //- Interpolation scheme to use
+        word interpolationScheme_;
+       
+        PtrList<sampledSurface> controlSurfaces_;
+  
         //-
         scalar timeStart_;
         
@@ -115,15 +116,12 @@ protected:
         //- Name of pressure field
         word pName_;
         
-        //
-        word UName_;
-        
         //- Sonic speed, m/s
         scalar c0_;
         
         //- Domain depth, m
         scalar dRef_;
-        
+            
         //-
         List<SoundObserver> observers_;
 
@@ -132,9 +130,6 @@ protected:
 
 	//- Reference density needed for incompressible calculations
 	scalar rhoRef_;
-	
-	//pref
-	scalar pRef_;
 
         //-
         vector c_;
@@ -143,55 +138,36 @@ protected:
         autoPtr<OFstream> FWHFilePtr_;
         
         //- Old value of patch force
-//        autoPtr<vector> FOldPtr_;
+        autoPtr<vector> FOldPtr_;
         
         //- Old-old value of patch force
-//        autoPtr<vector> FOldOldPtr_;
+        autoPtr<vector> FOldOldPtr_;
         
-        //- Old value of patch force
-//        autoPtr<scalar> FFOldPtr_;
-	List<autoPtr<scalar> > FFOldPtr_;
-
-        
-        //- Old-old value of patch force
-        List<autoPtr<scalar> >FFOldOldPtr_;
-
-//	List<scalar> FFOldOld_;
         //-
         label probeI_;
-        
-        //-
-        word graphFormat_;
 
-
-    // Private Member Functions
+// Private Member Functions
 
         //- If the FWH file has not been created create it
         void makeFile();
 
         //- Output file header information
         virtual void writeFileHeader();
-
+        
         //-
+        void calcDistances();
         
-        void correctFaceSetFWH();
-        
-        void correctSampledFWH();
         //-
-        
         void correct();
         
         //-
         void writeFft();
-//
-//        //- Return the effective viscous stress (laminar + turbulent).
-//        tmp<volSymmTensorField> devRhoReff() const;
-//
-//        //- Return rho if rhoName is specified otherwise rhoRef
-//        tmp<volScalarField> rho(const volScalarField& p) const;
 
 	//- Returns normal stresses using pressure (and optionally density) field
-//	tmp<scalarField> normalStress(const word& patchName) const;
+	tmp<scalarField> normalStress(const word& patchName) const;
+        
+        //- Returns normal stresses using pressure (and optionally density) field
+	tmp<scalarField> normalStress(const sampledSurface& surface) const;
 
         //- Disallow default bitwise copy construct
         FWH(const FWH&);
@@ -199,12 +175,19 @@ protected:
         //- Disallow default bitwise assignment
         void operator=(const FWH&);
 
+        //- Sample and write a particular volume field
+        template<class Type>
+        tmp<Field<Type> > sampleOrInterpolate
+        (
+	 const GeometricField<Type, fvPatchField, volMesh>&,
+	 const sampledSurface& surface
+        ) const;
+
 
 public:
 
     //- Runtime type information
-    TypeName("FW-H");
-
+    TypeName("FwocsWilliams-Hawkings");
 
     // Constructors
 
@@ -236,36 +219,45 @@ public:
         //- Execute, currently does nothing
         virtual void execute();
 
+        //- Mark the control surfaces as needing an update.
+        //  The function is copy-pasted from sampledSurfaces.C
+        //  May also free up unneeded data.
+        //  Return false if all surfaces were already marked as expired.
+        virtual bool expire();
+
+        virtual bool needsUpdate() const; 
+
+        virtual bool update();        
+
         //- Execute at the final time-loop, currently does nothing
         virtual void end();
-        
-        //-for 2.3
+
+        //- Called when time was set at the end of the Time::operator++
         virtual void timeSet();
 
-        //- Write the FWH
+        //- Write the FWH 
         virtual void write();
 
         //- Update for changes of mesh
-        virtual void updateMesh(const Foam::mapPolyMesh&)
+        virtual void updateMesh(const mapPolyMesh&)
         {};
 
         //- Update for changes of mesh
         virtual void movePoints(const polyMesh&)
         {};
         
-
-    //- Update for changes of mesh
-    //    virtual void updateMesh(const mapPolyMesh&)
-    //    {};
-
-        //- Update for changes of mesh
-    //    virtual void movePoints();
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+#   include "FWHTemplates.C"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
