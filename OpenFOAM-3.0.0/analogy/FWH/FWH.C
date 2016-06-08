@@ -27,6 +27,7 @@ License
 #include "volFields.H"
 #include "dictionary.H"
 #include "Time.H"
+#include "fvcDdt.H"
 //#include "wordReList.H"
 //#include "PtrList.H"
 //#include "PtrListIO.C"
@@ -54,50 +55,15 @@ namespace Foam
 }
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-Foam::tmp<Foam::scalarField> Foam::FWH::normalStress(const word& patchName) const
-{
-    const fvMesh& mesh = refCast<const fvMesh>(obr_);
-    const volScalarField& p = mesh.lookupObject<volScalarField>(pName_);
-    
-    label patchId = mesh.boundary().findPatchID(patchName);
-    
-    scalarField pPatch = p.boundaryField()[patchId];
-    
-    if (p.dimensions() == dimPressure)
-    {
-	//return tmp<scalarField>
-	//(
-	//    new scalarField(pPatch)
-	//);
-    }
-    else
-    {
-	if (rhoRef_ < 0) //density in volScalarField
-	{
-	    scalarField pRho = mesh.lookupObject<volScalarField>(rhoName_).
-				boundaryField()[patchId];
-	    pPatch *= pRho;
-	}
-	else //density is constant
-	{
-	    pPatch *= rhoRef_;
-	}
-    }
-
-    return tmp<scalarField>
-    (
-	new scalarField(pPatch)
-    );
-}
-
 Foam::tmp<Foam::scalarField> Foam::FWH::normalStress(const sampledSurface& surface) const
 {
     const volScalarField& p = obr_.lookupObject<volScalarField>(pName_);
- 
+    //Info<<"    Normal stress p-field was read"<<nl; 
     tmp<Field<scalar> > pSampled;
     
-    pSampled = sampleOrInterpolate<scalar>(p, surface);
-
+    //Sample pressure field and obtain difference with pressure in undisturbed flow
+    pSampled = sampleOrInterpolate<scalar>(p , surface) - pInf_;
+    //Info<<"    Normal stress p-field was sampled"<<nl; 
     if (p.dimensions() == dimPressure)
     {
 	//return tmp<scalarField>
@@ -125,6 +91,79 @@ Foam::tmp<Foam::scalarField> Foam::FWH::normalStress(const sampledSurface& surfa
     return pSampled;
 }
 
+Foam::tmp<Foam::vectorField> Foam::FWH::surfaceVelocity(const sampledSurface& surface) const
+{
+    const volVectorField& U = obr_.lookupObject<volVectorField>("U");
+ 
+    tmp<Field<vector> > USampled;
+    
+    USampled = sampleOrInterpolate<vector>(U , surface);
+
+    return USampled;
+}
+
+Foam::tmp<Foam::scalarField> Foam::FWH::surfaceDensity(const sampledSurface& surface) const
+{
+  tmp<Field<scalar> > rhoSampled;
+
+  if (rhoRef_ < 0) //density in volScalarField
+    {
+      volScalarField pRho = obr_.lookupObject<volScalarField>(rhoName_);     
+      rhoSampled = sampleOrInterpolate<scalar>(pRho, surface);
+    }
+  else //density is constant
+    {
+      Info<<"Incompressible crash"<<nl;
+      const fvMesh& mesh_ = refCast<const fvMesh>(obr_);
+      volScalarField rhoTemp
+        (
+	 IOobject
+	 (
+	  name_ + ":area",
+	  mesh_.time().timeName(),
+	  mesh_,
+	  IOobject::NO_READ,
+	  IOobject::NO_WRITE
+	  ),
+	 mesh_,
+	 dimensionedScalar("temp", dimless, rhoRef_)
+	 );
+      
+      rhoSampled = sampleOrInterpolate<scalar>(rhoTemp, surface); //= rhoRef_;
+    }
+
+  return rhoSampled;
+}
+
+//May be not need at all
+//Trade off between this implementation of the derivative operation
+//and using <type> dotProduct(type &)
+Foam::tmp<Foam::scalarField> Foam::FWH::dotNormalStress(const sampledSurface& surface) const
+{
+    const volScalarField& dpdt = Foam::fvc::ddt(obr_.lookupObject<volScalarField>(pName_));
+ 
+    tmp<Field<scalar> > pSampled;
+    
+    //Sample pressure field and obtain difference with pressure in undisturbed flow
+    pSampled = sampleOrInterpolate<scalar>(dpdt , surface);
+
+    if (rhoRef_ < 0) //density in volScalarField
+      {
+	volScalarField pRho = obr_.lookupObject<volScalarField>(rhoName_);
+	
+	tmp<Field<scalar> > rhoSampled;
+	rhoSampled = sampleOrInterpolate<scalar>(pRho, surface);
+	
+	pSampled() *= rhoSampled();
+      }
+    else //density is constant
+      {
+	pSampled() *= rhoRef_;
+      }
+
+    return pSampled;
+}
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::FWH::FWH
@@ -140,21 +179,23 @@ Foam::FWH::FWH
     active_(true),
     probeFreq_(1),
     log_(false),
-    patchNames_(0, word::null),
     interpolationScheme_(word::null),
     controlSurfaces_(0),
     timeStart_(-1.0),
     timeEnd_(-1.0),
     pName_(word::null),
-    c0_(300.0),
+    pInf_(0),
+    c0_(340.0),
     dRef_(-1.0),
     observers_(0),
     rhoName_(word::null),
     rhoRef_(1.0),
     c_(vector::zero),
     FWHFilePtr_(NULL),
-    FOldPtr_(NULL),
-    FOldOldPtr_(NULL),
+    VOldPtr_(NULL),
+    VOldOldPtr_(NULL),
+    SOldPtr_(NULL),
+    SOldOldPtr_(NULL),
     probeI_(0)
 {
     // Check if the available mesh is an fvMesh otherise deactivate
@@ -246,8 +287,6 @@ void Foam::FWH::read(const dictionary& dict)
     //     }
     //     Pout<< ")" << endl;
     // }
-
-    dict.lookup("patchNames") >> patchNames_;
     
     dict.lookup("timeStart") >> timeStart_;
     
@@ -258,6 +297,8 @@ void Foam::FWH::read(const dictionary& dict)
     dict.lookup("dRef") >> dRef_;
 
     dict.lookup("pName") >> pName_;
+
+    dict.lookup("pInf") >> pInf_;
     
     dict.lookup("rhoName") >> rhoName_;
     
@@ -293,102 +334,250 @@ void Foam::FWH::read(const dictionary& dict)
     calcDistances();   
 }
 
-void Foam::FWH::correct()
+Foam::vector Foam::FWH::dotProduct(const vector& F)
 {
-    const fvMesh& mesh = refCast<const fvMesh>(obr_);
-    
-    //sign '-' needed to calculate force, which exerts fluid by solid
-    vector F	(0.0, 0.0, 0.0);
-    vector Ftest (0.0, 0.0, 0.0);
+    const fvMesh& mesh_ = refCast<const fvMesh>(obr_);
+
     vector dFdT (0.0, 0.0, 0.0);
-    scalar deltaT = mesh.time().deltaT().value();
+
+    scalar deltaT = mesh_.time().deltaT().value();
+
+    if (VOldPtr_.empty())
+      {
+	VOldPtr_.set
+	  (
+	   new vector(F)
+	  );
+      }
+    else
+      {
+	if (VOldOldPtr_.empty())
+	  {
+	    //first order scheme
+	    dFdT = (F - VOldPtr_()) / deltaT;
+	    
+	    VOldOldPtr_.set
+	      (
+	       VOldPtr_.ptr()
+	       );
+	    
+	    VOldPtr_.reset
+	      (
+	       new vector(F)
+	       );
+	  }
+	else
+	  {
+	    //second order scheme (BDF)
+	    dFdT = (3.0*F - 4.0*VOldPtr_() + VOldOldPtr_()) / 2.0 / deltaT;
+	    
+	    VOldOldPtr_.reset
+	      (
+	       VOldPtr_.ptr()
+	       );
+	    
+	    VOldPtr_.reset
+	      (
+	       new vector(F)
+	       );
+	  }
+      }
+
+    return dFdT;
+}
+
+Foam::scalar Foam::FWH::dotProduct(const scalar& S)
+{
+    const fvMesh& mesh_ = refCast<const fvMesh>(obr_);
+
+    scalar dSdT (0.0);
+
+    scalar deltaT = mesh_.time().deltaT().value();
+
+    if (SOldPtr_.empty())
+      {
+	SOldPtr_.set
+	  (
+	   new scalar(S)
+	  );
+      }
+    else
+      {
+	if (SOldOldPtr_.empty())
+	  {
+	    //first order scheme
+	    dSdT = (S - SOldPtr_()) / deltaT;
+	    
+	    SOldOldPtr_.set
+	      (
+	       SOldPtr_.ptr()
+	       );
+	    
+	    SOldPtr_.reset
+	      (
+	       new scalar(S)
+	       );
+	  }
+	else
+	  {
+	    //second order scheme (BDF)
+	    dSdT = (3.0*S - 4.0*SOldPtr_() + SOldOldPtr_()) / 2.0 / deltaT;
+	    
+	    SOldOldPtr_.reset
+	      (
+	       SOldPtr_.ptr()
+	       );
+	    
+	    SOldPtr_.reset
+	      (
+	       new scalar(S)
+	       );
+	  }
+	  }
+
+    return dSdT;
+}
+
+void Foam::FWH::correct()
+{   
+    const fvMesh& mesh_ = refCast<const fvMesh>(obr_);
+
+    //sign '-' needed to calculate force, which exerts fluid by solid
+    vector F1	(0.0, 0.0, 0.0);
+    scalar F2	(0.0);
+    vector dF1dT (0.0, 0.0, 0.0);
+    scalar dF2dT (0.0);
+    vector Ufwh (-68.0, 0.0, 0.0);
     
-    forAll(patchNames_, iPatch)
-    {
-	word patchName = patchNames_[iPatch];
-	label patchId = mesh.boundary().findPatchID(patchName);
-	
-	scalarField pp = normalStress(patchName);
-	F -= gSum (pp * mesh.Sf().boundaryField()[patchId]);
-	Info<<"Patch Force = "<<F<<nl;
-    }
-    
+    //calling a function to update all sampledSurfaces
+    //without it everything related will be empty
+    update();
     //working with sampled surfaces
+    Info<<"    Surface updated"<<nl;
     forAll(controlSurfaces_, surfI)
     {
-      update();
       sampledSurface& s = controlSurfaces_.operator[](surfI);
-      scalarField sampledPressure = normalStress(s);
-      Ftest -= gSum (sampledPressure * s.Sf());
-      Info<<s.name()<<" , sampled Force = "<<Ftest<<nl;
+      //      Info<<"    Surface OK"<<nl;
+      scalarField pS = normalStress(s);
+      //      Info<<"    Pressure OK"<<gSum(pS)<<nl;
+      vectorField uS = surfaceVelocity(s);
+      //      Info<<"    Velocity OK"<<gSum(uS)<<nl;
+      scalarField rhoS = surfaceDensity(s);
+      //      Info<<"    Density OK"<<gSum(rhoS)<<nl;
+
+      F1 += gSum (
+		  pS*s.Sf() + 
+		  (rhoS*uS)*( (uS - Ufwh)&s.Sf() )
+		  );
+
+      F2 += gSum ( 
+		  (rhoRef_*uS + (pS/(c0_*c0_))*(uS - Ufwh))&s.Sf() 
+		   ); //rhoS - rhoRef_
+      
+      Info<<s.name()<<", sampled integrals F1="<<F1<<" F2="<<F2<<nl;
+      /*
+      if (rhoRef_ < 0) //density in volScalarField
+	{
+	  volScalarField pRho = obr_.lookupObject<volScalarField>(rhoName_);
+	  
+	  tmp<Field<scalar> > rhoSampled;
+	  rhoSampled = sampleOrInterpolate<scalar>(pRho, surface);
+	  
+	  pSampled() *= rhoSampled();
+	}
+      else //density is constant
+	{
+	  pSampled() *= rhoRef_;
+	}
+      */
     }
+
+    /*forAll (observers_, iObs)
+    {
+      SoundObserver& obs = observers_[iObs];
+
+
+    // Surface integral - loop over all patches
+    forAll(controlSurfaces_, surfI)
+    {
+      sampledSurface& s = controlSurfaces_.operator[](surfI);
+      //scalarField sampledPressure = normalStress(s);
+
+      // Surface area vector and face center at patch
+      vectorField Sf = s.Sf();
+      vectorField Cf = s.Cf();
+
+      // Normal direction vector 
+      vectorField n = -Sf/mag(Sf);
+
+      // Pressure field and time derivative at patch
+      scalarField pp = normalStress(s);
+      //scalarField dpdtp = dpdt.boundaryField()[patchI];
+
+      // Lighthill tensor on patch
+      //tensorField Tijp = Tij.boundaryField()[patchI];
+      //tensorField dTijdtp = dTijdt.boundaryField()[patchI];
+
+      // Distance surface-observer
+      scalarField r = mag(obs.position() - Cf);
+      vectorField l = (obs.position() - Cf) / r;
+
+      // Calculate pressure fluctuations
+      pPrime += coeff * gSum
+	(
+	 (
+	  (l*n)
+	  && 
+	  (
+	   (dpdtp*I - dTijdtp) / (cRef_*r)
+	   + (pp*I - Tijp) / sqr(r)
+	   )
+	  )
+	 * mag(Sf)
+	 );
+    }
+
+	//obs.pPrime(pPrime);
+	}*/
+
 
     if (Pstream::master() || !Pstream::parRun())
     {
 	//calculate dFdT and store old values
 	
-	if (FOldPtr_.empty())
+      dF1dT = dotProduct(F1);
+      dF2dT = dotProduct(F2);
+
+      //dFdT = F;
+
+      scalar coeff1 = 1. / 4. / Foam::constant::mathematical::pi;
+      
+      forAll (observers_, iObs)
 	{
-	    FOldPtr_.set
-	    (
-		new vector(F)
-	    );
-	}
-	else
-	{
-	    if (FOldOldPtr_.empty())
+	  SoundObserver& obs = observers_[iObs];
+	  //Vector from observer to center
+	  vector x = c_ - obs.position();
+	  vector y = obs.position() - c_;
+	  vector x_i = x/mag(x);
+	  vector y_i = y/mag(y);
+	  //Calculate distance
+	  scalar r = mag(x);
+	  //Calculate Mr
+	  scalar Mr = 1 - mag((Ufwh/c0_)&y_i);
+	  Info<<"    y_i = "<< y_i<<nl;
+	  Info<<"    Mr = "<< Mr<<nl;
+	  //Calculate ObservedAcousticPressure
+	  scalar oap = ( ((x/r/c0_)&dF1dT) + dF2dT ) * coeff1 / r / Mr;
+	  if (dRef_ > 0.0)
 	    {
-		//first order scheme
-		dFdT = (F - FOldPtr_()) / deltaT;
-		
-		FOldOldPtr_.set
-		(
-		    FOldPtr_.ptr()
-		);
-		
-		FOldPtr_.reset
-		(
-		    new vector(F)
-		);
+	      oap /= dRef_;
 	    }
-	    else
-	    {
-		//second order scheme (BDF)
-		dFdT = (3.0*F - 4.0*FOldPtr_() + FOldOldPtr_()) / 2.0 / deltaT;
-		
-		FOldOldPtr_.reset
-		(
-		    FOldPtr_.ptr()
-		);
-		
-		FOldPtr_.reset
-		(
-		    new vector(F)
-		);
-	    }
+	  obs.apressure(oap); //appends new calculated acoustic pressure
+	  
+	  //noiseFFT addition
+	  obs.atime(mesh_.time().value());
 	}
-	
-	scalar coeff1 = 1. / 4. / Foam::constant::mathematical::pi / c0_;
-	
-	forAll (observers_, iObs)
-	{
-	    SoundObserver& obs = observers_[iObs];
-	    //Vector from observer to center
-	    vector l = obs.position() - c_;
-	    //Calculate distance
-	    scalar r = mag(l);
-	    //Calculate ObservedAcousticPressure
-	    scalar oap = l & (dFdT + c0_ * F / r) * coeff1 / r / r;
-	    if (dRef_ > 0.0)
-	    {
-		oap /= dRef_;
-	    }
-	    obs.apressure(oap); //appends new calculated acoustic pressure
-	    
-	    //noiseFFT addition
-	    obs.atime(mesh.time().value());
-	}
-	
+      
     }
 }
 
@@ -453,31 +642,19 @@ void Foam::FWH::calcDistances()
 	return;
     }
 
-    const fvMesh& mesh = refCast<const fvMesh>(obr_);
-    
-    label patchId = mesh.boundary().findPatchID(patchNames_[0]);
-    
-    if (patchId < 0)
+    update();
+
+    vectorField ci;
+    scalar ni;
+
+    forAll(controlSurfaces_, surfI)
     {
-	List<word> patchNames(0);
-	forAll (mesh.boundary(), iPatch)
-	{
-	    patchNames.append(mesh.boundary()[iPatch].name());
-	}
-	FatalErrorIn
-	(
-	    "Foam::FWH::calcDistances()"
-	)   << "Can\'t find path "
-	<< patchNames_[0]
-	<< "Valid patches are : " << nl
-	<< patchNames
-	<< exit(FatalError);
+      sampledSurface& s = controlSurfaces_.operator[](surfI);
+      ci = s.Cf();
+      ni = scalar(ci.size());
     }
-    
-    vectorField ci = mesh.boundary()[patchId].Cf();
-    scalar ni = scalar(ci.size());
+
     reduce (ni, sumOp<scalar>());
-    
     c_ = gSum(ci) / ni;
 }
 

@@ -79,115 +79,132 @@ class FWH
 public:
 
 protected:
+  
+  // Private data
+  
+  //- Name of this set of FWH,
+  //  Also used as the name of the probes directory.
+  word name_;
 
-    // Private data
-
-        //- Name of this set of FWH,
-        //  Also used as the name of the probes directory.
-        word name_;
-
-        const objectRegistry& obr_;
-
-        //- on/off switch
-        bool active_;
-        
+  const objectRegistry& obr_;
+  
+  //- on/off switch
+  bool active_;
+  
         //- probe frequency
-        label probeFreq_;
-
-        //- Switch to send output to Info as well as to file
-        Switch log_;
-
-        // Read from dictionary
-
-	//- Patch to integrate FWH over
-        List<word> patchNames_;
-
-        //- Interpolation scheme to use
-        word interpolationScheme_;
-       
-        PtrList<sampledSurface> controlSurfaces_;
+  label probeFreq_;
+  
+  //- Switch to send output to Info as well as to file
+  Switch log_;
+  
+  // Read from dictionary
+  
+  //- Interpolation scheme to use
+  word interpolationScheme_;
+  
+  PtrList<sampledSurface> controlSurfaces_;
+  
+  //-
+  scalar timeStart_;
+  
+  //-
+  scalar timeEnd_;
+  
+  //- Name of pressure field
+  word pName_;
+  
+  //- Pressure value at infinity
+  scalar pInf_;
+  
+  //- Sonic speed, m/s
+  scalar c0_;
+  
+  //- Domain depth, m
+  scalar dRef_;
+  
+  //-
+  List<SoundObserver> observers_;
+  
+  //- Name of density field 
+  word rhoName_;
+  
+  //- Reference density needed for incompressible calculations
+  scalar rhoRef_;
   
         //-
-        scalar timeStart_;
+  vector c_;
+
+  //- FWH/moment file ptr
+  autoPtr<OFstream> FWHFilePtr_;
+  
+  //- Old value of vector integrand
+        autoPtr<vector> VOldPtr_;
+  
+  //- Old-old value of vector integrand
+  autoPtr<vector> VOldOldPtr_;
         
-        //-
-        scalar timeEnd_;
+  //- Old value of scalar integrand
+  autoPtr<scalar> SOldPtr_;
+  
+  //- Old-old value of scalar integrand
+  autoPtr<scalar> SOldOldPtr_;
+  
+  
+  //-
+  label probeI_;
+  
+  // Private Member Functions
 
-        //- Name of pressure field
-        word pName_;
+  //- If the FWH file has not been created create it
+  void makeFile();
+
+  //- Output file header information
+  virtual void writeFileHeader();
+  
+  //-
+  void calcDistances();
+  
+  //derivative function
+  Foam::vector dotProduct(const vector& F);
+
+  //derivative function
+  Foam::scalar dotProduct(const scalar& S);
         
-        //- Sonic speed, m/s
-        scalar c0_;
-        
-        //- Domain depth, m
-        scalar dRef_;
-            
-        //-
-        List<SoundObserver> observers_;
+  //-
+  void correct();
+  
+  //-
+  void writeFft();
+  
+  //- Returns Normal Stresses using pressure (and optionally density) field
+  tmp<scalarField> normalStress(const sampledSurface& surface) const;
+  //Same for Velocity
+  tmp<vectorField> surfaceVelocity(const sampledSurface& surface) const;
+  //Same for Density
+  tmp<scalarField> surfaceDensity(const sampledSurface& surface) const;
 
-        //- Name of density field 
-        word rhoName_;
-
-	//- Reference density needed for incompressible calculations
-	scalar rhoRef_;
-
-        //-
-        vector c_;
-
-        //- FWH/moment file ptr
-        autoPtr<OFstream> FWHFilePtr_;
-        
-        //- Old value of patch force
-        autoPtr<vector> FOldPtr_;
-        
-        //- Old-old value of patch force
-        autoPtr<vector> FOldOldPtr_;
-        
-        //-
-        label probeI_;
-
-// Private Member Functions
-
-        //- If the FWH file has not been created create it
-        void makeFile();
-
-        //- Output file header information
-        virtual void writeFileHeader();
-        
-        //-
-        void calcDistances();
-        
-        //-
-        void correct();
-        
-        //-
-        void writeFft();
-
-	//- Returns normal stresses using pressure (and optionally density) field
-	tmp<scalarField> normalStress(const word& patchName) const;
-        
-        //- Returns normal stresses using pressure (and optionally density) field
-	tmp<scalarField> normalStress(const sampledSurface& surface) const;
-
-        //- Disallow default bitwise copy construct
-        FWH(const FWH&);
-
-        //- Disallow default bitwise assignment
-        void operator=(const FWH&);
-
-        //- Sample and write a particular volume field
-        template<class Type>
-        tmp<Field<Type> > sampleOrInterpolate
-        (
-	 const GeometricField<Type, fvPatchField, volMesh>&,
-	 const sampledSurface& surface
-        ) const;
+  //- Returns normal stresses time derivative using pressure (and optionally density) field
+  tmp<scalarField> dotNormalStress(const sampledSurface& surface) const;
+  
+  //- Disallow default bitwise copy construct
+  FWH(const FWH&);
+  
+  //- Disallow default bitwise assignment
+  void operator=(const FWH&);
+  
+  //- Sample and write a particular volume field
+  template<class Type>
+  tmp<Field<Type> > sampleOrInterpolate
+  (
+   const GeometricField<Type, fvPatchField, volMesh>&,
+   const sampledSurface& surface
+   ) const;
 
 
 public:
 
     //- Runtime type information
-    TypeName("FwocsWilliams-Hawkings");
+    TypeName("FfowcsWilliams-Hawkings");
 
     // Constructors
 

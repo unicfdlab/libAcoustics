@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,20 +22,45 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
-#include "CurleFunctionObject.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+#include "Curle.H"
+#include "volFields.H"
+#include "surfaceFields.H"
+#include "ListListOps.H"
+#include "stringListOps.H"
 
-namespace Foam
+// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
+
+template<class Type>
+Foam::tmp<Foam::Field<Type> > Foam::Curle::sampleOrInterpolate
+(
+    const GeometricField<Type, fvPatchField, volMesh>& vField, 
+    const sampledSurface& surface
+) const
 {
-    defineNamedTemplateTypeNameAndDebug(CurleFunctionObject, 0);
+    // interpolator for this field
+    autoPtr<interpolation<Type> > interpolatorPtr;
+   
+    tmp<Field<Type> > values;
 
-    addToRunTimeSelectionTable
-    (
-        functionObject,
-        CurleFunctionObject,
-        dictionary
-    );
+    if (surface.interpolate())
+    {
+        if (interpolatorPtr.empty())
+        {
+            interpolatorPtr = interpolation<Type>::New
+            (
+                interpolationScheme_,
+                vField
+            );
+        }
+        values = surface.interpolate(interpolatorPtr());
+    }
+    else
+    {
+        values = surface.sample(vField);
+    }
+
+    return values;
 }
 
 // ************************************************************************* //
