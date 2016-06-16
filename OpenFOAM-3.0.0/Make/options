@@ -1,4 +1,6 @@
 EXE_INC = \
+	-I./soundObserver \
+	-I$(LIB_SRC)/cfdTools/include \
 	-I$(LIB_SRC)/finiteVolume/lnInclude \
 	-I$(LIB_SRC)/OpenFOAM/lnInclude \
 	-I$(LIB_SRC)/meshTools/lnInclude \
@@ -10,7 +12,13 @@ EXE_INC = \
 	-I$(LIB_SRC)/TurbulenceModels/compressible/lnInclude \
 	-I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
 	-I$(LIB_SRC)/conversion/lnInclude \
-	-I$(LIB_SRC)/randomProcesses/lnInclude
+	-I$(LIB_SRC)/randomProcesses/lnInclude \
+	-I$(LIB_SRC)/surfMesh/lnInclude \
+    	-I$(LIB_SRC)/fileFormats/lnInclude \
+    	-I$(LIB_SRC)/triSurface/lnInclude \
+    	-I$(LIB_SRC)/conversion/lnInclude \
+    	-I$(LIB_SRC)/lagrangian/basic/lnInclude
+
 
 LIB_LIBS = \
     -lcompressibleTransportModels \
@@ -23,4 +31,8 @@ LIB_LIBS = \
     -lmeshTools \
     -lsampling \
     -lconversion \
-    -lrandomProcesses 
+    -lrandomProcesses \
+    -lsurfMesh \
+    -lfileFormats \
+    -ltriSurface \
+    -llagrangian 

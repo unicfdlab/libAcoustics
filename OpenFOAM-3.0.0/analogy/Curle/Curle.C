@@ -27,12 +27,23 @@ License
 #include "volFields.H"
 #include "dictionary.H"
 #include "Time.H"
-#include "wordReList.H"
+//#include "wordReList.H"
+//#include "PtrList.H"
+//#include "PtrListIO.C"
 
 #include "RASModel.H"
 #include "LESModel.H"
 
 #include "basicThermo.H"
+
+//sampledSurfaces stuff
+#include "IOmanip.H"
+#include "volPointInterpolation.H"
+#include "PatchTools.H"
+
+#include "ListListOps.H"
+#include "stringListOps.H"
+#include "surfaceFields.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 namespace Foam
@@ -43,16 +54,14 @@ namespace Foam
 }
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-Foam::tmp<Foam::scalarField> Foam::Curle::normalStress(const word& patchName) const
+Foam::tmp<Foam::scalarField> Foam::Curle::normalStress(const sampledSurface& surface) const
 {
+    const volScalarField& p = obr_.lookupObject<volScalarField>(pName_);
+ 
+    tmp<Field<scalar> > pSampled;
+    
+    pSampled = sampleOrInterpolate<scalar>(p, surface) - pInf_;
 
-    const fvMesh& mesh = refCast<const fvMesh>(obr_);
-    const volScalarField& p = mesh.lookupObject<volScalarField>(pName_);
-    
-    label patchId = mesh.boundary().findPatchID(patchName);
-    
-    scalarField pPatch = p.boundaryField()[patchId];
-    
     if (p.dimensions() == dimPressure)
     {
 	//return tmp<scalarField>
@@ -64,20 +73,20 @@ Foam::tmp<Foam::scalarField> Foam::Curle::normalStress(const word& patchName) co
     {
 	if (rhoRef_ < 0) //density in volScalarField
 	{
-	    scalarField pRho = mesh.lookupObject<volScalarField>(rhoName_).
-				boundaryField()[patchId];
-	    pPatch *= pRho;
+	  volScalarField pRho = obr_.lookupObject<volScalarField>(rhoName_);
+
+	  tmp<Field<scalar> > rhoSampled;
+	  rhoSampled = sampleOrInterpolate<scalar>(pRho, surface);
+
+	  pSampled() *= rhoSampled();
 	}
 	else //density is constant
 	{
-	    pPatch *= rhoRef_;
+	  pSampled() *= rhoRef_;
 	}
     }
 
-    return tmp<scalarField>
-    (
-	new scalarField(pPatch)
-    );
+    return pSampled;
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -95,10 +104,12 @@ Foam::Curle::Curle
     active_(true),
     probeFreq_(1),
     log_(false),
-    patchNames_(0, word::null),
+    interpolationScheme_(word::null),
+    controlSurfaces_(0),
     timeStart_(-1.0),
     timeEnd_(-1.0),
     pName_(word::null),
+    pInf_(0),
     c0_(300.0),
     dRef_(-1.0),
     observers_(0),
@@ -156,9 +167,49 @@ void Foam::Curle::read(const dictionary& dict)
     
     dict.lookup("probeFrequency") >> probeFreq_;
 
-    //const fvMesh& mesh = refCast<const fvMesh>(obr_);
+    dict.lookup("interpolationScheme") >> interpolationScheme_;
 
-    dict.lookup("patchNames") >> patchNames_;
+    const fvMesh& mesh_ = refCast<const fvMesh>(obr_);
+
+    PtrList<sampledSurface> newList
+    (
+        dict.lookup("surfaces"),
+        sampledSurface::iNew(mesh_)
+    );
+
+    controlSurfaces_.transfer(newList);
+    //Turn on if developing parallel
+    // if (Pstream::parRun())
+    // {
+    //     mergeList_.setSize(size());
+    // }
+
+
+    // Ensure all surfaces and merge information are expired
+    expire();
+
+    if (controlSurfaces_.size())
+    {
+        Info<< "Function object "<< name_<<":" << nl;
+        Info<< "    Reading Curle analogy control surface description:" << nl;
+        forAll(controlSurfaces_, surfI)
+        {
+	    Info<< "        " <<  controlSurfaces_.operator[](surfI).name() << nl;        
+	}
+        Info<< endl;
+    }
+
+    // if (Pstream::master() && debug)
+    // {
+    //     Pout<< "sample fields:" << fieldSelection_ << nl
+    //         << "sample surfaces:" << nl << "(" << nl;
+
+    //     forAll(*this, surfI)
+    //     {
+    //         Pout<< "  " << operator[](surfI) << endl;
+    //     }
+    //     Pout<< ")" << endl;
+    // }
     
     dict.lookup("timeStart") >> timeStart_;
     
@@ -169,6 +220,8 @@ void Foam::Curle::read(const dictionary& dict)
     dict.lookup("dRef") >> dRef_;
 
     dict.lookup("pName") >> pName_;
+
+    dict.lookup("pInf") >> pInf_;
     
     dict.lookup("rhoName") >> rhoName_;
     
@@ -212,16 +265,19 @@ void Foam::Curle::correct()
     vector F	(0.0, 0.0, 0.0);
     vector dFdT (0.0, 0.0, 0.0);
     scalar deltaT = mesh.time().deltaT().value();
-    
-    forAll(patchNames_, iPatch)
+
+    //calling a function to update all sampledSurfaces
+    //without it everything related will be empty
+    update();
+    //working with sampled surfaces
+    forAll(controlSurfaces_, surfI)
     {
-	word patchName = patchNames_[iPatch];
-	label patchId = mesh.boundary().findPatchID(patchName);
-	
-	scalarField pp = normalStress(patchName);
-	F -= gSum (pp * mesh.Sf().boundaryField()[patchId]);
+      sampledSurface& s = controlSurfaces_.operator[](surfI);
+      scalarField sampledPressure = normalStress(s);
+      F -= gSum (sampledPressure * s.Sf());
+      Info<<s.name()<<" , sampled Force = "<<F<<nl;
     }
-    
+
     if (Pstream::master() || !Pstream::parRun())
     {
 	//calculate dFdT and store old values
@@ -277,7 +333,10 @@ void Foam::Curle::correct()
 	    //Calculate distance
 	    scalar r = mag(l);
 	    //Calculate ObservedAcousticPressure
-	    scalar oap = l & (dFdT + c0_ * F / r) * coeff1 / r / r;
+	    //with near-field term as in Larsson paper, D.Parkhi thesis
+	    scalar oap = l & (dFdT + c0_* F / r) * coeff1 / r / r;
+	    //witout near-field term as in classic Goldstein
+	    //scalar oap = (l & dFdT) * coeff1 / r / r;
 	    if (dRef_ > 0.0)
 	    {
 		oap /= dRef_;
@@ -352,31 +411,19 @@ void Foam::Curle::calcDistances()
 	return;
     }
 
-    const fvMesh& mesh = refCast<const fvMesh>(obr_);
-    
-    label patchId = mesh.boundary().findPatchID(patchNames_[0]);
-    
-    if (patchId < 0)
+    update();
+
+    vectorField ci;
+    scalar ni;
+
+    forAll(controlSurfaces_, surfI)
     {
-	List<word> patchNames(0);
-	forAll (mesh.boundary(), iPatch)
-	{
-	    patchNames.append(mesh.boundary()[iPatch].name());
-	}
-	FatalErrorIn
-	(
-	    "Foam::Curle::calcDistances()"
-	)   << "Can\'t find path "
-	<< patchNames_[0]
-	<< "Valid patches are : " << nl
-	<< patchNames
-	<< exit(FatalError);
+      sampledSurface& s = controlSurfaces_.operator[](surfI);
+      ci = s.Cf();
+      ni = scalar(ci.size());
     }
-    
-    vectorField ci = mesh.boundary()[patchId].Cf();
-    scalar ni = scalar(ci.size());
+
     reduce (ni, sumOp<scalar>());
-    
     c_ = gSum(ci) / ni;
 }
 
@@ -488,6 +535,103 @@ void Foam::Curle::execute()
 	    Info << endl;
 	}
     }
+}
+
+bool Foam::Curle::expire()
+{
+    bool justExpired = false;
+
+    forAll(controlSurfaces_, surfI)
+    {
+        if (controlSurfaces_.operator[](surfI).expire())
+        {
+            justExpired = true;
+        }
+
+        // Clear merge information
+        // if (Pstream::parRun())
+        // {
+        //     mergeList_[surfI].clear();
+        // }
+    }
+
+    // true if any surfaces just expired
+    return justExpired;
+}
+
+bool Foam::Curle::needsUpdate() const
+{
+    forAll(controlSurfaces_, surfI)
+    {
+        if (controlSurfaces_.operator[](surfI).needsUpdate())
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Foam::Curle::update()
+{
+    bool updated = false;
+
+    if (!needsUpdate())
+    {
+        return updated;
+    }
+
+    // Serial: quick and easy, no merging required
+    if (!Pstream::parRun())
+    {
+        forAll(controlSurfaces_, surfI)
+        {
+            if (controlSurfaces_.operator[](surfI).update())
+            {
+                updated = true;
+            }
+        }
+
+        return updated;
+    }
+
+    // Dimension as fraction of mesh bounding box
+    // scalar mergeDim = mergeTol_ * mesh_.bounds().mag();
+
+    // if (Pstream::master() && debug)
+    // {
+    //     Pout<< nl << "Merging all points within "
+    //         << mergeDim << " metre" << endl;
+    // }
+
+    forAll(controlSurfaces_, surfI)
+    {
+        sampledSurface& s = controlSurfaces_.operator[](surfI);
+
+        if (s.update())
+        {
+            updated = true;
+        }
+        else
+        {
+            continue;
+        }
+
+        // PatchTools::gatherAndMerge
+        // (
+        //     mergeDim,
+        //     primitivePatch
+        //     (
+        //         SubList<face>(s.faces(), s.faces().size()),
+        //         s.points()
+        //     ),
+        //     mergeList_[surfI].points,
+        //     mergeList_[surfI].faces,
+        //     mergeList_[surfI].pointsMap
+        // );
+    }
+
+    return updated;
 }
 
 void Foam::Curle::end()

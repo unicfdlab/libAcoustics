@@ -1,4 +1,4 @@
-CurleAnalogy1
+/*CurleAnalogy1
 {
 	functionObjectLibs ("libAcoustics.so");
 	
@@ -21,6 +21,56 @@ CurleAnalogy1
 	dRef		0.020833333;
 	
 	pName		p;
+	
+	rhoName		none;
+	
+	rhoRef		1.2;
+	
+	observers
+	{
+	    mic
+	    {
+		position	(0.0 2.432 0.0);
+		pRef		2.0e-5;
+		fftFreq		1024;
+	    }
+	}
+}*/
+CurleAnalogy2
+{
+	functionObjectLibs ("libAcousticsDev1.so");
+	
+	type		Curle;
+	
+	log		true;
+	
+	order		second;
+	
+	probeFrequency	1;
+	
+	interpolationScheme	cell;
+	
+	surfaces
+        (                                                                    
+                cylinder
+        	{
+                    type            patch;
+                    patches         ("cyl");
+                    interpolate     false;
+                }
+	);
+	
+	timeStart	0.001;
+	
+	timeEnd		1;
+	
+	c0		340;
+	
+	dRef		0.020833333;
+	
+	pName		p;
+	
+	pInf		0.0;
 	
 	rhoName		none;
 	

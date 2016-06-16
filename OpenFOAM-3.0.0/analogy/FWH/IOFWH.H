@@ -21,22 +21,29 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
+Typedef
+    Foam::IOCurle
+
+Description
+    Instance of the generic IOOutputFilter for FWH.
+
 \*---------------------------------------------------------------------------*/
 
-#include "CurleFunctionObject.H"
+#ifndef IOFWH_H
+#define IOFWH_H
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+#include "FWH.H"
+#include "IOOutputFilter.H"
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    defineNamedTemplateTypeNameAndDebug(CurleFunctionObject, 0);
-
-    addToRunTimeSelectionTable
-    (
-        functionObject,
-        CurleFunctionObject,
-        dictionary
-    );
+    typedef IOOutputFilter<FWH> IOFWH;
 }
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#endif
 
 // ************************************************************************* //

@@ -37,8 +37,8 @@ SourceFiles
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef Curle_H
-#define Curle_H
+#ifndef CURLE_H
+#define CURLE_H
 
 #include "coordinateSystem.H"
 #include "coordinateSystems.H"
@@ -52,6 +52,13 @@ SourceFiles
 #include "SoundObserver.H"
 #include "polyMesh.H"
 #include "mapPolyMesh.H"
+
+//control surfaces stuff
+#include "sampledSurface.H"
+#include "surfaceWriter.H"
+#include "surfaceFieldsFwd.H"
+#include "wordReList.H"
+#include "IOobjectList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -92,9 +99,11 @@ protected:
 
         // Read from dictionary
 
-	//- Patch to integrate Curle over
-        List<word> patchNames_;
-        
+        //- Interpolation scheme to use
+        word interpolationScheme_;
+       
+        PtrList<sampledSurface> controlSurfaces_;
+  
         //-
         scalar timeStart_;
         
@@ -103,6 +112,8 @@ protected:
 
         //- Name of pressure field
         word pName_;
+
+        scalar pInf_;
         
         //- Sonic speed, m/s
         scalar c0_;
@@ -150,15 +161,23 @@ protected:
         
         //-
         void writeFft();
-
-	//- Returns normal stresses using pressure (and optionally density) field
-	tmp<scalarField> normalStress(const word& patchName) const;
+       
+        //- Returns normal stresses using pressure (and optionally density) field
+	tmp<scalarField> normalStress(const sampledSurface& surface) const;
 
         //- Disallow default bitwise copy construct
         Curle(const Curle&);
 
         //- Disallow default bitwise assignment
         void operator=(const Curle&);
+
+        //- Sample and write a particular volume field
+        template<class Type>
+        tmp<Field<Type> > sampleOrInterpolate
+        (
+	 const GeometricField<Type, fvPatchField, volMesh>&,
+	 const sampledSurface& surface
+        ) const;
 
 
 public:
@@ -196,13 +215,23 @@ public:
         //- Execute, currently does nothing
         virtual void execute();
 
+        //- Mark the control surfaces as needing an update.
+        //  The function is copy-pasted from sampledSurfaces.C
+        //  May also free up unneeded data.
+        //  Return false if all surfaces were already marked as expired.
+        virtual bool expire();
+
+        virtual bool needsUpdate() const; 
+
+        virtual bool update();        
+
         //- Execute at the final time-loop, currently does nothing
         virtual void end();
 
         //- Called when time was set at the end of the Time::operator++
         virtual void timeSet();
 
-        //- Write the Curle
+        //- Write the Curle 
         virtual void write();
 
         //- Update for changes of mesh
@@ -219,6 +248,12 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+#   include "CurleTemplates.C"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
