@@ -60,7 +60,7 @@ Foam::tmp<Foam::scalarField> Foam::Curle::normalStress(const sampledSurface& sur
  
     tmp<Field<scalar> > pSampled;
     
-    pSampled = sampleOrInterpolate<scalar>(p, surface);
+    pSampled = sampleOrInterpolate<scalar>(p, surface) - pInf_;
 
     if (p.dimensions() == dimPressure)
     {
@@ -109,6 +109,7 @@ Foam::Curle::Curle
     timeStart_(-1.0),
     timeEnd_(-1.0),
     pName_(word::null),
+    pInf_(0),
     c0_(300.0),
     dRef_(-1.0),
     observers_(0),
@@ -219,6 +220,8 @@ void Foam::Curle::read(const dictionary& dict)
     dict.lookup("dRef") >> dRef_;
 
     dict.lookup("pName") >> pName_;
+
+    dict.lookup("pInf") >> pInf_;
     
     dict.lookup("rhoName") >> rhoName_;
     
@@ -330,7 +333,10 @@ void Foam::Curle::correct()
 	    //Calculate distance
 	    scalar r = mag(l);
 	    //Calculate ObservedAcousticPressure
-	    scalar oap = l & (dFdT + c0_ * F / r) * coeff1 / r / r;
+	    //with near-field term as in Larsson paper, D.Parkhi thesis
+	    scalar oap = l & (dFdT + c0_* F / r) * coeff1 / r / r;
+	    //witout near-field term as in classic Goldstein
+	    //scalar oap = (l & dFdT) * coeff1 / r / r;
 	    if (dRef_ > 0.0)
 	    {
 		oap /= dRef_;

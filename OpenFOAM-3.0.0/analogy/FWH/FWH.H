@@ -115,6 +115,8 @@ protected:
   
   //- Pressure value at infinity
   scalar pInf_;
+
+  vector Ufwh_;
   
   //- Sonic speed, m/s
   scalar c0_;

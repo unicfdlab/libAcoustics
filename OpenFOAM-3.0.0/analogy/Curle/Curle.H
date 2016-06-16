@@ -112,6 +112,8 @@ protected:
 
         //- Name of pressure field
         word pName_;
+
+        scalar pInf_;
         
         //- Sonic speed, m/s
         scalar c0_;

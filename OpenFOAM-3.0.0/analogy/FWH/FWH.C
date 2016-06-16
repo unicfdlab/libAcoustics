@@ -185,6 +185,7 @@ Foam::FWH::FWH
     timeEnd_(-1.0),
     pName_(word::null),
     pInf_(0),
+    Ufwh_(vector::zero),
     c0_(340.0),
     dRef_(-1.0),
     observers_(0),
@@ -299,6 +300,8 @@ void Foam::FWH::read(const dictionary& dict)
     dict.lookup("pName") >> pName_;
 
     dict.lookup("pInf") >> pInf_;
+
+    dict.lookup("Ufwh") >> Ufwh_;
     
     dict.lookup("rhoName") >> rhoName_;
     
@@ -447,7 +450,7 @@ void Foam::FWH::correct()
     scalar F2	(0.0);
     vector dF1dT (0.0, 0.0, 0.0);
     scalar dF2dT (0.0);
-    vector Ufwh (-68.0, 0.0, 0.0);
+    //vector Ufwh (-68.0, 0.0, 0.0);
     
     //calling a function to update all sampledSurfaces
     //without it everything related will be empty
@@ -467,11 +470,11 @@ void Foam::FWH::correct()
 
       F1 += gSum (
 		  pS*s.Sf() + 
-		  (rhoS*uS)*( (uS - Ufwh)&s.Sf() )
+		  (rhoS*uS)*( (uS - Ufwh_)&s.Sf() )
 		  );
 
       F2 += gSum ( 
-		  (rhoRef_*uS + (pS/(c0_*c0_))*(uS - Ufwh))&s.Sf() 
+		  (rhoRef_*uS + (pS/(c0_*c0_))*(uS - Ufwh_))&s.Sf() 
 		   ); //rhoS - rhoRef_
       
       Info<<s.name()<<", sampled integrals F1="<<F1<<" F2="<<F2<<nl;
@@ -563,7 +566,7 @@ void Foam::FWH::correct()
 	  //Calculate distance
 	  scalar r = mag(x);
 	  //Calculate Mr
-	  scalar Mr = 1 - mag((Ufwh/c0_)&y_i);
+	  scalar Mr = 1 - mag((Ufwh_/c0_)&y_i);
 	  Info<<"    y_i = "<< y_i<<nl;
 	  Info<<"    Mr = "<< Mr<<nl;
 	  //Calculate ObservedAcousticPressure
