@@ -7,4 +7,4 @@ analogy/FWH/FWH.C
 analogy/FWH/FWHFunctionObject.C
 
 
-LIB = $(FOAM_USER_LIBBIN)/libAcousticsDev1
+LIB = $(FOAM_USER_LIBBIN)/libAcoustics
