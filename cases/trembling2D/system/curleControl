@@ -1,6 +1,6 @@
 dipoleCurleTest
     {
-	functionObjectLibs ("libAcousticsDev1.so");
+	functionObjectLibs ("libAcoustics.so");
 	
 	type		Curle;
 	

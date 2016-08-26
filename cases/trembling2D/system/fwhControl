@@ -40,7 +40,9 @@ dipoleFwhTest
 	
 	rhoName		rho;
 	
-	rhoRef		1.29;
+	rhoRef		-1.29;
+
+	rhoInf		1.29;
 
 	observers
 	{
@@ -88,7 +90,7 @@ fwhAnalogy25x
 	
 	probeFrequency	1;
 
-	interpolationScheme	cellPointFace;
+	interpolationScheme	cellPoint;
 	
 	surfaces
         (
@@ -117,7 +119,9 @@ fwhAnalogy25x
 	
 	rhoName		rho;
 	
-	rhoRef		1.29;
+	rhoRef		-1.29;
+
+	rhoInf		1.29;
 	
 	observers
 	{	
@@ -165,7 +169,7 @@ fwhAnalogy50x
 	
 	probeFrequency	1;
 
-	interpolationScheme	cellPointFace;
+	interpolationScheme	cell;
 	
 	surfaces
         (
@@ -194,7 +198,9 @@ fwhAnalogy50x
 
 	rhoName		rho;
 	
-	rhoRef		1.29;
+	rhoRef		-1.29;
+
+	rhoInf		1.29;
 	
 	observers
 	{
