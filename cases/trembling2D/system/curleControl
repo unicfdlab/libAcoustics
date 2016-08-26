@@ -1,0 +1,103 @@
+dipoleCurleTest
+    {
+	functionObjectLibs ("libAcoustics.so");
+	
+	type		Curle;
+	
+	log		true;
+
+	saveSurfaceData	false;
+
+	order		second;
+	
+	probeFrequency	1;
+
+	interpolationScheme	cellPoint;
+
+	surfaces
+        (                                                                    
+                sphere
+        	{
+                    type            patch;
+                    patches         ("sphere");
+                    interpolate     false;
+                }
+	);
+	
+	timeStart	0.0001;
+	
+	timeEnd		1;
+	
+	c0		330.7;
+	
+	dRef		0.005555556;
+	
+	pName		p;
+
+	pInf		0.0;
+
+	Ufwh		(.0 .0 .0);
+	
+	rhoName		rho;
+	
+	rhoRef		1.29;
+	
+	observers
+	{
+		R09-A
+		{
+			position	(0.0001 0 0.9);
+			pRef		2.0e-5;
+			fftFreq		1024;
+		}
+
+		R09-B
+		{
+			position	(0.3444150891 0 0.8314915793);
+			pRef		2.0e-5;
+			fftFreq		1024;
+		}
+
+		R09-C
+		{
+			position	(0.6363961031 0 0.6363961031);
+			pRef		2.0e-5;
+			fftFreq		1024;
+		}
+
+		R09-D
+		{
+			position	(0.831491579 0 0.3444150891);
+			pRef		2.0e-5;
+			fftFreq		1024;
+		}
+		
+		R150-A
+		{
+			position	(0.0 0 150);
+			pRef		2.0e-5;
+			fftFreq		1024;
+		}
+
+		R150-B
+		{
+			position	(75 0 129.90381057);
+			pRef		2.0e-5;
+			fftFreq		1024;
+		}
+
+		R150-C
+		{
+			position	(106.06601718 0 106.06601718);
+			pRef		2.0e-5;
+			fftFreq		1024;
+		}
+
+		R150-D
+		{
+			position	(129.90381057 0 75);
+			pRef		2.0e-5;
+			fftFreq		1024;
+		}
+	}
+}

@@ -51,8 +51,10 @@ namespace Foam
 {
 
     defineTypeNameAndDebug(FWH, 0);
-
 }
+
+Foam::scalar Foam::FWH::mergeTol_ = 1e-10;
+
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 Foam::tmp<Foam::scalarField> Foam::FWH::normalStress(const sampledSurface& surface) const
@@ -73,19 +75,8 @@ Foam::tmp<Foam::scalarField> Foam::FWH::normalStress(const sampledSurface& surfa
     }
     else
     {
-	if (rhoRef_ < 0) //density in volScalarField
-	{
-	  volScalarField pRho = obr_.lookupObject<volScalarField>(rhoName_);
-
-	  tmp<Field<scalar> > rhoSampled;
-	  rhoSampled = sampleOrInterpolate<scalar>(pRho, surface);
-
-	  pSampled() *= rhoSampled();
-	}
-	else //density is constant
-	{
-	  pSampled() *= rhoRef_;
-	}
+      tmp<Field<scalar> > rhoField = surfaceDensity(surface);
+      pSampled() *= rhoField();
     }
 
     return pSampled;
@@ -138,6 +129,7 @@ Foam::tmp<Foam::scalarField> Foam::FWH::surfaceDensity(const sampledSurface& sur
 //May be not need at all
 //Trade off between this implementation of the derivative operation
 //and using <type> dotProduct(type &)
+
 Foam::tmp<Foam::scalarField> Foam::FWH::dotNormalStress(const sampledSurface& surface) const
 {
     const volScalarField& dpdt = Foam::fvc::ddt(obr_.lookupObject<volScalarField>(pName_));
@@ -149,12 +141,8 @@ Foam::tmp<Foam::scalarField> Foam::FWH::dotNormalStress(const sampledSurface& su
 
     if (rhoRef_ < 0) //density in volScalarField
       {
-	volScalarField pRho = obr_.lookupObject<volScalarField>(rhoName_);
-	
-	tmp<Field<scalar> > rhoSampled;
-	rhoSampled = sampleOrInterpolate<scalar>(pRho, surface);
-	
-	pSampled() *= rhoSampled();
+	tmp<Field<scalar> > rhoField = surfaceDensity(surface);
+	pSampled() *= rhoField();
       }
     else //density is constant
       {
@@ -191,12 +179,14 @@ Foam::FWH::FWH
     observers_(0),
     rhoName_(word::null),
     rhoRef_(1.0),
+    rhoInf_(1.0),
     c_(vector::zero),
     FWHFilePtr_(NULL),
     VOldPtr_(NULL),
     VOldOldPtr_(NULL),
     SOldPtr_(NULL),
     SOldOldPtr_(NULL),
+    mergeList_(),
     probeI_(0)
 {
     // Check if the available mesh is an fvMesh otherise deactivate
@@ -256,12 +246,12 @@ void Foam::FWH::read(const dictionary& dict)
     );
 
     controlSurfaces_.transfer(newList);
-    //Turn on if developing parallel
-    // if (Pstream::parRun())
-    // {
-    //     mergeList_.setSize(size());
-    // }
 
+    //Parallel fix as it was implemented in sampledSuraces class
+    if (Pstream::parRun())
+    {
+         mergeList_.setSize(controlSurfaces_.size());
+    }
 
     // Ensure all surfaces and merge information are expired
     expire();
@@ -277,17 +267,16 @@ void Foam::FWH::read(const dictionary& dict)
         Info<< endl;
     }
 
-    // if (Pstream::master() && debug)
-    // {
-    //     Pout<< "sample fields:" << fieldSelection_ << nl
-    //         << "sample surfaces:" << nl << "(" << nl;
+    if (Pstream::master() && debug)
+    {
+      Pout<< "FWH control surfaces additional info:" << nl << "(" << nl;
 
-    //     forAll(*this, surfI)
-    //     {
-    //         Pout<< "  " << operator[](surfI) << endl;
-    //     }
-    //     Pout<< ")" << endl;
-    // }
+      forAll(controlSurfaces_, surfI)
+	{
+	  Pout<< "  " << controlSurfaces_.operator[](surfI) << endl;
+	}
+      Pout<< ")" << endl;
+    }
     
     dict.lookup("timeStart") >> timeStart_;
     
@@ -307,6 +296,8 @@ void Foam::FWH::read(const dictionary& dict)
     
     dict.lookup("rhoRef") >> rhoRef_;
 
+    dict.lookup("rhoInf") >> rhoInf_;
+    
     //read observers
     {
 	const dictionary& obsDict = dict.subDict("observers");
@@ -343,7 +334,7 @@ Foam::vector Foam::FWH::dotProduct(const vector& F)
 
     vector dFdT (0.0, 0.0, 0.0);
 
-    scalar deltaT = mesh_.time().deltaT().value();
+    scalar deltaT = probeFreq_*mesh_.time().deltaT().value();
 
     if (VOldPtr_.empty())
       {
@@ -395,7 +386,7 @@ Foam::scalar Foam::FWH::dotProduct(const scalar& S)
 
     scalar dSdT (0.0);
 
-    scalar deltaT = mesh_.time().deltaT().value();
+    scalar deltaT = probeFreq_*mesh_.time().deltaT().value();
 
     if (SOldPtr_.empty())
       {
@@ -450,23 +441,29 @@ void Foam::FWH::correct()
     scalar F2	(0.0);
     vector dF1dT (0.0, 0.0, 0.0);
     scalar dF2dT (0.0);
-    //vector Ufwh (-68.0, 0.0, 0.0);
     
     //calling a function to update all sampledSurfaces
     //without it everything related will be empty
     update();
+    
     //working with sampled surfaces
-    Info<<"    Surface updated"<<nl;
+    Info<<"    Surfaces updated"<<nl;
+
+    // works only in master
+    if (Pstream::master())
+    {
+    }
+    
     forAll(controlSurfaces_, surfI)
     {
       sampledSurface& s = controlSurfaces_.operator[](surfI);
-      //      Info<<"    Surface OK"<<nl;
+            Info<<"    Surface OK"<<nl;
       scalarField pS = normalStress(s);
-      //      Info<<"    Pressure OK"<<gSum(pS)<<nl;
+            Info<<"    Pressure OK"<<gSum(pS)<<nl;
       vectorField uS = surfaceVelocity(s);
-      //      Info<<"    Velocity OK"<<gSum(uS)<<nl;
+            Info<<"    Velocity OK"<<gSum(uS)<<nl;
       scalarField rhoS = surfaceDensity(s);
-      //      Info<<"    Density OK"<<gSum(rhoS)<<nl;
+            Info<<"    Density OK"<<gSum(rhoS)<<nl;
 
       F1 += gSum (
 		  pS*s.Sf() + 
@@ -474,8 +471,8 @@ void Foam::FWH::correct()
 		  );
 
       F2 += gSum ( 
-		  (rhoRef_*uS + (pS/(c0_*c0_))*(uS - Ufwh_))&s.Sf() 
-		   ); //rhoS - rhoRef_
+		  (rhoInf_*uS + (pS/(c0_*c0_))*(uS - Ufwh_))&s.Sf() 
+		   ); //rhoS - rhoInf_
       
       Info<<s.name()<<", sampled integrals F1="<<F1<<" F2="<<F2<<nl;
       /*
@@ -782,11 +779,11 @@ bool Foam::FWH::expire()
             justExpired = true;
         }
 
-        // Clear merge information
-        // if (Pstream::parRun())
-        // {
-        //     mergeList_[surfI].clear();
-        // }
+        //Clear merge information
+        if (Pstream::parRun())
+        {
+	  mergeList_[surfI].clear();
+	}
     }
 
     // true if any surfaces just expired
@@ -808,6 +805,8 @@ bool Foam::FWH::needsUpdate() const
 
 bool Foam::FWH::update()
 {
+  //Actually the update() function copy-pasted from libSampling
+  
     bool updated = false;
 
     if (!needsUpdate())
@@ -816,6 +815,7 @@ bool Foam::FWH::update()
     }
 
     // Serial: quick and easy, no merging required
+    // Just like sampledSurfaces
     if (!Pstream::parRun())
     {
         forAll(controlSurfaces_, surfI)
@@ -829,14 +829,16 @@ bool Foam::FWH::update()
         return updated;
     }
 
+    const fvMesh& mesh = refCast<const fvMesh>(obr_);
+   
     // Dimension as fraction of mesh bounding box
-    // scalar mergeDim = mergeTol_ * mesh_.bounds().mag();
+    scalar mergeDim = mergeTol_ * mesh.bounds().mag();
 
-    // if (Pstream::master() && debug)
-    // {
-    //     Pout<< nl << "Merging all points within "
-    //         << mergeDim << " metre" << endl;
-    // }
+    if (Pstream::master() && debug)
+    {
+      Pout<< nl << "Merging all points within "
+	  << mergeDim << " metre" << endl;
+    }
 
     forAll(controlSurfaces_, surfI)
     {
@@ -851,18 +853,18 @@ bool Foam::FWH::update()
             continue;
         }
 
-        // PatchTools::gatherAndMerge
-        // (
-        //     mergeDim,
-        //     primitivePatch
-        //     (
-        //         SubList<face>(s.faces(), s.faces().size()),
-        //         s.points()
-        //     ),
-        //     mergeList_[surfI].points,
-        //     mergeList_[surfI].faces,
-        //     mergeList_[surfI].pointsMap
-        // );
+        PatchTools::gatherAndMerge
+	  (
+	   mergeDim,
+            primitivePatch
+            (
+                SubList<face>(s.faces(), s.faces().size()),
+                s.points()
+            ),
+            mergeList_[surfI].points,
+            mergeList_[surfI].faces,
+            mergeList_[surfI].pointsMap
+        );
     }
 
     return updated;
@@ -881,6 +883,18 @@ void Foam::FWH::timeSet()
 void Foam::FWH::write()
 {
     // Do nothing - only valid on execute
+}
+
+Foam::scalar Foam::FWH::mergeTol()
+{
+    return mergeTol_;
+}
+
+Foam::scalar Foam::FWH::mergeTol(const scalar tol)
+{
+    scalar oldTol = mergeTol_;
+    mergeTol_ = tol;
+    return oldTol;
 }
 
 // ************************************************************************* //

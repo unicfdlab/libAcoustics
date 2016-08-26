@@ -76,7 +76,7 @@ class SoundObserver
     //-
     label fftFreq_;
 
-    bool checkOrder(scalar size) const;
+    bool checkPressureSize() const;
 
 public:
 

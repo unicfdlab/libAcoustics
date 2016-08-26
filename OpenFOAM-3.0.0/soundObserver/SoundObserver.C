@@ -129,17 +129,36 @@ void Foam::SoundObserver::atime(scalar atime)
     time_.append(atime);
 }
 
-bool Foam::SoundObserver::checkOrder(scalar size) const
+bool Foam::SoundObserver::checkPressureSize() const
 {
-  double reminder;
+  scalar size = p_.size();
+  double reminder(1.0);
   reminder = log10(size)/log10(2.0);
-  Info<<"Checking order rem="<<reminder<<endl;
-  if (reminder > floor(reminder)){
-    Info<<"False"<<endl;
-    return false;
+  //  
+  if (
+      size >= fftFreq_
+      &&
+      ( (p_.size() % fftFreq_) == 0)
+      &&
+      !(reminder > floor(reminder) )
+      )
+    {
+    // Info<<"SoundObserver::fft(scalar tau) "
+    // 	<<"checkPressureSize() message: "<<nl
+    // 	<<"    p.size() = "<< p_.size()<<nl
+    // 	<<"    fftFreq_ = "<<fftFreq_<<nl
+    // 	<<"    reminder = "<<reminder<<nl
+    // 	<<"    return TRUE"<<endl;
+    return true;
   }
   else{
-    return true;
+    // Info<<"SoundObserver::fft(scalar tau) "
+    // 	<<"checkPressureSize() message: "<<nl
+    // 	<<"    p.size() = "<< p_.size()<<nl
+    // 	<<"    fftFreq_ = "<<fftFreq_<<nl
+    // 	<<"    reminder = "<<reminder<<nl
+    // 	<<"    return FALSE"<<endl;
+    return false;
   };
 }
 
@@ -152,7 +171,7 @@ Foam::autoPtr<Foam::List<Foam::List<Foam::scalar> > > Foam::SoundObserver::fft(s
 	fft_res[i].resize(0);
     }
     
-    if ( (p_.size() > 0) && (p_.size() % fftFreq_ == 0) && checkOrder(p_.size()) )
+    if ( checkPressureSize() )
     {
         tmp<scalarField> tPn2
 	(
@@ -161,11 +180,11 @@ Foam::autoPtr<Foam::List<Foam::List<Foam::scalar> > > Foam::SoundObserver::fft(s
 	    fft::reverseTransform
 	    (
 	     ReComplexField(p_),
-	     labelList(1, p_.size())
+	     labelList(0, p_.size())
 	    )
 	   )
 	 );
-   
+
 	tmp<scalarField> tPn
 	(
 	 new scalarField
@@ -189,12 +208,15 @@ Foam::autoPtr<Foam::List<Foam::List<Foam::scalar> > > Foam::SoundObserver::fft(s
 	 fft_res[0].resize(tPn().size());
 	 fft_res[1].resize(tPn().size());
 	 fft_res[2].resize(tPn().size());
-	
+
 	 forAll (tPn(), k)
 	 {
 	     fft_res[0][k] = f[k]; //Frequency, Hz
 	     fft_res[1][k] = tPn()[k]; //pressure amplitude, Pa
-	     fft_res[2][k] = 20*log10(fft_res[1][k] / pref_); //SLP, dB
+
+	     //check value to prevent log10(x = 0) crash
+	     if(fft_res[1][k] == 0) fft_res[2][k] = 0.0;
+	     else fft_res[2][k] = 20*log10(fft_res[1][k] / pref_); //SLP, dB
 	 }
     }    
     return autoPtr<List<List<scalar> > >
