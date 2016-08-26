@@ -53,6 +53,9 @@ SourceFiles
 #include "polyMesh.H"
 #include "mapPolyMesh.H"
 
+//Came from A.Epikhin implementation
+#include "volFields.H"
+
 //control surfaces stuff
 #include "sampledSurface.H"
 #include "surfaceWriter.H"
@@ -76,8 +79,29 @@ class mapPolyMesh;
 
 class FWH
 {
-public:
+private:
+  
+  //- Class used for surface merging information
+  class mergeInfo
+  {
+  public:
+    
+    pointField points;
+    faceList   faces;
+    labelList  pointsMap;
+    
+    //- Clear all storage
+    void clear()
+    {
+      points.clear();
+      faces.clear();
+      pointsMap.clear();
+    }
+  };
 
+  //- Tolerance for merging points (fraction of mesh bounding box)
+  static scalar mergeTol_;
+  
 protected:
   
   // Private data
@@ -103,6 +127,9 @@ protected:
   word interpolationScheme_;
   
   PtrList<sampledSurface> controlSurfaces_;
+
+  //- Information for merging surfaces
+  List<mergeInfo> mergeList_;
   
   //-
   scalar timeStart_;
@@ -132,8 +159,11 @@ protected:
   
   //- Reference density needed for incompressible calculations
   scalar rhoRef_;
-  
-        //-
+
+  //- The relative density of the undisturbed medium
+  scalar rhoInf_;
+
+  //-
   vector c_;
 
   //- FWH/moment file ptr
@@ -264,6 +294,12 @@ public:
         //- Update for changes of mesh
         virtual void movePoints(const polyMesh&)
         {};
+    
+  //- Get merge tolerance
+  static scalar mergeTol();
+  
+  //- Set tolerance (and return old tolerance)
+  static scalar mergeTol(const scalar);
         
 };
 
