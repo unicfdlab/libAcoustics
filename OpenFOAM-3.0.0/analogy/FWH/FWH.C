@@ -436,24 +436,18 @@ void Foam::FWH::correct()
 {   
     const fvMesh& mesh_ = refCast<const fvMesh>(obr_);
 
-    //sign '-' needed to calculate force, which exerts fluid by solid
     vector F1	(0.0, 0.0, 0.0);
     scalar F2	(0.0);
-    vector dF1dT (0.0, 0.0, 0.0);
-    scalar dF2dT (0.0);
-    
+    vector dF1dT    (0.0, 0.0, 0.0);
+    scalar dF2dT    (0.0);
+        
     //calling a function to update all sampledSurfaces
     //without it everything related will be empty
     update();
     
     //working with sampled surfaces
     Info<<"    Surfaces updated"<<nl;
-
-    // works only in master
-    if (Pstream::master())
-    {
-    }
-    
+   
     forAll(controlSurfaces_, surfI)
     {
       sampledSurface& s = controlSurfaces_.operator[](surfI);
@@ -465,33 +459,66 @@ void Foam::FWH::correct()
       scalarField rhoS = surfaceDensity(s);
             Info<<"    Density OK"<<gSum(rhoS)<<nl;
 
-      F1 += gSum (
-		  pS*s.Sf() + 
-		  (rhoS*uS)*( (uS - Ufwh_)&s.Sf() )
-		  );
+	    //parallel: integrate locally for each processor
+	    F1 += sum( pS*s.Sf() + 
+		       (rhoS*uS)*( (uS - Ufwh_)&s.Sf() ));
+	    
+	    F2 += sum((rhoInf_*uS + (pS/(c0_*c0_))*(uS - Ufwh_))&s.Sf() ); //rhoS - rhoInf_
+    
+	    // F1 += gSum (
+	    // 		pS*s.Sf() + 
+	    // 		(rhoS*uS)*( (uS - Ufwh_)&s.Sf() )
+	    // 		);
+	    
+	    // F2 += gSum ( 
+	    // 		(rhoInf_*uS + (pS/(c0_*c0_))*(uS - Ufwh_))&s.Sf() 
+	    // 		 ); //rhoS - rhoInf_
+	    
+	    Info<<s.name()<<", sampled integrals F1="<<F1<<" F2="<<F2<<nl;
 
-      F2 += gSum ( 
-		  (rhoInf_*uS + (pS/(c0_*c0_))*(uS - Ufwh_))&s.Sf() 
-		   ); //rhoS - rhoInf_
+	    //parallel: add integral from each processor
+	    reduce (F1, sumOp<vector>());
+	    reduce (F2, sumOp<scalar>());
+
+	    if (Pstream::master() || !Pstream::parRun())
+	      {
+		//calculate dFdT and store old values
+	
+		dF1dT = dotProduct(F1);
+		dF2dT = dotProduct(F2);
+
+		//dFdT = F;
+		
+		scalar coeff1 = 1. / 4. / Foam::constant::mathematical::pi;
+		
+		forAll (observers_, iObs)
+		  {
+		    SoundObserver& obs = observers_[iObs];
+		    //Vector from observer to center
+		    vector x = c_ - obs.position();
+		    vector y = obs.position() - c_;
+		    vector x_i = x/mag(x);
+		    vector y_i = y/mag(y);
+		    //Calculate distance
+		    scalar r = mag(x);
+		    //Calculate Mr
+		    scalar Mr = 1 - mag((Ufwh_/c0_)&y_i);
+		    Info<<"    y_i = "<< y_i<<nl;
+		    Info<<"    Mr = "<< Mr<<nl;
+		    //Calculate ObservedAcousticPressure
+		    scalar oap = ( ((x/r/c0_)&dF1dT) + dF2dT ) * coeff1 / r / Mr;
+		    if (dRef_ > 0.0)
+		      {
+			oap /= dRef_;
+		      }
+		    obs.apressure(oap); //appends new calculated acoustic pressure
+		    
+		    //noiseFFT addition
+		    obs.atime(mesh_.time().value());
+		  }
       
-      Info<<s.name()<<", sampled integrals F1="<<F1<<" F2="<<F2<<nl;
-      /*
-      if (rhoRef_ < 0) //density in volScalarField
-	{
-	  volScalarField pRho = obr_.lookupObject<volScalarField>(rhoName_);
-	  
-	  tmp<Field<scalar> > rhoSampled;
-	  rhoSampled = sampleOrInterpolate<scalar>(pRho, surface);
-	  
-	  pSampled() *= rhoSampled();
-	}
-      else //density is constant
-	{
-	  pSampled() *= rhoRef_;
-	}
-      */
+	      }
     }
-
     /*forAll (observers_, iObs)
     {
       SoundObserver& obs = observers_[iObs];
@@ -539,46 +566,6 @@ void Foam::FWH::correct()
 
 	//obs.pPrime(pPrime);
 	}*/
-
-
-    if (Pstream::master() || !Pstream::parRun())
-    {
-	//calculate dFdT and store old values
-	
-      dF1dT = dotProduct(F1);
-      dF2dT = dotProduct(F2);
-
-      //dFdT = F;
-
-      scalar coeff1 = 1. / 4. / Foam::constant::mathematical::pi;
-      
-      forAll (observers_, iObs)
-	{
-	  SoundObserver& obs = observers_[iObs];
-	  //Vector from observer to center
-	  vector x = c_ - obs.position();
-	  vector y = obs.position() - c_;
-	  vector x_i = x/mag(x);
-	  vector y_i = y/mag(y);
-	  //Calculate distance
-	  scalar r = mag(x);
-	  //Calculate Mr
-	  scalar Mr = 1 - mag((Ufwh_/c0_)&y_i);
-	  Info<<"    y_i = "<< y_i<<nl;
-	  Info<<"    Mr = "<< Mr<<nl;
-	  //Calculate ObservedAcousticPressure
-	  scalar oap = ( ((x/r/c0_)&dF1dT) + dF2dT ) * coeff1 / r / Mr;
-	  if (dRef_ > 0.0)
-	    {
-	      oap /= dRef_;
-	    }
-	  obs.apressure(oap); //appends new calculated acoustic pressure
-	  
-	  //noiseFFT addition
-	  obs.atime(mesh_.time().value());
-	}
-      
-    }
 }
 
 void Foam::FWH::makeFile()
@@ -655,6 +642,7 @@ void Foam::FWH::calcDistances()
     }
 
     reduce (ni, sumOp<scalar>());
+    
     c_ = gSum(ci) / ni;
 }
 
