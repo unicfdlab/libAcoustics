@@ -122,8 +122,16 @@ protected:
   Switch log_;
   
   // Read from dictionary
+
+  //- Patch to integrate FW-H over
+  word	fwhSurfaceType_;
+
+  // parameter for faceSet
+  word	fwhFaceSetName_;
+
+  label faceZoneID_;
   
-  //- Interpolation scheme to use
+  //- Interpolation scheme to use for sampling
   word interpolationScheme_;
   
   PtrList<sampledSurface> controlSurfaces_;
@@ -217,7 +225,9 @@ protected:
 
   //- Returns normal stresses time derivative using pressure (and optionally density) field
   tmp<scalarField> dotNormalStress(const sampledSurface& surface) const;
-  
+
+  bool checkNormal( vector c , vector p, vector n) const;
+
   //- Disallow default bitwise copy construct
   FWH(const FWH&);
   

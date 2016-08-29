@@ -167,6 +167,9 @@ Foam::FWH::FWH
     active_(true),
     probeFreq_(1),
     log_(false),
+    fwhSurfaceType_(word::null),
+    fwhFaceSetName_(word::null),
+    faceZoneID_(-1),
     interpolationScheme_(word::null),
     controlSurfaces_(0),
     timeStart_(-1.0),
@@ -238,45 +241,73 @@ void Foam::FWH::read(const dictionary& dict)
     dict.lookup("interpolationScheme") >> interpolationScheme_;
 
     const fvMesh& mesh_ = refCast<const fvMesh>(obr_);
+  
+    //Istream& is = dict.lookup("surfaces");
+    //dictionary dc(is);
+    //dc.readIfPresent("type", fwhSurfaceType_);
 
-    PtrList<sampledSurface> newList
-    (
-        dict.lookup("surfaces"),
-        sampledSurface::iNew(mesh_)
-    );
-
-    controlSurfaces_.transfer(newList);
-
-    //Parallel fix as it was implemented in sampledSuraces class
-    if (Pstream::parRun())
+    dict.lookup("fwhSurfaceType") >> fwhSurfaceType_;
+    
+    if ( fwhSurfaceType_=="faceSet")
     {
-         mergeList_.setSize(controlSurfaces_.size());
-    }
+      dict.lookup("faceSetName") >> fwhFaceSetName_;
+      Info<< "Function object "<< name_<<":" << nl;
+      Info<< "    FwocsWilliams-Hawkings analogy control surface is faceSet "
+	  << fwhFaceSetName_ << nl << nl;
 
-    // Ensure all surfaces and merge information are expired
-    expire();
-
-    if (controlSurfaces_.size())
-    {
-        Info<< "Function object "<< name_<<":" << nl;
-        Info<< "    Reading FwocsWilliams-Hawkings analogy control surface description:" << nl;
-        forAll(controlSurfaces_, surfI)
-        {
-	    Info<< "        " <<  controlSurfaces_.operator[](surfI).name() << nl;        
-	}
-        Info<< endl;
-    }
-
-    if (Pstream::master() && debug)
-    {
-      Pout<< "FWH control surfaces additional info:" << nl << "(" << nl;
-
-      forAll(controlSurfaces_, surfI)
+      const fvMesh& mesh = refCast<const fvMesh>(obr_);
+      faceZoneID_ = mesh.faceZones().findZoneID(fwhFaceSetName_);
+      
+      if (faceZoneID_ < 0)
 	{
-	  Pout<< "  " << controlSurfaces_.operator[](surfI) << endl;
+	  FatalError
+	    << "Foam::FWH::read(const dictionary& dict): can not find faceZone "
+	    << fwhFaceSetName_ << endl
+	    << exit(FatalError);
 	}
-      Pout<< ")" << endl;
+
     }
+    else if( fwhSurfaceType_ == "sampled")
+      {
+	PtrList<sampledSurface> newList
+	  (
+	   dict.lookup("surfaces"),
+	   sampledSurface::iNew(mesh_)
+	   );
+	
+	controlSurfaces_.transfer(newList);
+	//Parallel fix as it was implemented in sampledSuraces class
+	if (Pstream::parRun())
+	  {
+	    mergeList_.setSize(controlSurfaces_.size());
+	  }
+	
+	// Ensure all surfaces and merge information are expired
+	expire();
+	
+	if (controlSurfaces_.size())
+	  {
+	    Info<< "Function object "<< name_<<":" << nl;
+	    Info<< "    Reading FwocsWilliams-Hawkings analogy control surface description:" << nl;
+	    forAll(controlSurfaces_, surfI)
+	      {
+		Info<< "        " <<  controlSurfaces_.operator[](surfI).name() << nl;        
+	      }
+	    Info<< endl;
+	  }
+	
+	if (Pstream::master() && debug)
+	  {
+	    Pout<< "FWH control surfaces additional info:" << nl << "(" << nl;
+	    
+	    forAll(controlSurfaces_, surfI)
+	      {
+		Pout<< "  " << controlSurfaces_.operator[](surfI) << endl;
+	      }
+	    Pout<< ")" << endl;
+	  }
+	
+      }
     
     dict.lookup("timeStart") >> timeStart_;
     
@@ -883,6 +914,23 @@ Foam::scalar Foam::FWH::mergeTol(const scalar tol)
     scalar oldTol = mergeTol_;
     mergeTol_ = tol;
     return oldTol;
+}
+
+bool Foam::FWH::checkNormal( vector c, vector p, vector n) const
+{
+    vector cp_ (0.0, 0.0, 0.0);
+    
+    cp_ = c - p;
+    cp_ /= mag(cp_);
+    
+    if ((cp_ & n) > 0)
+    {
+	return true;
+    }
+    else
+    {
+	return false;
+    }
 }
 
 // ************************************************************************* //

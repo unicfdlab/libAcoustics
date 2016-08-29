@@ -173,7 +173,10 @@ Foam::autoPtr<Foam::List<Foam::List<Foam::scalar> > > Foam::SoundObserver::fft(s
     
     if ( checkPressureSize() )
     {
-        tmp<scalarField> tPn2
+      Info<<"FFT attempt"<<endl;
+      Info<< p_ <<endl;
+      
+      tmp<scalarField> tPn2
 	(
 	   mag
 	   (
@@ -192,7 +195,7 @@ Foam::autoPtr<Foam::List<Foam::List<Foam::scalar> > > Foam::SoundObserver::fft(s
 	  scalarField::subField(tPn2(), tPn2().size()/2)
 	 )
 	);
-	
+	Info<<"FFT executed"<<endl;
 	scalarField& Pn = tPn();
 	Pn *= 2.0/sqrt(scalar(tPn2().size()));
 	Pn[0] /= 2.0;
@@ -200,6 +203,7 @@ Foam::autoPtr<Foam::List<Foam::List<Foam::scalar> > > Foam::SoundObserver::fft(s
 	scalar N = p_.size();	
 	scalarField f(N/2);
 	scalar deltaf = 1.0/(N*tau);
+	
 	forAll(f, i)
 	{
 	  f[i] = i*deltaf;

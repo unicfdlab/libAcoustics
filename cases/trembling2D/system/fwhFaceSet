@@ -1,0 +1,71 @@
+fwhFaceSetTest
+{
+	functionObjectLibs ("libAcoustics.so");
+	
+	type		FfowcsWilliams-Hawkings;
+	
+	log		true;
+	
+	saveSurfaceData	false;
+	
+	order		second;
+	
+	probeFrequency	1;
+
+	interpolationScheme	cell;
+	
+	fwhSurfaceType	"faceSet";
+	
+	faceSetName	fwhSet0;
+	
+	timeStart	0.001;
+	
+	timeEnd		1;
+	
+	c0		330.7;
+	
+	dRef		0.005555556;
+	
+	pName		p;
+	
+	pInf		101325.0;
+	
+	Ufwh		(.0 .0 .0);
+
+	rhoName		rho;
+	
+	rhoRef		-1.29;
+
+	rhoInf		1.29;
+	
+	observers
+	{
+		R150-A
+		{
+			position	(0.0 0 150);
+			pRef		2.0e-5;
+			fftFreq		1024;
+		}
+
+		R150-B
+		{
+			position	(75 0 129.90381057);
+			pRef		2.0e-5;
+			fftFreq		1024;
+		}
+
+		R150-C
+		{
+			position	(106.06601718 0 106.06601718);
+			pRef		2.0e-5;
+			fftFreq		1024;
+		}
+
+		R150-D
+		{
+			position	(129.90381057 0 75);
+			pRef		2.0e-5;
+			fftFreq		1024;
+		}
+	}
+}

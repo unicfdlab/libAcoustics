@@ -73,6 +73,7 @@ functions
 	include "probeControl"
 	include "curleControl"
 	include "fwhControl"
+	include "fwhFaceSet"
 	include "surfaces"
 }
 
