@@ -14,6 +14,10 @@ dipoleFwhTest
 
 	interpolationScheme	cellPoint;
 
+	fwhSurfaceType	"sampled";
+	
+	faceSetName	fwhSet0;
+
 	surfaces
         (                                                                    
                 sphere
@@ -91,6 +95,10 @@ fwhAnalogy25x
 	probeFrequency	1;
 
 	interpolationScheme	cellPoint;
+
+	fwhSurfaceType	"sampled";
+	
+	faceSetName	fwhSet0;
 	
 	surfaces
         (
@@ -171,6 +179,10 @@ fwhAnalogy50x
 
 	interpolationScheme	cell;
 	
+	fwhSurfaceType	"sampled";
+	
+	faceSetName	fwhSet0;
+
 	surfaces
         (
     		permeable

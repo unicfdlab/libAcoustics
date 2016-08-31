@@ -56,7 +56,6 @@ namespace Foam
 Foam::scalar Foam::FWH::mergeTol_ = 1e-10;
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
-
 Foam::tmp<Foam::scalarField> Foam::FWH::normalStress(const sampledSurface& surface) const
 {
     const volScalarField& p = obr_.lookupObject<volScalarField>(pName_);
@@ -167,6 +166,9 @@ Foam::FWH::FWH
     active_(true),
     probeFreq_(1),
     log_(false),
+    fwhSurfaceType_(word::null),
+    fwhFaceSetName_(word::null),
+    faceZoneID_(-1),
     interpolationScheme_(word::null),
     controlSurfaces_(0),
     timeStart_(-1.0),
@@ -182,6 +184,8 @@ Foam::FWH::FWH
     rhoInf_(1.0),
     c_(vector::zero),
     FWHFilePtr_(NULL),
+    F1_(0.0),
+    F2_(0.0),
     VOldPtr_(NULL),
     VOldOldPtr_(NULL),
     SOldPtr_(NULL),
@@ -238,45 +242,73 @@ void Foam::FWH::read(const dictionary& dict)
     dict.lookup("interpolationScheme") >> interpolationScheme_;
 
     const fvMesh& mesh_ = refCast<const fvMesh>(obr_);
+  
+    //Istream& is = dict.lookup("surfaces");
+    //dictionary dc(is);
+    //dc.readIfPresent("type", fwhSurfaceType_);
 
-    PtrList<sampledSurface> newList
-    (
-        dict.lookup("surfaces"),
-        sampledSurface::iNew(mesh_)
-    );
-
-    controlSurfaces_.transfer(newList);
-
-    //Parallel fix as it was implemented in sampledSuraces class
-    if (Pstream::parRun())
+    dict.lookup("fwhSurfaceType") >> fwhSurfaceType_;
+    
+    if ( fwhSurfaceType_=="faceSet")
     {
-         mergeList_.setSize(controlSurfaces_.size());
-    }
+      dict.lookup("faceSetName") >> fwhFaceSetName_;
+      Info<< "Function object "<< name_<<":" << nl;
+      Info<< "    FwocsWilliams-Hawkings analogy control surface is faceSet "
+	  << fwhFaceSetName_ << nl << nl;
 
-    // Ensure all surfaces and merge information are expired
-    expire();
-
-    if (controlSurfaces_.size())
-    {
-        Info<< "Function object "<< name_<<":" << nl;
-        Info<< "    Reading FwocsWilliams-Hawkings analogy control surface description:" << nl;
-        forAll(controlSurfaces_, surfI)
-        {
-	    Info<< "        " <<  controlSurfaces_.operator[](surfI).name() << nl;        
-	}
-        Info<< endl;
-    }
-
-    if (Pstream::master() && debug)
-    {
-      Pout<< "FWH control surfaces additional info:" << nl << "(" << nl;
-
-      forAll(controlSurfaces_, surfI)
+      const fvMesh& mesh = refCast<const fvMesh>(obr_);
+      faceZoneID_ = mesh.faceZones().findZoneID(fwhFaceSetName_);
+      
+      if (faceZoneID_ < 0)
 	{
-	  Pout<< "  " << controlSurfaces_.operator[](surfI) << endl;
+	  FatalError
+	    << "Foam::FWH::read(const dictionary& dict): can not find faceZone "
+	    << fwhFaceSetName_ << endl
+	    << exit(FatalError);
 	}
-      Pout<< ")" << endl;
+
     }
+    else if( fwhSurfaceType_ == "sampled")
+      {
+	PtrList<sampledSurface> newList
+	  (
+	   dict.lookup("surfaces"),
+	   sampledSurface::iNew(mesh_)
+	   );
+	
+	controlSurfaces_.transfer(newList);
+	//Parallel fix as it was implemented in sampledSuraces class
+	if (Pstream::parRun())
+	  {
+	    mergeList_.setSize(controlSurfaces_.size());
+	  }
+	
+	// Ensure all surfaces and merge information are expired
+	expire();
+	
+	if (controlSurfaces_.size())
+	  {
+	    Info<< "Function object "<< name_<<":" << nl;
+	    Info<< "    Reading FwocsWilliams-Hawkings analogy control surface description:" << nl;
+	    forAll(controlSurfaces_, surfI)
+	      {
+		Info<< "        " <<  controlSurfaces_.operator[](surfI).name() << nl;        
+	      }
+	    Info<< endl;
+	  }
+	
+	if (Pstream::master() && debug)
+	  {
+	    Pout<< "FWH control surfaces additional info:" << nl << "(" << nl;
+	    
+	    forAll(controlSurfaces_, surfI)
+	      {
+		Pout<< "  " << controlSurfaces_.operator[](surfI) << endl;
+	      }
+	    Pout<< ")" << endl;
+	  }
+	
+      }
     
     dict.lookup("timeStart") >> timeStart_;
     
@@ -432,66 +464,252 @@ Foam::scalar Foam::FWH::dotProduct(const scalar& S)
     return dSdT;
 }
 
-void Foam::FWH::correct()
-{   
+Foam::scalar Foam::FWH::dotProduct(dScalar& var)
+{
     const fvMesh& mesh_ = refCast<const fvMesh>(obr_);
 
-    //sign '-' needed to calculate force, which exerts fluid by solid
-    vector F1	(0.0, 0.0, 0.0);
-    scalar F2	(0.0);
-    vector dF1dT (0.0, 0.0, 0.0);
-    scalar dF2dT (0.0);
+    scalar ddT (0.0);
+
+    scalar deltaT = probeFreq_*mesh_.time().deltaT().value();
+
+    if (var.old.empty())
+      {
+	var.old.set
+	  (
+	   new scalar(var.value)
+	  );
+      }
+    else
+      {
+	if (var.oldOld.empty())
+	  {
+	    //first order scheme
+	    ddT = (var.value - var.old()) / deltaT;
+	    
+	    var.oldOld.set
+	      (
+	       var.old.ptr()
+	       );
+	    
+	    var.old.reset
+	      (
+	       new scalar(var.value)
+	       );
+	  }
+	else
+	  {
+	    //second order scheme (BDF)
+	    ddT = (3.0*var.value - 4.0*var.old() + var.oldOld()) / 2.0 / deltaT;
+	    
+	    var.oldOld.set
+	      (
+	       var.old.ptr()
+	       );
+	    
+	    var.old.reset
+	      (
+	       new scalar(var.value)
+	       );
+	  }
+      }
+
+    return ddT;
+}
+
+void Foam::FWH::correct()
+{   
+    const fvMesh& mesh = refCast<const fvMesh>(obr_);
+
+    scalar dF1dT    (0.0);
+    scalar dF2dT    (0.0);
     
-    //calling a function to update all sampledSurfaces
-    //without it everything related will be empty
-    update();
-    
-    //working with sampled surfaces
-    Info<<"    Surfaces updated"<<nl;
+    forAll (observers_, iObs)
+      {
+	SoundObserver& obs = observers_[iObs];
+	
+	if( fwhSurfaceType_ == "sampled")
+	  {
+	    //calling a function to update all sampledSurfaces
+	    //without it everything related will be empty
+	    update();
+       
+	    //working with sampled surfaces
+	    Info<<"    Surfaces updated"<<nl;
+       
+	    forAll(controlSurfaces_, surfI)
+	      {
+		sampledSurface& s = controlSurfaces_.operator[](surfI);
+		label surfaceSize = s.Cf().size();
+		Info<<"    Surface OK"<<nl;
+		scalarField pS = normalStress(s);
+		Info<<"    Pressure OK"<<gSum(pS)<<nl;
+		vectorField uS = surfaceVelocity(s);
+		Info<<"    Velocity OK"<<gSum(uS)<<nl;
+		scalarField rhoS = surfaceDensity(s);
+		Info<<"    Density OK"<<gSum(rhoS)<<nl;
 
-    // works only in master
-    if (Pstream::master())
-    {
-    }
-    
-    forAll(controlSurfaces_, surfI)
-    {
-      sampledSurface& s = controlSurfaces_.operator[](surfI);
-            Info<<"    Surface OK"<<nl;
-      scalarField pS = normalStress(s);
-            Info<<"    Pressure OK"<<gSum(pS)<<nl;
-      vectorField uS = surfaceVelocity(s);
-            Info<<"    Velocity OK"<<gSum(uS)<<nl;
-      scalarField rhoS = surfaceDensity(s);
-            Info<<"    Density OK"<<gSum(rhoS)<<nl;
+		forAll(s.Cf(), i)
+		  {
+		    //Vector from observer to center of each cells
+		    vector n = s.Sf()[i];
+		    scalar dS = mag(n);
+		    vector n_i = n/dS;
+		    vector x = s.Cf()[i] - obs.position();
+		    vector y = obs.position() - s.Cf()[i];
+		    //Calculate distance
+		    scalar r = mag(x);
+		    vector x_i = x/r;
+		    vector y_i = y/r;
+		    //Calculate Mr
+		    scalar Mr = mag((Ufwh_/c0_/r)&x_i);
 
-      F1 += gSum (
-		  pS*s.Sf() + 
-		  (rhoS*uS)*( (uS - Ufwh_)&s.Sf() )
-		  );
+		    //parallel: integrate locally for each processor
+		    //		    F1 += (
+		    //	   )*dS;
+		
+		    //		    F2 += (
+		    //	   )*dS; // rhoS - rhoInf_ changed to isentropic equation
 
-      F2 += gSum ( 
-		  (rhoInf_*uS + (pS/(c0_*c0_))*(uS - Ufwh_))&s.Sf() 
-		   ); //rhoS - rhoInf_
-      
-      Info<<s.name()<<", sampled integrals F1="<<F1<<" F2="<<F2<<nl;
-      /*
-      if (rhoRef_ < 0) //density in volScalarField
-	{
-	  volScalarField pRho = obr_.lookupObject<volScalarField>(rhoName_);
-	  
-	  tmp<Field<scalar> > rhoSampled;
-	  rhoSampled = sampleOrInterpolate<scalar>(pRho, surface);
-	  
-	  pSampled() *= rhoSampled();
-	}
-      else //density is constant
-	{
-	  pSampled() *= rhoRef_;
-	}
-      */
-    }
+		    F1_.value += (
+			   (
+			    pS[i]*n_i + (n_i&(rhoS[i]*uS[i]) )*(uS[i] - Ufwh_)
+			    )&x_i
+			   )
+		      /(r - r*Mr)
+		      *dS;
+		
+		    F2_.value += (
+			   (
+			    ( rhoInf_*uS[i] + (1.4*pS[i]/(c0_*c0_))*(uS[i] - Ufwh_) )
+			    /
+			    (r - r*Mr)
+			    )&n_i
+			    )*dS; // rhoS - rhoInf_ changed to isentropic equation
+		    
+		    if(false)
+		      {
+			Info<<nl
+			    <<"FWH face integration loop debug info >>"<<nl
+			    <<"    n = "<< n<<nl
+			    <<"    n_i = "<< n_i<<nl
+			    <<"    x = "<< x <<", y = "<< y << nl
+			    <<"    x_i = "<< x_i <<", y_i = "<< y_i << nl
+			    <<"    r = "<< r << nl
+			    <<"    Mr = "<< Mr << nl <<endl;
+		      }
+		  }
+		//parallel: add integral from each processor
+		reduce (F1_.value, sumOp<scalar>());
+		reduce (F2_.value, sumOp<scalar>());
+		
+		Info<<s.name()<<", sampled integrals F1="<<F1_.value<<" F2="<<F2_.value<<nl;
+		// F1 += gSum (
+		// 		pS*s.Sf() + 
+		// 		(rhoS*uS)*( (uS - Ufwh_)&s.Sf() )
+		// 		);
+		
+		// F2 += gSum ( 
+		// 		(rhoInf_*uS + (pS/(c0_*c0_))*(uS - Ufwh_))&s.Sf() 
+		// 		 ); //rhoS - rhoInf_
+	
+	      }
+	  }
+	else if (fwhSurfaceType_ == "faceSet")
+	  {
+	    /*	    const volVectorField& U = obr_.lookupObject<volVectorField>("U");
+	    const volScalarField& rho = obr_.lookupObject<volScalarField>("rho");
+	    const volScalarField& p = obr_.lookupObject<volScalarField>(pName_);
+	    
+	    const surfaceScalarField pSf = fvc::interpolate(p);
+	    const surfaceVectorField uSf = fvc::interpolate(U);
+	    const surfaceScalarField rhoSf = fvc::interpolate(rho);
+	    
+	    const faceZone& facesZone = mesh.faceZones()[faceZoneID_];
+	    int zoneSize = facesZone.size();
+	    
+	    reduce(zoneSize, sumOp<scalar>() );
 
+	    scalar counter = 0;
+	    List<scalar>  faceCenters;
+
+	    forAll(facesZone, idx)
+	      {
+
+		bool goodFace = true;
+		label faceID = facesZone[idx]; 
+
+		forAll (mesh.boundaryMesh(), patchIdx)
+		  {
+		    
+		    if (isA<processorPolyPatch>(mesh.boundaryMesh()[patchIdx]))
+		      {
+			//			label nFaces = mesh.boundaryMesh()[patchIdx].size();
+			const scalar startFace = mesh.boundaryMesh()[patchIdx].start();
+			scalar faceIdx = startFace;
+			forAll(mesh.boundaryMesh()[patchIdx], patchFaceIdx)
+			  {
+			    if ( (faceIdx == faceID) )// &(count <= cc/2)  )
+			      {
+				//Pout << "polyPatch Name "<< mesh.boundaryMesh()[Bp].name()
+				//<<" POLYPATCH face "<< faceI << " faceID = " << faceID << endl;
+			    	counter++;
+			    	goodFace = false;
+			      }
+			    faceIdx++;
+			  }
+		      }
+		  }
+		if (goodFace == true)
+		  {
+		    vector faceNormal_ = mesh.Sf()[faceID];
+		    vector Uf = uSf[faceID];
+		    scalar Pf = pSf[faceID];
+		    scalar Rhof = rhoSf[faceID];
+		    
+		    F1 += Pf*faceNormal_ + 
+		      (Rhof*Uf)*( (Uf - Ufwh_)&faceNormal_ );
+		    
+		    F2 += (rhoInf_*Uf + (Pf/(c0_*c0_))*(Uf - Ufwh_))&faceNormal_ ; //rhoS - rhoInf_
+		    
+		  }
+	    */
+	    F1_.value += 0.0; 
+	
+	    F2_.value += 0.0; //rhoS - rhoInf_
+		
+	  }
+	
+	if (Pstream::master() || !Pstream::parRun())
+	  {
+	    SoundObserver& obs = observers_[iObs];
+	    //calculate dFdT and store old values
+	    scalar coeff1 = 1. / 4. / Foam::constant::mathematical::pi;
+	    
+	    dF1dT = dotProduct(F1_);
+	    dF2dT = dotProduct(F2_);
+	    
+	    //dFdT = F;
+	    
+	    scalar oap = (dF1dT/c0_ + dF2dT ) * coeff1;
+	    
+	    if (dRef_ > 0.0)
+	      {
+		oap /= dRef_;
+	      }
+	    
+	    obs.apressure(oap); //appends new calculated acoustic pressure
+	    
+	    //noiseFFT addition
+	    obs.atime(mesh.time().value());
+
+	    F1_.value = 0.0;
+	    F2_.value = 0.0;
+	    dF1dT = 0.0;
+	    dF2dT = 0.0;
+
+	  }
+      }
+}
     /*forAll (observers_, iObs)
     {
       SoundObserver& obs = observers_[iObs];
@@ -540,46 +758,6 @@ void Foam::FWH::correct()
 	//obs.pPrime(pPrime);
 	}*/
 
-
-    if (Pstream::master() || !Pstream::parRun())
-    {
-	//calculate dFdT and store old values
-	
-      dF1dT = dotProduct(F1);
-      dF2dT = dotProduct(F2);
-
-      //dFdT = F;
-
-      scalar coeff1 = 1. / 4. / Foam::constant::mathematical::pi;
-      
-      forAll (observers_, iObs)
-	{
-	  SoundObserver& obs = observers_[iObs];
-	  //Vector from observer to center
-	  vector x = c_ - obs.position();
-	  vector y = obs.position() - c_;
-	  vector x_i = x/mag(x);
-	  vector y_i = y/mag(y);
-	  //Calculate distance
-	  scalar r = mag(x);
-	  //Calculate Mr
-	  scalar Mr = 1 - mag((Ufwh_/c0_)&y_i);
-	  Info<<"    y_i = "<< y_i<<nl;
-	  Info<<"    Mr = "<< Mr<<nl;
-	  //Calculate ObservedAcousticPressure
-	  scalar oap = ( ((x/r/c0_)&dF1dT) + dF2dT ) * coeff1 / r / Mr;
-	  if (dRef_ > 0.0)
-	    {
-	      oap /= dRef_;
-	    }
-	  obs.apressure(oap); //appends new calculated acoustic pressure
-	  
-	  //noiseFFT addition
-	  obs.atime(mesh_.time().value());
-	}
-      
-    }
-}
 
 void Foam::FWH::makeFile()
 {
@@ -640,22 +818,42 @@ void Foam::FWH::calcDistances()
     if (!active_)
     {
 	return;
-    }
-
-    update();
-
+    };
+    
     vectorField ci;
     scalar ni;
+    
+    if( fwhSurfaceType_ == "sampled")
+      {
 
-    forAll(controlSurfaces_, surfI)
-    {
-      sampledSurface& s = controlSurfaces_.operator[](surfI);
-      ci = s.Cf();
-      ni = scalar(ci.size());
-    }
+	update();
 
-    reduce (ni, sumOp<scalar>());
-    c_ = gSum(ci) / ni;
+	forAll(controlSurfaces_, surfI)
+	  {
+	    sampledSurface& s = controlSurfaces_.operator[](surfI);
+	    ci = s.Cf();
+	    ni = scalar(ci.size());
+	  }
+	
+	reduce (ni, sumOp<scalar>());
+	
+	c_ = gSum(ci) / ni;
+      }
+    else if( fwhSurfaceType_ == "faceSet")
+      {
+       const fvMesh& mesh = refCast<const fvMesh>(obr_);
+       const faceZone& facesZone = mesh.faceZones()[faceZoneID_];
+       ni = facesZone.size();
+       reduce(ni, sumOp<scalar>() );
+       forAll(facesZone, idx)
+	 {
+	   label faceID = facesZone[idx];
+	   ci += mesh.Cf()[faceID];
+	 }
+
+       c_ = gSum(ci)/ni;
+       
+      };
 }
 
 void Foam::FWH::writeFft()
@@ -895,6 +1093,23 @@ Foam::scalar Foam::FWH::mergeTol(const scalar tol)
     scalar oldTol = mergeTol_;
     mergeTol_ = tol;
     return oldTol;
+}
+
+bool Foam::FWH::checkNormal( vector c, vector p, vector n) const
+{
+    vector cp_ (0.0, 0.0, 0.0);
+    
+    cp_ = c - p;
+    cp_ /= mag(cp_);
+    
+    if ((cp_ & n) > 0)
+    {
+	return true;
+    }
+    else
+    {
+	return false;
+    }
 }
 
 // ************************************************************************* //
