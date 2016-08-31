@@ -77,10 +77,45 @@ class mapPolyMesh;
                            Class FWH Declaration
 \*---------------------------------------------------------------------------*/
 
+  
+  class dScalar
+  {
+  public:
+    scalar value;
+    autoPtr<scalar> old;
+    autoPtr<scalar> oldOld;
+
+    dScalar(scalar init)
+    {
+      value = init;
+    };
+
+    ~dScalar()
+    {
+    };
+    
+    /*
+    dScalar operator+(const scalar &add)
+    {
+      value+=add;
+    };
+
+    dScalar operator-(const scalar &sub)
+    {
+      value+=sub;
+    };
+
+    dScalar operator=(const scalar &init)
+    {
+      value+=init;
+    };
+    */   
+  };
+
+  
 class FWH
 {
-private:
-  
+private:  
   //- Class used for surface merging information
   class mergeInfo
   {
@@ -176,9 +211,13 @@ protected:
 
   //- FWH/moment file ptr
   autoPtr<OFstream> FWHFilePtr_;
+
+  dScalar F1_;
+
+  dScalar F2_;
   
   //- Old value of vector integrand
-        autoPtr<vector> VOldPtr_;
+  autoPtr<vector> VOldPtr_;
   
   //- Old-old value of vector integrand
   autoPtr<vector> VOldOldPtr_;
@@ -209,7 +248,10 @@ protected:
 
   //derivative function
   Foam::scalar dotProduct(const scalar& S);
-        
+
+  //derivative function
+  Foam::scalar dotProduct(dScalar& val);
+  
   //-
   void correct();
   
@@ -236,7 +278,7 @@ protected:
   
   //- Sample and write a particular volume field
   template<class Type>
-  tmp<Field<Type> > sampleOrInterpolate
+  Foam::tmp<Foam::Field<Type> > sampleOrInterpolate
   (
    const GeometricField<Type, fvPatchField, volMesh>&,
    const sampledSurface& surface
@@ -310,7 +352,7 @@ public:
   
   //- Set tolerance (and return old tolerance)
   static scalar mergeTol(const scalar);
-        
+
 };
 
 
