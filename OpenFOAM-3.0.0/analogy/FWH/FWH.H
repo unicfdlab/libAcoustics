@@ -76,43 +76,7 @@ class mapPolyMesh;
 /*---------------------------------------------------------------------------*\
                            Class FWH Declaration
 \*---------------------------------------------------------------------------*/
-
-  
-  class dScalar
-  {
-  public:
-    scalar value;
-    autoPtr<scalar> old;
-    autoPtr<scalar> oldOld;
-
-    dScalar(scalar init)
-    {
-      value = init;
-    };
-
-    ~dScalar()
-    {
-    };
-    
-    /*
-    dScalar operator+(const scalar &add)
-    {
-      value+=add;
-    };
-
-    dScalar operator-(const scalar &sub)
-    {
-      value+=sub;
-    };
-
-    dScalar operator=(const scalar &init)
-    {
-      value+=init;
-    };
-    */   
-  };
-
-  
+ 
 class FWH
 {
 private:  
@@ -136,6 +100,40 @@ private:
 
   //- Tolerance for merging points (fraction of mesh bounding box)
   static scalar mergeTol_;
+
+  class dScalar
+  {
+  public:
+    scalar value;
+    autoPtr<scalar> old;
+    autoPtr<scalar> oldOld;
+    
+    dScalar(scalar init)
+    {
+      value = init;
+    };
+    
+    ~dScalar()
+    {
+    };
+    
+    /*
+    dScalar operator+(const scalar &add)
+    {
+      value+=add;
+    };
+
+    dScalar operator-(const scalar &sub)
+    {
+      value+=sub;
+    };
+
+    dScalar operator=(const scalar &init)
+    {
+      value+=init;
+    };
+    */   
+  };
   
 protected:
   

@@ -471,9 +471,9 @@ Foam::scalar Foam::FWH::dotProduct(dScalar& var)
     scalar ddT (0.0);
 
     scalar deltaT = probeFreq_*mesh_.time().deltaT().value();
-
+   
     if (var.old.empty())
-      {
+      {	
 	var.old.set
 	  (
 	   new scalar(var.value)
@@ -485,7 +485,6 @@ Foam::scalar Foam::FWH::dotProduct(dScalar& var)
 	  {
 	    //first order scheme
 	    ddT = (var.value - var.old()) / deltaT;
-	    
 	    var.oldOld.set
 	      (
 	       var.old.ptr()
@@ -501,7 +500,7 @@ Foam::scalar Foam::FWH::dotProduct(dScalar& var)
 	    //second order scheme (BDF)
 	    ddT = (3.0*var.value - 4.0*var.old() + var.oldOld()) / 2.0 / deltaT;
 	    
-	    var.oldOld.set
+	    var.oldOld.reset
 	      (
 	       var.old.ptr()
 	       );
@@ -571,20 +570,20 @@ void Foam::FWH::correct()
 		    //	   )*dS; // rhoS - rhoInf_ changed to isentropic equation
 
 		    F1_.value += (
-			   (
-			    pS[i]*n_i + (n_i&(rhoS[i]*uS[i]) )*(uS[i] - Ufwh_)
-			    )&x_i
-			   )
+				  (
+				   pS[i]*n_i + (n_i&(rhoS[i]*uS[i]) )*(uS[i] - Ufwh_)
+				   )&x_i
+				  )
 		      /(r - r*Mr)
 		      *dS;
-		
+				      
 		    F2_.value += (
-			   (
-			    ( rhoInf_*uS[i] + (1.4*pS[i]/(c0_*c0_))*(uS[i] - Ufwh_) )
-			    /
-			    (r - r*Mr)
-			    )&n_i
-			    )*dS; // rhoS - rhoInf_ changed to isentropic equation
+				  (
+				   ( rhoInf_*uS[i] + (1.4*pS[i]/(c0_*c0_))*(uS[i] - Ufwh_) )
+				   /
+				   (r - r*Mr)
+				   )&n_i
+				  )*dS; // rhoS - rhoInf_ changed to isentropic equation
 		    
 		    if(false)
 		      {
@@ -598,20 +597,13 @@ void Foam::FWH::correct()
 			    <<"    Mr = "<< Mr << nl <<endl;
 		      }
 		  }
+		
 		//parallel: add integral from each processor
 		reduce (F1_.value, sumOp<scalar>());
 		reduce (F2_.value, sumOp<scalar>());
+		//not using gSum
 		
 		Info<<s.name()<<", sampled integrals F1="<<F1_.value<<" F2="<<F2_.value<<nl;
-		// F1 += gSum (
-		// 		pS*s.Sf() + 
-		// 		(rhoS*uS)*( (uS - Ufwh_)&s.Sf() )
-		// 		);
-		
-		// F2 += gSum ( 
-		// 		(rhoInf_*uS + (pS/(c0_*c0_))*(uS - Ufwh_))&s.Sf() 
-		// 		 ); //rhoS - rhoInf_
-	
 	      }
 	  }
 	else if (fwhSurfaceType_ == "faceSet")
@@ -678,7 +670,7 @@ void Foam::FWH::correct()
 	    F2_.value += 0.0; //rhoS - rhoInf_
 		
 	  }
-	
+
 	if (Pstream::master() || !Pstream::parRun())
 	  {
 	    SoundObserver& obs = observers_[iObs];
