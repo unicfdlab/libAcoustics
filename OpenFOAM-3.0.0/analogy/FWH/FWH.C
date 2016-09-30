@@ -521,6 +521,8 @@ void Foam::FWH::correct()
 
     scalar dF1dT    (0.0);
     scalar dF2dT    (0.0);
+    F1_.value = 0.0;
+    F2_.value = 0.0;    
     
     forAll (observers_, iObs)
       {
@@ -533,7 +535,7 @@ void Foam::FWH::correct()
 	    update();
        
 	    //working with sampled surfaces
-	    Info<<"    Surfaces updated"<<nl;
+	    //Info<<"    Surfaces updated"<<nl;
        
 	    forAll(controlSurfaces_, surfI)
 	      {
@@ -560,7 +562,7 @@ void Foam::FWH::correct()
 		    vector x_i = x/r;
 		    vector y_i = y/r;
 		    //Calculate Mr
-		    scalar Mr = mag((Ufwh_/c0_/r)&x_i);
+		    scalar Mr = mag((Ufwh_/c0_)&x_i);
 
 		    //parallel: integrate locally for each processor
 		    //		    F1 += (
@@ -681,8 +683,11 @@ void Foam::FWH::correct()
 	    dF2dT = dotProduct(F2_);
 	    
 	    //dFdT = F;
+	    Info<<"Dot products F1="<<dF1dT<<" F2="<<dF2dT<<nl;
 	    
 	    scalar oap = (dF1dT/c0_ + dF2dT ) * coeff1;
+
+	    Info<<"OAP = "<< oap <<nl;
 	    
 	    if (dRef_ > 0.0)
 	      {
