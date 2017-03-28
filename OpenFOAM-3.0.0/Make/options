@@ -1,6 +1,6 @@
-fftw_root=$(FOAM_USER_LIBBIN)/fftw-3.3.3
-
 EXE_INC = \
+	-I./soundObserver \
+	-I$(LIB_SRC)/cfdTools/include \
 	-I$(LIB_SRC)/finiteVolume/lnInclude \
 	-I$(LIB_SRC)/OpenFOAM/lnInclude \
 	-I$(LIB_SRC)/meshTools/lnInclude \
@@ -11,7 +11,14 @@ EXE_INC = \
 	-I$(LIB_SRC)/TurbulenceModels/incompressible/lnInclude \
 	-I$(LIB_SRC)/TurbulenceModels/compressible/lnInclude \
 	-I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
-	-I$(fftw_root)/include
+	-I$(LIB_SRC)/conversion/lnInclude \
+	-I$(LIB_SRC)/randomProcesses/lnInclude \
+	-I$(LIB_SRC)/surfMesh/lnInclude \
+    	-I$(LIB_SRC)/fileFormats/lnInclude \
+    	-I$(LIB_SRC)/triSurface/lnInclude \
+    	-I$(LIB_SRC)/conversion/lnInclude \
+    	-I$(LIB_SRC)/lagrangian/basic/lnInclude
+
 
 LIB_LIBS = \
     -lcompressibleTransportModels \
@@ -23,6 +30,9 @@ LIB_LIBS = \
     -lfiniteVolume \
     -lmeshTools \
     -lsampling \
-    -L$(fftw_root)/lib \
-    -lfftw3
-
+    -lconversion \
+    -lrandomProcesses \
+    -lsurfMesh \
+    -lfileFormats \
+    -ltriSurface \
+    -llagrangian 
