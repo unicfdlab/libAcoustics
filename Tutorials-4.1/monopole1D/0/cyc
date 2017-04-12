@@ -1,0 +1,5 @@
+    "(cyc1|cyc2|cyc3|cyc4)"
+    {
+        type            wedge;
+    }
+
