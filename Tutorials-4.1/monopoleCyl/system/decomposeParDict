@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  3.0.0                                 |
+|  \\    /   O peration     | Version:  4.x                                   |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -11,55 +11,12 @@ FoamFile
     format      ascii;
     class       dictionary;
     location    "system";
-    object      controlDict;
+    object      decomposeParDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     rhoPimpleFoam;
+numberOfSubdomains 12;
 
-startFrom       startTime; //latestTime;
-
-startTime       0;
-
-stopAt          endTime;
-
-endTime         0.1;
-
-deltaT          2.5e-6;
-
-writeControl    adjustableRunTime;
-
-writeInterval   5e-3;
-
-purgeWrite      200;
-
-writeFormat     ascii;
-
-writePrecision  9;
-
-writeCompression compressed;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
-
-adjustTimeStep  false;
-
-maxCo           0.5;
-
-maxDeltaT       1e-5;
-
-CourantType	cellCourant;
-
-libs ("libcompressibleTools.so");
-
-functions
-{
-        include "probeControl"
-        include "fwhControl"
-        include "sphereAverage"
-}
+method          scotch;
 
 // ************************************************************************* //

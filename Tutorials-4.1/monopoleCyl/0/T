@@ -9,57 +9,32 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    location    "system";
-    object      controlDict;
+    class       volScalarField;
+    object      T;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     rhoPimpleFoam;
+dimensions      [0 0 0 1 0 0 0];
 
-startFrom       startTime; //latestTime;
+internalField   uniform 24.88;
 
-startTime       0;
-
-stopAt          endTime;
-
-endTime         0.1;
-
-deltaT          2.5e-6;
-
-writeControl    adjustableRunTime;
-
-writeInterval   5e-3;
-
-purgeWrite      200;
-
-writeFormat     ascii;
-
-writePrecision  9;
-
-writeCompression compressed;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
-
-adjustTimeStep  false;
-
-maxCo           0.5;
-
-maxDeltaT       1e-5;
-
-CourantType	cellCourant;
-
-libs ("libcompressibleTools.so");
-
-functions
+boundaryField
 {
-        include "probeControl"
-        include "fwhControl"
-        include "sphereAverage"
+    "(cyc1|cyc2)"
+    {
+        type            wedge;
+    }
+
+    sphere
+    {
+        type            fixedValue;
+        value           uniform 24.88;
+    }
+
+    free
+    {
+        type            zeroGradient;
+    }
 }
 
 // ************************************************************************* //
