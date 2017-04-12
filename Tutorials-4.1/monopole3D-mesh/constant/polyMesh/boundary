@@ -15,48 +15,13 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-6
+1
 (
     free
     {
         type            patch;
-        nFaces          1;
-        startFace       1199;
-    }
-    cyc1
-    {
-        type            wedge;
-        inGroups        1(wedge);
-        nFaces          1200;
-        startFace       1200;
-    }
-    cyc2
-    {
-        type            wedge;
-        inGroups        1(wedge);
-        nFaces          1200;
-        startFace       2400;
-    }
-    cyc3
-    {
-        type            wedge;
-        inGroups        1(wedge);
-        nFaces          1200;
-        startFace       3600;
-    }
-    cyc4
-    {
-        type            wedge;
-        inGroups        1(wedge);
-        nFaces          1200;
-        startFace       4800;
-    }
-    sphere
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          1;
-        startFace       6000;
+        nFaces          1350;
+        startFace       9450;
     }
 )
 
