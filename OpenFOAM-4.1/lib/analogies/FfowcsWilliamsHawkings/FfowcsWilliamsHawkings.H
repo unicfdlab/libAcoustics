@@ -115,6 +115,12 @@ private:
 
         //-
         word formulationType_;
+        
+        //-
+        Switch fixedResponseDelay_;
+        
+        //-
+        scalar responseDelay_;
 
         //-
         vector Ufwh_;

@@ -78,6 +78,8 @@ Foam::functionObjects::FfowcsWilliamsHawkings::FfowcsWilliamsHawkings
         dict
     ),
     formulationType_(word::null),
+    fixedResponseDelay_(true),
+    responseDelay_(0.0),
     Ufwh_(vector::zero),
     nonUniformSurfaceMotion_(false),
     Cf0_(0),
@@ -108,6 +110,8 @@ Foam::functionObjects::FfowcsWilliamsHawkings::FfowcsWilliamsHawkings
         dict
     ),
     formulationType_(word::null),
+    fixedResponseDelay_(true),
+    responseDelay_(0.0),
     Ufwh_(vector::zero),
     nonUniformSurfaceMotion_(false),
     Cf0_(0),
@@ -198,6 +202,20 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::read(const dictionary& dict)
     if (dict.found("nonUniformSurfaceMotion"))
     {
         dict.lookup("nonUniformSurfaceMotion") >> nonUniformSurfaceMotion_;
+    }
+    
+    if (dict.found("fixedResponseDelay"))
+    {
+        dict.lookup("fixedResponseDelay") >> fixedResponseDelay_;
+    }
+    
+    if (fixedResponseDelay_ && dict.found("responseDelay"))
+    {
+        dict.lookup("responseDelay") >> responseDelay_;
+    }
+    else
+    {
+        fixedResponseDelay_ = false;
     }
     
     dict.lookup("cleanFreq") >> cleanFreq_;

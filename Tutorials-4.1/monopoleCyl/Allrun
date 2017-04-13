@@ -10,7 +10,7 @@ runApplication decomposePar
 
 # Get application directory
 application=`getApplication`
-runApplication mpirun -np 12 $application -parallel
+runApplication mpirun -np 6 $application -parallel
 
 runApplication reconstructPar
 

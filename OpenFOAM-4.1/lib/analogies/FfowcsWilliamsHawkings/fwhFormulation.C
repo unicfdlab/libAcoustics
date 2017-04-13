@@ -13,7 +13,8 @@ Foam::functionObjects::fwhFormulation::fwhFormulation(const FfowcsWilliamsHawkin
     ni_(0),
     nl_(0),
     rMax_(0),
-    tauMax_(0)
+    tauMax_(0),
+    tauMin_(0)
 {
     this->initialize();
 }
@@ -45,8 +46,8 @@ void Foam::functionObjects::fwhFormulation::initialize()
         }
     }
     
-    tauMax_.resize(fwh_.observers_.size());
-    rMax_.resize(fwh_.observers_.size());
+    tauMax_.resize(fwh_.observers_.size(), 0.0);
+    rMax_.resize(fwh_.observers_.size(), 0.0);
     
     //allocate robs
     robs_.resize(fwh_.observers_.size());
@@ -73,7 +74,35 @@ void Foam::functionObjects::fwhFormulation::initialize()
                 }
             }
         }
-        tauMax_[iObs] = rMax_[iObs] / fwh_.c0_ + fwh_.obr_.time().deltaT().value()*2.0;
+        reduce(rMax_[iObs], maxOp<scalar>());
+        tauMax_[iObs] = rMax_[iObs] / fwh_.c0_;
+        reduce(tauMax_[iObs], maxOp<scalar>());
+    }
+    
+    if (fwh_.fixedResponseDelay_)
+    {
+        tauMin_.resize(tauMax_.size());
+        rMin_.resize(rMax_.size());
+        tauMin_ = max(tauMax_);
+        rMin_ = max(rMax_);
+        
+        forAll(rMin_, iObs)
+        {
+            forAll(fwh_.controlSurfaces_, iSurf)
+            {
+                const vectorField& Cf = fwh_.controlSurfaces_[iSurf].Cf();
+                forAll(Cf, i)
+                {
+                    if (magrobs_[iObs][iSurf][i] < rMin_[iObs])
+                    {
+                        rMin_[iObs] = magrobs_[iObs][iSurf][i];
+                    }
+                }
+            }
+            tauMin_[iObs] = rMin_[iObs] / fwh_.c0_;
+            reduce(rMin_[iObs], minOp<scalar>());
+            reduce(tauMin_[iObs], minOp<scalar>());
+        }
     }
 
     //calculate normals
@@ -120,7 +149,8 @@ Foam::scalar Foam::functionObjects::fwhFormulation::observerAcousticPressure(lab
 
 void Foam::functionObjects::fwhFormulation::clearExpiredData()
 {
-    scalar ct   = fwh_.obr_.time().value();
+    scalar ct   = fwh_.obr_.time().value();// - fwh_.obr_.time().deltaT().value()*1.0e-6;
+    reduce(ct, minOp<scalar>());
     
     fwhProbeI_++;
     
@@ -140,7 +170,14 @@ void Foam::functionObjects::fwhFormulation::clearExpiredData()
             {
                 forAll(qds_[iObs][iSurf], iFace)
                 {
-                    expiredTime = ct - tauMax_[iObs];
+                    if (tauMin_.size())
+                    {
+                        expiredTime = ct - (tauMax_[iObs] - tauMin_[iObs] + fwh_.responseDelay_);
+                    }
+                    else
+                    {
+                        expiredTime = ct - tauMax_[iObs];
+                    }
                     const pointTimeData& qdsOldPointData = qds_[iObs][iSurf][iFace];
                     expiredIndex= findExpiredIndex(qdsOldPointData, expiredTime);
                     
@@ -180,7 +217,6 @@ void Foam::functionObjects::fwhFormulation::clearExpiredData()
 
 void Foam::functionObjects::fwhFormulation::update()
 {
-    scalar dt   = fwh_.obr_.time().deltaT().value();
     scalar ct   = fwh_.obr_.time().value();
     
     if (mag(fwh_.Ufwh_) > SMALL || fwh_.nonUniformSurfaceMotion_)
@@ -188,6 +224,11 @@ void Foam::functionObjects::fwhFormulation::update()
         forAll(fwh_.observers_, iObs)
         {
             rMax_[iObs] = 0.0;
+            tauMax_[iObs] = 0.0;
+            if (rMin_.size())
+            {
+                rMin_[iObs] = GREAT;
+            }
             forAll(fwh_.controlSurfaces_, iSurf)
             {
                 const vectorField& Cf = fwh_.controlSurfaces_[iSurf].Cf();
@@ -199,11 +240,25 @@ void Foam::functionObjects::fwhFormulation::update()
                     {
                         rMax_[iObs] = magrobs_[iObs][iSurf][i];
                     }
+                    
+                    if (rMin_.size() && (magrobs_[iObs][iSurf][i] < rMin_[iObs]))
+                    {
+                        rMin_[iObs] = magrobs_[iObs][iSurf][i];
+                    }
                 }
             }
-            tauMax_[iObs] = rMax_[iObs] / fwh_.c0_ + 2.0*dt;
+            tauMax_[iObs] = rMax_[iObs] / fwh_.c0_;
+            reduce(tauMax_[iObs], maxOp<scalar>());
+            reduce(rMax_[iObs], maxOp<scalar>());
+            tauMin_ = max(tauMax_);
+            if (tauMin_.size())
+            {
+                tauMin_[iObs] = rMin_[iObs] / fwh_.c0_;
+                reduce(tauMin_[iObs], minOp<scalar>());
+                reduce(rMin_[iObs], minOp<scalar>());
+            }
         }
-    
+        
         forAll(ni_, iSurf)
         {
             const vectorField& Sf = fwh_.controlSurfaces_[iSurf].Sf();
@@ -215,9 +270,12 @@ void Foam::functionObjects::fwhFormulation::update()
             }
         }
     }
-
+    
     forAll(fwh_.observers_, iObs)
     {
+    //    Info << "iObs = " << iObs << " tauMax = " << tauMax_[iObs] << endl;
+    //    Info << "iObs = " << iObs << " tauMin = " << tauMin_[iObs] << endl;
+    //    Info << "iObs = " << iObs << " Delta  = " << (tauMax_[iObs] - tauMin_[iObs]) << endl;
         forAll(fwh_.controlSurfaces_, iSurf)
         {
             const sampledSurface& surf = fwh_.controlSurfaces_[iSurf];
@@ -226,6 +284,10 @@ void Foam::functionObjects::fwhFormulation::update()
             {
                 tobs_[iObs][iSurf][i] = 
                         ct + magrobs_[iObs][iSurf][i]/fwh_.c0_;
+                if (tauMin_.size())
+                {
+                    tobs_[iObs][iSurf][i] -= (tauMin_[iObs]-fwh_.responseDelay_);
+                }
             }
         }
     }
@@ -305,29 +367,34 @@ Foam::scalar Foam::functionObjects::fwhFormulation::valueAt
     const pointTimeData& timeData = data[iObs][iSurf][iFace];
     
     label ui = timeData.first().size();
+    label li = 0;
+    label mi = (ui + li) / 2;
+    //exit if size is zero
     if (ui < 1)
     {
         return 0.0;
     }
-    label li = 0;
-    label mi = (ui + li) / 2;
-    if (mi < 1)
+    //exit if tau out of bounds
+    if (
+        (tau < timeData.first()[li])
+        ||
+        (tau > timeData.first()[ui-1])
+       )
     {
-        if (tau < timeData.first()[mi])
-        {
-            return 0.0;
-        }
-        else
-        {
-            return timeData.second()[mi];
-        }
+        return 0.0;
     }
-    else
+    //exit if tau is at bounds
+    if (tau == timeData.first()[li])
     {
-        if (tau < timeData.first()[li])
-        {
-            return 0.0;
-        }
+        return timeData.second()[li];
+    }
+    if (tau == timeData.first()[ui-1])
+    {
+        return timeData.second()[ui-1];
+    }
+    //check that size is sufficient
+    if (mi >= 1)
+    {
         do
         {
             if (tau < timeData.first()[mi])
@@ -335,13 +402,12 @@ Foam::scalar Foam::functionObjects::fwhFormulation::valueAt
                 ui = mi;
                 mi = (ui + li) / 2;
             }
-            else
+            else if (tau > timeData.first()[mi])
             {
                 li = mi;
                 mi = (ui + li) / 2;
             }
-            
-            if (tau == timeData.first()[mi])
+            else //(tau == timeData.first()[mi])
             {
                 return timeData.second()[mi];
             }
@@ -351,7 +417,7 @@ Foam::scalar Foam::functionObjects::fwhFormulation::valueAt
             ((ui - li) != 1)
         );
     }
-    
+    //return value between li and ui
     return timeData.second()[li] + 
     (
         (timeData.second()[ui] - timeData.second()[li])

@@ -89,7 +89,6 @@ Foam::functionObjects::Farassat1AFormulation::~Farassat1AFormulation()
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 void Foam::functionObjects::Farassat1AFormulation::initialize()
 {
-    
     intFdS_.resize(fwh_.observers_.size());
     intDotQdS_.resize(fwh_.observers_.size());
     
@@ -211,6 +210,7 @@ Foam::scalar Foam::functionObjects::Farassat1AFormulation::observerAcousticPress
         } //For Sf
     } // for controlSurfaces_
     
+    scalar ct1 = ct+fwh_.obr_.time().deltaT().value()*1.0e-6;//slightly increase time to get inside of time step
     scalar retv = 0.0;
     intDotQdS_.value(iObs) = 0.0;
     intFdS_.value(iObs)    = 0.0;
@@ -219,9 +219,56 @@ Foam::scalar Foam::functionObjects::Farassat1AFormulation::observerAcousticPress
     {
         forAll(qds_[iObs][iSurf], iFace)
         {
-            retv = valueAt(qds_, iObs, iSurf, iFace, ct);
+            retv = valueAt(qds_, iObs, iSurf, iFace, ct1);
+            //Code to check bisection
+            /*
+            scalar retv2 = 0.0;
+            {
+                const pointTimeData& timeData = qds_[iObs][iSurf][iFace];
+                if (timeData.first().size() < 1)
+                {
+                    retv2 = 0.0;
+                }
+                if (ct < timeData.first()[0])
+                {
+                    retv2 = 0.0;
+                }
+                if (ct > timeData.first()[timeData.first().size()-1])
+                {
+                    retv2 = 0.0;
+                }
+                for(label k=1; k<timeData.first().size(); k++)
+                {
+                    label kl = k-1;
+                    if (ct == timeData.first()[kl])
+                    {
+                        retv2 = timeData.second()[kl];
+                        break;
+                    }
+                    if (ct == timeData.first()[k])
+                    {
+                        retv2 = timeData.second()[k];
+                        break;
+                    }
+                    if ( (ct > timeData.first()[kl]) && (ct < timeData.first()[k]) )
+                    {
+                        retv2 = timeData.second()[kl] + 
+                        (
+                            (timeData.second()[k] - timeData.second()[kl])
+                            /
+                            (timeData.first()[k] - timeData.first()[kl])
+                        ) * (ct - timeData.first()[kl]);
+                        break;
+                    }
+                }
+                if (mag(retv - retv2) > 1.0e-8)
+                {
+                    Info << "Error in retv: " << timeData << endl;
+                }
+            }
+            */
             intDotQdS_.value(iObs) += retv;
-            retv = valueAt(fds_, iObs, iSurf, iFace, ct);
+            retv = valueAt(fds_, iObs, iSurf, iFace, ct1);
             intFdS_.value(iObs) += retv;
         }
     }

@@ -2,14 +2,10 @@
 
 source libEnv.sh
 
+rm -rf fftw.stamp
 cd FoamFourierAnalysis/$FFTW_LIB
-
 make clean
-
 make distclean
-
-rm -rf build.stamp
-
 cd ../..
 
 wclean

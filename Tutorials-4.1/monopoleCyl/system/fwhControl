@@ -1,4 +1,4 @@
-dipoleFwhTest
+monopole2DFwhTest
 {
         type            FfowcsWilliamsHawkings;
         #include        "commonSettings";
@@ -6,6 +6,8 @@ dipoleFwhTest
         interpolationScheme cell;
         formulationType Farassat1AFormulation;
         cleanFreq       100;
+        fixedResponseDelay true;
+        responseDelay   1e-3;
         
         surfaces
         (

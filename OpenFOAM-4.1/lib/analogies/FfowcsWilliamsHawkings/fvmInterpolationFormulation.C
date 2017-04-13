@@ -168,15 +168,16 @@ Foam::scalar Foam::functionObjects::fvmInterpolationFormulation::observerAcousti
 
     } // for controlSurfaces_
     
+    scalar ct1 = ct + fwh_.obr_.time().deltaT().value()*1.0e-6;
     //calculate acoustic pressure, zero if source didn't reached observer
     forAll(fwh_.controlSurfaces_, iSurf)
     {
         forAll(qds_[iObs][iSurf], iFace)
         {
             intQdS_.value(iObs) += 
-                valueAt(qds_, iObs, iSurf, iFace, ct);
+                valueAt(qds_, iObs, iSurf, iFace, ct1);
             intFdS_.value(iObs) += 
-                valueAt(fds_, iObs, iSurf, iFace, ct);
+                valueAt(fds_, iObs, iSurf, iFace, ct1);
         }
     }
     reduce (intQdS_.value(iObs), sumOp<scalar>());

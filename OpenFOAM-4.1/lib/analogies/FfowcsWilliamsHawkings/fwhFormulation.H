@@ -63,6 +63,12 @@ protected:
     //-
     List<scalar> tauMax_;
     
+    //-
+    List<scalar> rMin_;
+    
+    //-
+    List<scalar> tauMin_;
+    
 
 protected:
     
