@@ -160,14 +160,7 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::initialize()
     }
     
     //Allocate pointer to FWH formulation
-    if (formulationType_ == "Farassat1AFormulation")
-    {
-        fwhFormulationPtr_.set
-        (
-            new Farassat1AFormulation(*this)
-        );
-    }
-    else if (formulationType_ == "fvmInterpolationFormulation")
+    if (formulationType_ == "fvmInterpolationFormulation")
     {
         fwhFormulationPtr_.set
         (
@@ -178,8 +171,7 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::initialize()
     {
         Info << "Wrong formulation type: " << formulationType_ << endl
         << "Please, select one of: " << endl
-        << "1) Farassat1AFormulation " << endl
-        << "2) fvmInterpolationFormulation " << endl;
+        << "1) Farassat1AFormulation " << endl;
     }
 }
 

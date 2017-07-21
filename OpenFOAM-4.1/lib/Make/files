@@ -7,7 +7,6 @@ analogies/AcousticAnalogy/AcousticAnalogy.C
 analogies/Curle/Curle.C
 analogies/FfowcsWilliamsHawkings/fwhFormulation.C
 analogies/FfowcsWilliamsHawkings/Farassat1AFormulation.C
-analogies/FfowcsWilliamsHawkings/fvmInterpolationFormulation.C
 analogies/FfowcsWilliamsHawkings/FfowcsWilliamsHawkings.C
 
 /* Coupling with BEM and FFT */
