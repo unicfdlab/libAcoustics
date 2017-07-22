@@ -6,5 +6,5 @@ libAcoustics - library for far-field noise computation. At current time contains
 
 2. **Ffowcs Williams Hawkings analogy**
 
-3.**CFD-BEM coupling** 
+3. **CFD-BEM coupling** 
 
