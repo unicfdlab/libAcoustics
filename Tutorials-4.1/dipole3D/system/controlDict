@@ -51,10 +51,6 @@ maxCo           0.5;
 
 maxDeltaT       1e-5;
 
-CourantType	cellCourant;
-
-libs ("libcompressibleTools.so");
-
 functions
 {
         include "probeControl"

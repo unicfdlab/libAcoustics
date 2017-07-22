@@ -160,11 +160,11 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::initialize()
     }
     
     //Allocate pointer to FWH formulation
-    if (formulationType_ == "fvmInterpolationFormulation")
+    if (formulationType_ == "Farassat1AFormulation")
     {
         fwhFormulationPtr_.set
         (
-            new fvmInterpolationFormulation(*this)
+            new Farassat1AFormulation(*this)
         );
     }
     else
