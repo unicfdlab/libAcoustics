@@ -1,0 +1,17 @@
+Add-ons for bempp:
+
+1) simple mesh merging using binary search algorithm to find duplicate nodes
+2) import node data from .msh-file
+
+--------------------------------------
+
+Environment variables for bempp:
+
+export PYTHONPATH=/home/foo/bempp/lib/python2.7/site-packages
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+
+--------------------------------------
+
+PYTHONPATH environment variable for bempp add-ons module:
+
+export PYTHONPATH=/path/to/this/module:$PYTHONPATH
