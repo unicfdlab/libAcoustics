@@ -42,7 +42,7 @@ License
 
 #include "fwhFormulation.H"
 #include "Farassat1AFormulation.H"
-#include "fvmInterpolationFormulation.H"
+
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
