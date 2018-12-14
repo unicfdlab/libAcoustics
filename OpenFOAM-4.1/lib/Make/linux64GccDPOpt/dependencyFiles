@@ -1,0 +1,10 @@
+DEPENDENCIES = \
+SoundObserver/SoundObserver.dep\
+FoamFourierAnalysis/FoamFftwDriver.dep\
+analogies/AcousticAnalogy/AcousticAnalogy.dep\
+analogies/Curle/Curle.dep\
+analogies/FfowcsWilliamsHawkings/fwhFormulation.dep\
+analogies/FfowcsWilliamsHawkings/Farassat1AFormulation.dep\
+analogies/FfowcsWilliamsHawkings/FfowcsWilliamsHawkings.dep\
+samplingBEM/sampledSurface/writers/gmsh/gmshSurfaceWriter.dep\
+samplingBEM/soundPressureSampler/soundPressureSampler.dep

@@ -1,10 +1,11 @@
-dipoleFwhTest
+dipoleFwhFarassatTest
 {
         type            FfowcsWilliamsHawkings;
         #include        "commonSettings";
         patches ("sphere");
         interpolationScheme cell;
         formulationType Farassat1AFormulation;
+        U0		(0.0 0.0 0.0);
         cleanFreq       100;
         
         surfaces
@@ -19,4 +20,7 @@ dipoleFwhTest
         
         nonUniformSurfaceMotion false;
         Ufwh		(.0 .0 .0);
+
 }
+
+

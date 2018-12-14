@@ -37,7 +37,7 @@ private:
     
     //-
     List<List<tdPrimitive<scalar> > > Mr_;
-    
+
     //-
     tdPrimitive<scalar> intDotQdS_;
     

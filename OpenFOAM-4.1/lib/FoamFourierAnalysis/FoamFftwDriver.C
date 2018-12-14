@@ -85,6 +85,7 @@ Foam::autoPtr<Foam::Pair<Foam::List<Foam::scalar> > > Foam::FoamFftwDriver::simp
     }
     
     label N = in_.size();
+
     fftw_complex* in = (fftw_complex*) fftw_malloc (N*sizeof(fftw_complex));
     fftw_complex* out= (fftw_complex*) fftw_malloc (N*sizeof(fftw_complex));
     forAll(in_, k)
@@ -108,10 +109,10 @@ Foam::autoPtr<Foam::Pair<Foam::List<Foam::scalar> > > Foam::FoamFftwDriver::simp
         out_res.second()[k] = 
                         2*sqrt
                         (
-                                (out[k][0]/N)*(out[k][0]/N)
+                                (out[k][0])*(out[k][0])
                                 +
-                                (out[k][1]/N)*(out[k][1]/N)
-                        );
+                                (out[k][1])*(out[k][1])
+                        )/N;
     }
     
     fftw_destroy_plan(p);

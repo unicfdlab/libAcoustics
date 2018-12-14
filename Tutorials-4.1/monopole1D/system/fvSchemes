@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  3.0.1                                 |
+|  \\    /   O peration     | Version:  2.3.0                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -25,32 +25,27 @@ gradSchemes
     default         Gauss linear;
 }
 
-defaultAdvScheme     vanLeer;
-defaultAdvSchemeV    vanLeer;
+defaultAdvScheme     Minmod;
+defaultAdvSchemeV    MinmodV;
 
 divSchemes
 {
     default         none;
-    div(phi,k)      Gauss upwind;
-    div(phi,epsilon) Gauss upwind;
-    
+
     //momentum equation
-    div(phi,U)	Gauss $defaultAdvSchemeV;
+    div(phi_nei,U)	Gauss $defaultAdvSchemeV;
+    div(phi_own,U)	Gauss $defaultAdvSchemeV;
     div(((rho*nuEff)*dev2(T(grad(U))))) Gauss linear;
-    
+
     //energy equation
-    div(phi,h)	Gauss $defaultAdvScheme;
-    div(phi,K)	Gauss $defaultAdvScheme;
-    
+    div(phi_nei,h)	Gauss $defaultAdvScheme;
+    div(phi_own,h)	Gauss $defaultAdvScheme;
+    div(phi_nei,K)	Gauss $defaultAdvScheme;
+    div(phi_own,K)	Gauss $defaultAdvScheme;
+
     //continuity equation
-    div(phid,p)	Gauss $defaultAdvScheme;
-    
-    div(((rho*nuEff)*dev2(T(grad(U))))) Gauss linear;
-
-    div(meshPhi,p)  Gauss vanLeer;
-    div((meshPhi*interpolate(thermo:psi)),pcorr) Gauss vanLeer;
-
-    div(((rho*U)*U)) Gauss linear; //FWH analogy
+    div(phid_nei,p)	Gauss $defaultAdvScheme;
+    div(phid_own,p)	Gauss $defaultAdvScheme;
 }
 
 laplacianSchemes
@@ -60,8 +55,10 @@ laplacianSchemes
 
 interpolationSchemes
 {
-    default         linear;
-
+    default         none;
+    
+    interpolate((rho*U))	linear;
+    
     reconstruct(rho)		$defaultAdvScheme;
     reconstruct(psi)		$defaultAdvScheme;
     reconstruct(p)		$defaultAdvScheme;
@@ -77,9 +74,8 @@ snGradSchemes
 
 fluxRequired
 {
+    default	none;
     p;
-    pcorr;
 }
-
 
 // ************************************************************************* //

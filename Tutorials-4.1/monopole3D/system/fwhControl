@@ -20,6 +20,7 @@ sphereMonopole1AFassarat
         
         cleanFreq 100;
         formulationType Farassat1AFormulation;
+        U0		(.0 .0 .0);
         fixedResponseDelay true;
         responseDelay   1e-3;
 }
@@ -47,6 +48,7 @@ sphereMonopole1AFassaratStl
         
         cleanFreq 100;
         formulationType Farassat1AFormulation;
+        U0		(.0 .0 .0);
         fixedResponseDelay true;
         responseDelay   1e-3;
 }

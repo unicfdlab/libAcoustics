@@ -1,0 +1,9 @@
+include SoundObserver/SoundObserver.dep
+include FoamFourierAnalysis/FoamFftwDriver.dep
+include analogies/AcousticAnalogy/AcousticAnalogy.dep
+include analogies/Curle/Curle.dep
+include analogies/FfowcsWilliamsHawkings/fwhFormulation.dep
+include analogies/FfowcsWilliamsHawkings/Farassat1AFormulation.dep
+include analogies/FfowcsWilliamsHawkings/FfowcsWilliamsHawkings.dep
+include samplingBEM/sampledSurface/writers/gmsh/gmshSurfaceWriter.dep
+include samplingBEM/soundPressureSampler/soundPressureSampler.dep

@@ -67,7 +67,23 @@ void Foam::functionObjects::fwhFormulation::initialize()
             forAll(Cf, i)
             {
                 robs_[iObs][iSurf][i] = obs.position() - Cf[i];
-                magrobs_[iObs][iSurf][i] = mag(robs_[iObs][iSurf][i]);
+                vector r = robs_[iObs][iSurf][i];
+                scalar R_ = sqrt
+            	    (
+            		sqr(r[0]) 
+            		+ 
+            		( 1 - sqr(mag(fwh_.U0_)/fwh_.c0_))
+            		*
+            		( sqr(r[1]) + sqr(r[2]) )
+            	    );
+            	
+//                magrobs_[iObs][iSurf][i] = mag(robs_[iObs][iSurf][i]);
+		magrobs_[iObs][iSurf][i] = 
+		    (
+			-(mag(fwh_.U0_)/fwh_.c0_) * r[0] + R_
+		    ) /	(1 - sqr(mag(fwh_.U0_)/fwh_.c0_));
+		     
+
                 if (magrobs_[iObs][iSurf][i] > rMax_[iObs])
                 {
                     rMax_[iObs] = magrobs_[iObs][iSurf][i];

@@ -57,6 +57,7 @@ namespace functionObjects
 
 class fwhFormulation;
 class Farassat1AFormulation;
+class GTFormulation;
 
 
 /*---------------------------------------------------------------------------*\
@@ -73,12 +74,14 @@ private:
 
     friend class fwhFormulation;
     friend class Farassat1AFormulation;
+    friend class GTFormulation;
     friend class fvmInterpolationFormulation;
 
 protected:
 
     friend class fwhFormulation;
     friend class Farassat1AFormulation;
+    friend class GTFormulation;
     friend class fvmInterpolationFormulation;
 
 private:
@@ -124,6 +127,10 @@ private:
 
         //-
         vector Ufwh_;
+        
+        //Wind Tunnel Velocity Vector for GTFormulation
+        //U0 = (0 0 0) for 1AFormulation
+        vector U0_;
         
         //-
         bool nonUniformSurfaceMotion_;

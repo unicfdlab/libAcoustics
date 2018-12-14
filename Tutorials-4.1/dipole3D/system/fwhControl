@@ -16,6 +16,7 @@ sphereDipole1AFassarat
         );
         
         nonUniformSurfaceMotion false;
+        U0		(.0 .0 .0);
         Ufwh		(.0 .0 .0);
         
         cleanFreq 100;
@@ -43,6 +44,7 @@ sphereDipole1AFassaratStl
         );
         
         nonUniformSurfaceMotion false;
+        U0		(.0 .0 .0);
         Ufwh		(.0 .0 .0);
         
         cleanFreq 100;
