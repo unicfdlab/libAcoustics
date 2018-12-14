@@ -42,6 +42,7 @@ License
 
 #include "fwhFormulation.H"
 #include "Farassat1AFormulation.H"
+#include "GTFormulation.H"
 
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -81,6 +82,7 @@ Foam::functionObjects::FfowcsWilliamsHawkings::FfowcsWilliamsHawkings
     fixedResponseDelay_(true),
     responseDelay_(0.0),
     Ufwh_(vector::zero),
+    U0_(vector::zero),
     nonUniformSurfaceMotion_(false),
     Cf0_(0),
     vS_(0),
@@ -113,6 +115,7 @@ Foam::functionObjects::FfowcsWilliamsHawkings::FfowcsWilliamsHawkings
     fixedResponseDelay_(true),
     responseDelay_(0.0),
     Ufwh_(vector::zero),
+    U0_(vector::zero),
     nonUniformSurfaceMotion_(false),
     Cf0_(0),
     vS_(0),
@@ -160,19 +163,31 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::initialize()
     }
     
     //Allocate pointer to FWH formulation
-    if (formulationType_ == "Farassat1AFormulation")
+    if ((formulationType_ == "Farassat1AFormulation") or (formulationType_ == "GTFormulation"))
     {
-        fwhFormulationPtr_.set
-        (
-            new Farassat1AFormulation(*this)
-        );
+        if (formulationType_ == "Farassat1AFormulation")
+        {
+    	    fwhFormulationPtr_.set
+    	    (
+        	new Farassat1AFormulation(*this)
+    	    );
+    	}
+    	else
+    	{
+    	    fwhFormulationPtr_.set 
+    	    (
+	    	new GTFormulation(*this)
+    	    );
+    	}
     }
     else
     {
         Info << "Wrong formulation type: " << formulationType_ << endl
         << "Please, select one of: " << endl
-        << "1) Farassat1AFormulation " << endl;
+        << "1) Farassat1AFormulation " << endl
+        << "2) GTFormulation " << endl;
     }
+
 }
 
 
@@ -186,6 +201,8 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::read(const dictionary& dict)
     dict.lookup("formulationType") >> formulationType_;
     
     dict.lookup("Ufwh") >> Ufwh_;
+    
+    dict.lookup("U0") >> U0_;
     
     dict.lookup("pInf") >> pInf_;
     
@@ -475,11 +492,15 @@ Foam::tmp<Foam::scalarField> Foam::functionObjects::FfowcsWilliamsHawkings::surf
 {
     tmp<Field<scalar> > pSampled;
     const volScalarField& p = obr_.lookupObject<volScalarField>(pName_);
+    
     pSampled = sampleOrInterpolate<scalar>(p , surface);
+    
     if (p.dimensions() != dimPressure)
     {
         pSampled.ref() *= rhoRef_;
     }
+    
+    //Info << pSampled() << endl;
     
     return pSampled;
 }

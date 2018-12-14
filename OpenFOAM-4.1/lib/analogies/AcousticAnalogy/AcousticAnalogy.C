@@ -32,7 +32,9 @@ Foam::functionObjects::AcousticAnalogy::AcousticAnalogy
     probeFreq_(1024),
     timeStart_(-1.0),
     timeEnd_(-1.0),
+    writeFft_(true),
     c0_(300.0),
+//    U0_(50.0,0.0,0.0),
     dRef_(-1.0),
     observers_(0),
     probeI_(0)
@@ -55,7 +57,9 @@ Foam::functionObjects::AcousticAnalogy::AcousticAnalogy
     probeFreq_(1024),
     timeStart_(-1.0),
     timeEnd_(-1.0),
+    writeFft_(true),
     c0_(300.0),
+//    U0_(50.0,0.0,0.0),
     dRef_(-1.0),
     observers_(0),
     probeI_(0)
@@ -130,7 +134,17 @@ void Foam::functionObjects::AcousticAnalogy::writeFft()
     if (Pstream::master() || !Pstream::parRun())
     {
         const fvMesh& mesh = refCast<const fvMesh>(obr_);
-        scalar tau = (mesh.time().value() - timeStart_);
+
+        scalar	tau;
+        if (mesh.time().startTime().value() > timeStart_)
+        {
+    	    tau = (mesh.time().value() - mesh.time().startTime().value());
+    	}
+    	else
+    	{
+    	    tau = (mesh.time().value() - timeStart_);
+    	}    
+    	
         forAll(observers_, iObserver)
         {
             SoundObserver& obs = observers_[iObserver];
@@ -168,13 +182,18 @@ bool Foam::functionObjects::AcousticAnalogy::read(const dictionary& dict)
         return false;
     }
     Info << "Reading analogy settings" << endl;
+
     dict.lookup("probeFrequency") >> probeFreq_;
     
     dict.lookup("timeStart") >> timeStart_;
     
     dict.lookup("timeEnd") >> timeEnd_;
     
+    dict.lookup("writeFft") >> writeFft_;
+    
     dict.lookup("c0") >> c0_;
+    
+//    dict.lookup("U0") >> U0_;
     
     dict.lookup("dRef") >> dRef_;
     
@@ -227,6 +246,7 @@ bool Foam::functionObjects::AcousticAnalogy::write()
     }
     
     scalar cTime = obr_.time().value();
+    scalar stTime = obr_.time().startTime().value();
     
     probeI_++;
     
@@ -250,7 +270,14 @@ bool Foam::functionObjects::AcousticAnalogy::write()
     if (Pstream::master() || !Pstream::parRun())
     {
         // time history output
-        file(2) << (cTime - timeStart_) << " ";
+        if (stTime > timeStart_)
+        {
+    	    file(2) << (cTime - stTime) << " ";
+        }
+        else
+        {
+            file(2) << (cTime - timeStart_) << " ";
+        }
         
         forAll(observers_, iObserver)
         {
@@ -261,7 +288,10 @@ bool Foam::functionObjects::AcousticAnalogy::write()
         file(2) << endl;
         
         //fft output
-        writeFft();
+        if (writeFft_ == true)
+        {
+    	    writeFft();
+    	}
         
         //output to stdio
         Log << "Acoustic pressure" << endl;

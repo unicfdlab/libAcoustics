@@ -67,6 +67,15 @@ class Curle
         //- Force acting on patch
         tdPrimitive<vector> F_;
         
+        //- Force acting on patch
+        tdPrimitive<vector> dF_;
+        
+        //
+        List<vector> FF_;
+        
+        //
+        scalar iter_;
+        
 
 protected:
 

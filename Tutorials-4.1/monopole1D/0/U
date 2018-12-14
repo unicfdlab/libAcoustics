@@ -35,7 +35,8 @@ boundaryField
 
     sphere
     {
-        type            uniformFixedValue;
+        type            zeroGradient;//uniformFixedValue;
+/*
         uniformValue    sine;
         uniformValueCoeffs
         {
@@ -44,6 +45,7 @@ boundaryField
             level       (0 0 0);
             frequency   constant 100;
         }
+*/
     }
     
     #include "cyc"

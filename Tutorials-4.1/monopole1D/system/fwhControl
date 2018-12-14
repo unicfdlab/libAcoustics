@@ -5,6 +5,7 @@ dipoleFwhTest
         patches ("sphere");
         interpolationScheme cell;
         formulationType Farassat1AFormulation;
+        U0		(.0 .0 .0);
         cleanFreq       100;
         
         surfaces
