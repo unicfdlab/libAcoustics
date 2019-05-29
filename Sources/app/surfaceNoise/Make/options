@@ -1,4 +1,4 @@
-fftw_root=$(FOAM_USER_LIBBIN)/fftw-3.3.3
+fftw_root=$(FFTW_ARCH_PATH)
 
 EXE_INC = \
     -I$(LIB_SRC)/randomProcesses/lnInclude \
@@ -10,5 +10,5 @@ EXE_LIBS = \
     -lsampling \
     -L$(FOAM_USER_LIBBIN) \
     -lAcoustics \
-    -L$(fftw_root)/lib \
+    -L$(fftw_root)/lib64 \
     -lfftw3
