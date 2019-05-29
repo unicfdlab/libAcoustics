@@ -23,7 +23,7 @@
     word outputFormat = dict.lookupOrDefault<word>("outputFormat", "gmsh");
 
     // output directory (similar with surface name)
-    fileName inputFileName = dict.lookup("inputFileName");
+    fileName inputFileName = dict.get<word>("inputFileName");
 
     //interpolation scheme
     //word interpolationScheme = dict.lookup("interpolationScheme");
