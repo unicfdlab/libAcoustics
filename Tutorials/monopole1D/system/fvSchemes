@@ -25,27 +25,24 @@ gradSchemes
     default         Gauss linear;
 }
 
-defaultAdvScheme     Minmod;
-defaultAdvSchemeV    MinmodV;
+defaultAdvScheme    Minmod;
+defaultAdvSchemeV   MinmodV;
 
 divSchemes
 {
     default         none;
 
     //momentum equation
-    div(phi_nei,U)	Gauss $defaultAdvSchemeV;
-    div(phi_own,U)	Gauss $defaultAdvSchemeV;
+    div(phi,U)    Gauss $defaultAdvSchemeV;
     div(((rho*nuEff)*dev2(T(grad(U))))) Gauss linear;
 
     //energy equation
-    div(phi_nei,h)	Gauss $defaultAdvScheme;
-    div(phi_own,h)	Gauss $defaultAdvScheme;
-    div(phi_nei,K)	Gauss $defaultAdvScheme;
-    div(phi_own,K)	Gauss $defaultAdvScheme;
+    div(phi,h)    Gauss $defaultAdvScheme;
+    div(phi,K)    Gauss $defaultAdvScheme;
+    div(phi,omega)    Gauss $defaultAdvScheme;
 
     //continuity equation
-    div(phid_nei,p)	Gauss $defaultAdvScheme;
-    div(phid_own,p)	Gauss $defaultAdvScheme;
+    div(phi,p)    Gauss $defaultAdvScheme;
 }
 
 laplacianSchemes
@@ -57,14 +54,15 @@ interpolationSchemes
 {
     default         none;
     
-    interpolate((rho*U))	linear;
+    interpolate((rho*U))    linear;
     
-    reconstruct(rho)		$defaultAdvScheme;
-    reconstruct(psi)		$defaultAdvScheme;
-    reconstruct(p)		$defaultAdvScheme;
-    reconstruct(U)		$defaultAdvSchemeV;
-    reconstruct(rho*U)		$defaultAdvSchemeV;
-    reconstruct(Dp)		$defaultAdvScheme;
+    reconstruct(rho)        $defaultAdvScheme;
+    reconstruct(psi)        $defaultAdvScheme;
+    reconstruct(p)        $defaultAdvScheme;
+    reconstruct(U)        $defaultAdvSchemeV;
+    reconstruct(rho*U)        $defaultAdvSchemeV;
+    reconstruct(Dp)        $defaultAdvScheme;
+    flux(rhoU)        linear;
 }
 
 snGradSchemes
@@ -74,7 +72,7 @@ snGradSchemes
 
 fluxRequired
 {
-    default	none;
+    default    none;
     p;
 }
 

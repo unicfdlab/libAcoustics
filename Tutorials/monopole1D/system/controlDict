@@ -15,7 +15,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     pimpleCentralFoam;
+application     rhoCentralFoam;
 
 startFrom       startTime; //latestTime;
 
@@ -55,9 +55,9 @@ CourantType	cellCourant;
 
 functions
 {
-        include "probeControl"
-        include "fwhControl"
-        include "sphereAverage"
+    #include "probeControl"
+    #include "fwhControl"
+    #include "sphereAverage"
 }
 
 // ************************************************************************* //

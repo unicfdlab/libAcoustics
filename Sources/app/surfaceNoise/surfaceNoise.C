@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
 
     fileName outputDirectory = inputFileName.lessExt();    
 
-    fileName controlFile = "complexPressureData/" + outputDirectory + "Spectrum.dat";
+    fileName controlFile = "complexPressureData/" + outputDirectory + "/" + "Spectrum.dat";
 
     autoPtr<OFstream> controlFilePtr;
 
@@ -259,8 +259,6 @@ int main(int argc, char *argv[])
         }
         
         Info << "Max abs: " << maxAbs << nl;
-
-        Info << "write..." << nl;
 
         controlFilePtr() << freq[freqI] << ' ' << maxAbs << nl;
     }

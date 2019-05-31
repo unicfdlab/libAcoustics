@@ -3,7 +3,8 @@ fftw_root=$(FFTW_ARCH_PATH)
 EXE_INC = \
     -I$(LIB_SRC)/randomProcesses/lnInclude \
     -I$(LIB_SRC)/sampling/lnInclude \
-    -I../../lib/lnInclude
+    -I../../lib/lnInclude \
+    -I$(fftw_root)/include
 
 EXE_LIBS = \
     -lrandomProcesses \

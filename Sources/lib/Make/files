@@ -15,6 +15,6 @@ analogies/FfowcsWilliamsHawkings/FfowcsWilliamsHawkings.C
 samplingBEM/sampledSurface/writers/gmsh/gmshSurfaceWriter.C
 samplingBEM/soundPressureSampler/soundPressureSampler.C
 
-LIB = $(FOAM_LIBBIN)/libAcoustics
+LIB = $(FOAM_USER_LIBBIN)/libAcoustics
 
 

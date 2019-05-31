@@ -85,7 +85,7 @@ class GmshInterface(FileInterfaceImpl):
         with open(file_name) as f:
         
             while True:
-        	
+                
                 line = f.readline()
                 if line == '': break
                 s = line.rstrip()
@@ -300,7 +300,7 @@ class GmshInterface(FileInterfaceImpl):
                     from collections import OrderedDict
                     gmsh_interface._element_data = OrderedDict()                                           
                     gmsh_interface.data_type = "element"                    
-        	    gmsh_interface._withData = True                    
+                    gmsh_interface._withData = True                    
             
                     # read number of string tags
                     s = f.readline().rstrip()

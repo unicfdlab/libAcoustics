@@ -76,17 +76,17 @@ class FileReader(object):
             # Match data in nodes or elements
             
             if self._impl.withData:
-        	if self._impl.data_type == 'node':
-            	    node_data_from_file = self._impl._node_data['data']
-            	    node_data_entities = OrderedDict((key, node_data_from_file[key]) for key in self._vertex_insertion_indices_to_file)
-            	    coeffs = np.array(node_data_entities.values()).flatten()
-            	    self._node_data = coeffs
+                if self._impl.data_type == 'node':
+                    node_data_from_file = self._impl._node_data['data']
+                    node_data_entities = OrderedDict((key, node_data_from_file[key]) for key in self._vertex_insertion_indices_to_file)
+                    coeffs = np.array(node_data_entities.values()).flatten()
+                    self._node_data = coeffs
 
-        	if self._impl.data_type == 'element':
-            	    element_data_from_file = self._impl._element_data['data']
-            	    element_data_entities = OrderedDict((key, element_data_from_file[key]) for key in self._element_insertion_indices_to_file)
-            	    coeffs = np.array(element_data_entities.values()).flatten()
-            	    self._element_data = coeffs
+                if self._impl.data_type == 'element':
+                    element_data_from_file = self._impl._element_data['data']
+                    element_data_entities = OrderedDict((key, element_data_from_file[key]) for key in self._element_insertion_indices_to_file)
+                    coeffs = np.array(element_data_entities.values()).flatten()
+                    self._element_data = coeffs
 
     def _create_grid(self):
 

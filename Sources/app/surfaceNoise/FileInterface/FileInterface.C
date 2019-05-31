@@ -55,50 +55,30 @@ autoPtr<List<List<scalar > > > FileInterface::read()
     }
 
     List<List<scalar> > data;
-
     label probeI = 0;
-
     scalar num = 0;
-
     string line;
 
     if (inFilePtr.valid())
     {
-        //Info << inFilePtr().name() << endl;
-
         while(inFilePtr().getLine(line))
         {
             probeI ++;
-
             data.resize(probeI);
-
-            //Info << "resize ok" << endl;
-
             label pointI = 0;
-
             IStringStream lineStream(line);
 
             while(lineStream >> num)
             {  
                 pointI++;
-
                 data[probeI-1].resize(pointI);
-
                 data[probeI-1][pointI-1] = num;
             }
-
-            //inFilePtr() >> num ;
-            //Info << num << nl;
-
-            //Info << "///////////////////////////////" << nl;
-            //istr++;
         }
 
         //check if last string has equal size with previous strings
         label refSize = data[0].size();
         label lastStrSize = data[probeI-1].size();
-
-        //Info << "ref size = " << refSize << ", size of last string = " << lastStrSize << endl;
 
         if (lastStrSize < refSize) // short last string shows the lost part of data
         {

@@ -119,11 +119,11 @@ void Foam::soundPressureSampler::writeSurface
             {
                 if (os.valid())
                 {
-                    os() << cTime << ' ';
+                    os() << cTime;
                     
                     forAll(allValues,i)
                     {                  
-                        os() << allValues[i] << " ";
+                        os() << " " << allValues[i];
                     }
                     
                     os() << nl;
@@ -134,15 +134,15 @@ void Foam::soundPressureSampler::writeSurface
     }
     else
     {
-        Info << "size = " << values.size() << nl;
+        //Info << "size = " << values.size() << nl;
 
         if (os.valid())
         {
-            os() << cTime << ' ';
+            os() << cTime;
             
             forAll(values,i)
             {
-                os() << values[i] << ' ';
+                os() << ' ' << values[i];
             }
             os() << nl;
             os().flush();

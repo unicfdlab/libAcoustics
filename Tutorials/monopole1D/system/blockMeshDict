@@ -51,14 +51,14 @@ boundary
     {
         type wedge;
         neighbourPatch cyc2;
-	faces
+        faces
         (
             (0 1 5 4)
         );
         transform rotational;
         rotationAxis (1 0 0);
         rotationCentre (0 0 0);
-	matchTolerance	1e-8;
+        matchTolerance        1e-8;
     }
     cyc2
     {
@@ -71,20 +71,20 @@ boundary
         transform rotational;
         rotationAxis (1 0 0);
         rotationCentre (0 0 0);
-	matchTolerance	1e-8;
+        matchTolerance        1e-8;
     }
     cyc3
     {
         type wedge;
         neighbourPatch cyc4;
-	faces
+        faces
         (
             (0 3 7 4)
         );
         transform rotational;
         rotationAxis (1 0 0);
         rotationCentre (0 0 0);
-	matchTolerance	1e-8;
+        matchTolerance        1e-8;
     }
     cyc4
     {
@@ -97,7 +97,7 @@ boundary
         transform rotational;
         rotationAxis (0 1 0);
         rotationCentre (0 0 0);
-	matchTolerance	1e-8;
+        matchTolerance        1e-8;
     }
     sphere
     {
