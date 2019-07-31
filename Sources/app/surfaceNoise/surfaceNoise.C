@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 
     Info << "Calculate interpolation and FFT..." << endl;
 
-    for (label i = 1; i < nSurfPoints; ++i) //loop starts from 1 because time value is placed on 0 position
+    for (label i = 1; i <= nSurfPoints; ++i) //loop starts from 1 because time value is placed on 0 position
     {                    
         forAll(pSampled,pI)
         {
