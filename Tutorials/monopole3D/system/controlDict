@@ -53,10 +53,10 @@ maxDeltaT       1e-5;
 
 functions
 {
-//        include "probeControl"
+        include "probeControl"
         include "fwhControl"
-//        include "sphereAverage"
-//        include "soundPressureSampling"
-};
+        include "sphereAverage"
+        include "soundPressureSampling"
+}
 
 // ************************************************************************* //
