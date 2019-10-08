@@ -1,6 +1,8 @@
 	functionObjectLibs ("libAcoustics.so");
 	
 	log		true;
+		
+	writeFft	true;
 	
 	probeFrequency	1;
 	
@@ -9,6 +11,8 @@
 	timeEnd		1;
 	
 	c0		100;
+	
+	U0		(0 0 0);
 	
 	dRef		0.005555556;
 	

@@ -20,23 +20,36 @@ internalField   uniform 101325;
 
 boundaryField
 {
-    free
-    {
-        type            waveTransmissive;
-        field           p;
-        phi             phi;
-        rho             rho;
-        psi             thermo:psi;
-        gamma           1.4;
-        value           uniform 101325;
-    }
-
     sphere
     {
-        type            zeroGradient;
+        type           uniformFixedValue;
+	uniformValue   sine;
+	    uniformValueCoeffs
+    	    {
+    		frequency	100;
+    		amplitude	1000;
+    		scale		1;//(1 0 0);
+    		level		101325;//(0 0 0);
+    		t0		0;
+	    }
     }
-
+    
+    free
+    {
+        type            waveTransmissive; //totalPressure;
+        field		p;
+        psi		thermo:psi;        
+        rho		rho;
+        phi		phi;
+        gamma           1.4;           
+        value           uniform 101325;
+    }
+    
     #include "cyc"
+    
 }
 
 // ************************************************************************* //
+
+
+

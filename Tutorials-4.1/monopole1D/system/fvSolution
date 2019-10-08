@@ -17,44 +17,34 @@ FoamFile
 
 solvers
 {
-    "(rho|U|h|p|k|epsilon).*"
+    "(rho|U|h|p).*"
     {
         solver          PBiCGStab;
         preconditioner	DILU;
         tolerance       1e-015;
-        relTol          1e-6;
-        maxIter         1000;
-    }
-
-    pcorr
-    {
-        solver          GAMG;
-        tolerance       0;
-        relTol          1e-6;
-        smoother        GaussSeidel;
-        cacheAgglomeration no;
-        nCellsInCoarsestLevel 10;
-        agglomerator    faceAreaPair;
-        mergeLevels     1;
-        maxIter         50;
-    }
-    
-    cellDisplacement
-    {
-        $pcorr;
+        relTol          0.0;
     }
 }
 
 PIMPLE
 {
-    
+                                
     momentumPredictor           false; //true;
-    nCorrectors                 2;
-    nOuterCorrectors            1;
-    nNonOrthogonalCorrectors    1;
-    correctPhi                  true;
-    checkMeshCourantNo          true;
-    transonic                   true;
+    nCorrectors                 1;
+    nOuterCorrectors            2;
+    nonOrthogonalityThreshold   60;
+    skewnessThreshold           0.5;
+    updateEnergyInPISO          false;
+    fluxScheme                  Kurganov; //Tadmor;
+    
+    kappaFunction
+    {
+        type standardMachToAcCourantRatio;
+        
+        standardMachToAcCourantRatioCoeffs
+        {
+        }
+    }
 }
 
 // ************************************************************************* //

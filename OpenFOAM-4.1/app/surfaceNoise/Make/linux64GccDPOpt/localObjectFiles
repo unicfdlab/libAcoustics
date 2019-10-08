@@ -1,0 +1,4 @@
+LOCAL_OBJECTS = \
+FileInterface.o\
+Interpolator.o\
+surfaceNoise.o

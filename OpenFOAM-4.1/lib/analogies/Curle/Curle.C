@@ -61,7 +61,10 @@ Foam::functionObjects::Curle::Curle
         dict
     ),
     c_(vector::zero),
-    F_(vector::zero, obr_.time().value())
+    F_(vector::zero, obr_.time().value()),
+    dF_(vector::zero, obr_.time().value()),
+    FF_(0, vector::zero),
+    iter_(0)
 {
     this->read(dict);
     F_.resize(1);
@@ -81,7 +84,10 @@ Foam::functionObjects::Curle::Curle
         dict
     ),
     c_(vector::zero),
-    F_(vector::zero, obr_.time().value())
+    F_(vector::zero, obr_.time().value()),
+    dF_(vector::zero, obr_.time().value()),
+    FF_(0, vector::zero),
+    iter_(0)
 {
     this->read(dict);
     F_.resize(1);
@@ -145,22 +151,49 @@ bool Foam::functionObjects::Curle::write()
 
 void Foam::functionObjects::Curle::correct()
 {
+    iter_ += 1;
     F_.value(0) = forceEff();
+    vector F1_= vector::zero;
+    
+    FF_.setSize(iter_);
+    FF_[iter_ - 1] = F_.value(0);
+    forAll(FF_, I)
+    {
+	F1_ += FF_[I];
+    }
+    vector Fav_ = F1_ / FF_.size();
+
+    dF_.value(0) = F_.value(0) - Fav_; 
+    
     vector dotF = F_.dot(obr_.time().value(), 0);
+    vector dotdF = dF_.dot(obr_.time().value(), 0);
     
     if (Pstream::master() || !Pstream::parRun())
     {
-        scalar coeff1 = 1. / 4. / Foam::constant::mathematical::pi / c0_;
+        scalar coeff1_3d = 1. / 4. / Foam::constant::mathematical::pi / c0_;
+        
+        scalar coeff1_2d = 1. / 2.828427 / Foam::constant::mathematical::pi / sqrt(c0_);
+        scalar coeff2_2d = 1. / 2. / Foam::constant::mathematical::pi;
+        scalar coeff3_2d = sqrt(c0_) / 5.656854 / Foam::constant::mathematical::pi;
         
         forAll (observers_, iObs)
         {
             SoundObserver& obs = observers_[iObs];
             vector l = obs.position() - c_;
             scalar r = mag(l);
-            scalar oap = l & (dotF + c0_ * F_.value(0) / r) * coeff1 / r / r;
+            scalar oap = 0;
+            
             if (dRef_ > 0.0)
             {
-                oap /= dRef_;
+        	scalar A1 = l & (dotF) * coeff1_2d / sqrt(r) / r;
+        	scalar B1 = l & (Fav_) * coeff2_2d / r / r;
+        	scalar C1 = l & (dotdF) * coeff3_2d / sqrt(r) / r / r;
+        	oap = A1 + B1 + C1;
+        	oap /= dRef_;
+    	    }
+    	    else
+    	    {
+    		oap = l & (dotF + c0_ * F_.value(0) / r) * coeff1_3d / r / r;
             }
             obs.apressure(oap);
         }

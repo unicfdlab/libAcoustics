@@ -1,0 +1,10 @@
+SOURCE = \
+SoundObserver/SoundObserver.C\
+FoamFourierAnalysis/FoamFftwDriver.C\
+analogies/AcousticAnalogy/AcousticAnalogy.C\
+analogies/Curle/Curle.C\
+analogies/FfowcsWilliamsHawkings/fwhFormulation.C\
+analogies/FfowcsWilliamsHawkings/Farassat1AFormulation.C\
+analogies/FfowcsWilliamsHawkings/FfowcsWilliamsHawkings.C\
+samplingBEM/sampledSurface/writers/gmsh/gmshSurfaceWriter.C\
+samplingBEM/soundPressureSampler/soundPressureSampler.C

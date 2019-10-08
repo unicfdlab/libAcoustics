@@ -36,6 +36,9 @@ protected:
         //-
         scalar timeEnd_;
         
+        //-
+        bool writeFft_;
+        
         //- Sonic speed, m/s
         scalar c0_;
         
@@ -73,7 +76,7 @@ public:
         
         //-
         scalar deltat_;
-    
+
         //-
         List<T> new_;
     
@@ -157,19 +160,16 @@ public:
                     (
                         idx+1
                     );
-                    
                     oldOld_[idx] = old_[idx];
                     old_[idx] = new_[idx];
                 }
                 else
                 {
                     dvdt = (3.0*new_[idx] - 4.0*old_[idx] + oldOld_[idx]) / 2.0 / deltat_;
-                    
                     oldOld_[idx] = old_[idx];
                     old_[idx] = new_[idx];
                 }
             }
-            
             return dvdt;
         }
 

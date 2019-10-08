@@ -15,7 +15,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     rhoPimpleFoam;
+application     pimpleCentralFoam;
 
 startFrom       startTime; //latestTime;
 
@@ -50,6 +50,8 @@ adjustTimeStep  false;
 maxCo           0.5;
 
 maxDeltaT       1e-5;
+
+CourantType	cellCourant;
 
 functions
 {

@@ -1,0 +1,10 @@
+LOCAL_OBJECTS = \
+SoundObserver.o\
+FoamFftwDriver.o\
+AcousticAnalogy.o\
+Curle.o\
+fwhFormulation.o\
+Farassat1AFormulation.o\
+FfowcsWilliamsHawkings.o\
+gmshSurfaceWriter.o\
+soundPressureSampler.o
