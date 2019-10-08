@@ -1,0 +1,2 @@
+mpirun: Error: unknown option "-parallel"
+Type 'mpirun --help' for usage.

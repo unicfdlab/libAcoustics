@@ -49,8 +49,6 @@ divSchemes
 
     div(meshPhi,p)  Gauss vanLeer;
     div((meshPhi*interpolate(thermo:psi)),pcorr) Gauss vanLeer;
-
-    div(((rho*U)*U)) Gauss linear; //FWH analogy
 }
 
 laplacianSchemes
