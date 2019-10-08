@@ -1,0 +1,25 @@
+monopole2DFwhTest
+{
+        type            FfowcsWilliamsHawkings;
+        #include        "commonSettings";
+        patches ("sphere");
+        interpolationScheme cell;
+        formulationType Farassat1AFormulation;
+        U0		(.0 .0 .0);
+        cleanFreq       100;
+        fixedResponseDelay true;
+        responseDelay   1e-3;
+        
+        surfaces
+        (
+                sphere
+                {
+                    type            patch;
+                    patches         ("sphere");
+                    interpolate     false;
+                }
+        );
+        
+        nonUniformSurfaceMotion false;
+        Ufwh		(.0 .0 .0);
+}

@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1812                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : v1812 OPENFOAM=1812
+Arch   : "LSB;label=32;scalar=64"
+Exec   : decomposePar
+Date   : Oct 08 2019
+Time   : 13:29:10
+Host   : pc1010400758
+PID    : 741
+I/O    : uncollated
+Case   : /home/v.korchagova/software/libAcoustics/Tutorials/monopole3D
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 10)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+--> FOAM Warning :
+    Reading "/home/v.korchagova/software/libAcoustics/Tutorials/monopole3D/system/controlDict" at line 60
+    Too many closing '}' ... was a ';' forgotten?
+--> FOAM Warning :
+    Reading "/home/v.korchagova/software/libAcoustics/Tutorials/monopole3D/system/controlDict" at line 63
+    Imbalanced brackets
+
+
+--> FOAM FATAL IO ERROR: 
+"ill defined primitiveEntry starting at keyword 'include' on line 57 and ending at line 63"
+
+file: /home/v.korchagova/software/libAcoustics/Tutorials/monopole3D/system/controlDict at line 63.
+
+    From function void Foam::primitiveEntry::readEntry(const Foam::dictionary&, Foam::Istream&)
+    in file db/dictionary/primitiveEntry/primitiveEntryIO.C at line 238.
+
+FOAM exiting
+

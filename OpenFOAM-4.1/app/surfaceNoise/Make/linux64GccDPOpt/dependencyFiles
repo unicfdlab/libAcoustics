@@ -1,4 +1,0 @@
-DEPENDENCIES = \
-FileInterface/FileInterface.dep\
-Interpolator/Interpolator.dep\
-surfaceNoise.dep

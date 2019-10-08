@@ -1,5 +1,5 @@
 import numpy as np
-from .general_interface import FileInterfaceImpl, Vertex, Element 
+from cfdbem.file_interfaces.general_interface import FileInterfaceImpl, Vertex, Element 
 
 def read_version(s):
     tokens = s.split()
@@ -31,7 +31,7 @@ def read_element(s):
         index = int(tokens[0])
         elem_type = int(tokens[1])
     except:
-        raise ValueError("Unspported format for element in string {0}".format(s))
+        raise ValueError("Unsupported format for element in string {0}".format(s))
     
     if elem_type!=2: return None
     try:
@@ -85,7 +85,6 @@ class GmshInterface(FileInterfaceImpl):
         with open(file_name) as f:
         
             while True:
-        	
                 line = f.readline()
                 if line == '': break
                 s = line.rstrip()
@@ -300,7 +299,7 @@ class GmshInterface(FileInterfaceImpl):
                     from collections import OrderedDict
                     gmsh_interface._element_data = OrderedDict()                                           
                     gmsh_interface.data_type = "element"                    
-        	    gmsh_interface._withData = True                    
+                    gmsh_interface._withData = True                    
             
                     # read number of string tags
                     s = f.readline().rstrip()

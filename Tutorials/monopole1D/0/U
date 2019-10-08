@@ -1,0 +1,54 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    free
+    {
+        type            waveTransmissive;
+        field           U;
+        phi             phi;
+        rho             rho;
+        psi             thermo:psi;
+        gamma           1.4;
+        //fieldInf        101325;
+        //lInf            100;
+        value           uniform (0 0 0);
+    }
+
+    sphere
+    {
+        type            zeroGradient;//uniformFixedValue;
+/*
+        uniformValue    sine;
+        uniformValueCoeffs
+        {
+            amplitude   0.01;
+            scale       (0 0 1);
+            level       (0 0 0);
+            frequency   constant 100;
+        }
+*/
+    }
+    
+    #include "cyc"
+}
+
+// ************************************************************************* //
