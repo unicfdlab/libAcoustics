@@ -8,6 +8,8 @@ libAcoustics - library for far-field noise computation. At current time contains
 
 3. **CFD-BEM coupling** 
 
+OpenFOAM 3.0, 4.1 versions are in the master branch, version OpenFOAM+ v.1812 is in digitef-dev-1812 branch of the repository
+
 When using this library in your research, please cite next articles:
 
 DOI: 10.1016/j.procs.2015.11.018 
