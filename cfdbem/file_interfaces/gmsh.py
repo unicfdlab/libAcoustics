@@ -42,7 +42,7 @@ def read_element(s):
         v0 = int(tokens[-3])
     except:
         raise ValueError("Unsupported format for element in string {0}".format(s))
-    
+
     return Element(index,v0,v1,v2,phys_id)
 
 class GmshInterface(FileInterfaceImpl):
@@ -55,11 +55,11 @@ class GmshInterface(FileInterfaceImpl):
         self._element_data = None
         self._element_node_data = None
         self._withData = False
-        
+
     node_data = property(lambda self: self._node_data)
     element_data = property(lambda self: self._element_data)
     withData = property(lambda self: self._withData)
-    
+
 
     @property
     def default_data_type(self):
@@ -83,212 +83,207 @@ class GmshInterface(FileInterfaceImpl):
         gmsh_interface = GmshInterface()
 
         with open(file_name) as f:
-        
+
             while True:
                 line = f.readline()
                 if line == '': break
                 s = line.rstrip()
-                
+
                 if s == "$MeshFormat":
-                
+
                     # read version
                     s = f.readline().rstrip()
                     gmsh_interface._version = read_version(s)
-                    
+
                     # check end of section
                     s = f.readline().rstrip()
-                    
+
                     if not s == "$EndMeshFormat":
                         raise ValueError("Expected $EndMeshFormat but got {0}".format(s))
-                    
+
                     continue
-                    
+
                 if s == "$Nodes":
-                
+
                     # read number of nodes
                     s = f.readline().rstrip()
                     try:
                         number_of_vertices = int(s)
                     except:
                         raise ValueError("Expected integer, got {0}".format(s))
-                    
+
                     # read nodes while counter is not equal to number_of_vertices
                     count = 0
                     s = f.readline().rstrip()
-                    
+
                     while s != "$EndNodes":
                         vertex = read_vertex(s)
                         gmsh_interface.vertices[vertex.index] = vertex.data
-                        
+
                         count += 1
                         s = f.readline().rstrip()
-                        
+
                         if count == number_of_vertices:
                             break
-                    
+
                     # check if the vertices were written correct
                     if count != number_of_vertices:
                         raise ValueError("Expected {0} vertices but got {1} vertices.".format(number_of_vertices,count))
                     if s != "$EndNodes":
                         raise ValueError("Expected $EndNodes but got {0}.".format(s))
 
-                        
                 if s == "$Elements":
-                
+
                     # read number of elements
                     s = f.readline().rstrip()
                     try:
                         number_of_elements = int(s)
                     except:
                         raise ValueError("Expected integer, got {0}".format(s))
-                    
+
                     # read elements while counter is not equal to number_of_elements
                     count = 0
                     s = f.readline().rstrip()
                     while s != "$EndElements":
                         element = read_element(s)
                         count += 1
-                        
+
                         if element is not None:
                             gmsh_interface.elements[element.index] = {'data':element.data, 'domain_index':element.domain_index}
                         s = f.readline().rstrip()
-                        
+
                         if count == number_of_elements:
                             break
-                    
+
                     # check if elements were written correct
                     if count != number_of_elements:
                         raise ValueError("Expected {0} elements but got {1} elements.".format(number_of_elements,count))
                     if s != "$EndElements":
                         raise ValueError("Expected $EndElements but got {0}.".format(s))
-                
+
                 if s == "$NodeData":
 
                     from collections import OrderedDict
-                    gmsh_interface._node_data = OrderedDict()                                           
+                    gmsh_interface._node_data = OrderedDict()
                     gmsh_interface.data_type = "node"
-                    gmsh_interface._withData = True                    
-            
+                    gmsh_interface._withData = True
+
                     # read number of string tags
                     s = f.readline().rstrip()
-                        
+
                     try:
                         number_of_string_tags = int(s)
                     except:
                         raise ValueError("Expected integer, got {0}".format(s))
-                        
-                    # read string tags    
-                    count = 0  
+
+                    # read string tags
+                    count = 0
 
                     if count > number_of_string_tags:
                         pass
                     else:
                         s = f.readline().rstrip()
-                        
+
                         if count == 1:
                             gmsh_interface._node_data['label'] = s
                         elif count == 2: # here should be interpolation scheme (not used because always n_str_t = 1)
                             interpolation_scheme = s                    
                         else:
                             pass
-                            
+
                     # read number of real tags (always one tag)
                     s = f.readline().rstrip()
-                        
+
                     try:
                         number_of_real_tags = int(s)
                     except:
                         raise ValueError("Expected integer, got {0}".format(s))
-                        
+
                     # read one real tag --- time step (not used because _node_data has not this field)
                     s = f.readline().rstrip()
-                        
+
                     try:
                         time_value = float(s)
                     except:
                         raise ValueError("Expected float, got {0}".format(s))
-                                    
-                        
+
                     # read number of integer tags
                     s = f.readline().rstrip()
-                        
+
                     try:
                         number_of_integer_tags = int(s)
                     except:
                         raise ValueError("Expected integer, got {0}".format(s))
-                            
-                        
+
                     # read integer tags (always 4 tags now)
                     count = 0    
                     number_of_field_components = 0
                     number_of_nodes = 0
-                               
+
                     while count < number_of_integer_tags:
                         s = f.readline().rstrip()
                         count += 1
-                            
+
                         # read time step
                         if count == 1:
                             try:
                                 time_step_index = int(s)
                             except:
                                 raise ValueError("Expected integer, got {0}".format(s))
-                        
+
                         # read number of field components
                         elif count == 2:
                             try:
                                 number_of_field_components = int(s)
                             except:
                                 raise ValueError("Expected integer, got {0}".format(s))
-                        
+
                         # read number of nodes
                         elif count == 3:
                             try:
                                 number_of_nodes = int(s)
                             except:
                                 raise ValueError("Expected integer, got {0}".format(s))
-                            
+
                         # read partition index
                         elif count == 4:
                             try:
                                 partition_index = int(s)
                             except:
                                 raise ValueError("Expected integer, got {0}".format(s))
-                            
-                        # no more data
+
+                    # no more data
                         else:
                             pass
-                        
-                    
-                    # read node data                    
+
+                    # read node data
                     count = 0
-                        
+
                     s = f.readline().rstrip()
 
                     gmsh_interface._node_data['data'] = OrderedDict()
-                            
+
                     while s != "$EndNodeData":
                         tokens = s.split()
-                        
+
                         if len(tokens) != number_of_field_components + 1:
                             raise ValueError("Unsupported format for node data in string {0}".format(s))
-                        
+
                         local_node_data = []
-                    
+
                         for i in range (1,number_of_field_components+1):
                             local_node_data.append(complex(tokens[i]))
-                        
-                        
+
                         gmsh_interface._node_data['data'][int(tokens[0])] = np.array(local_node_data, dtype = complex)    
                         #node_data[tokens[0]] = np.array(local_node_data, dtype = float)
-                        
+
                         s = f.readline().rstrip()
-                            
+
                         count += 1
-                        
+
                         if count == number_of_nodes:
-                            break                  
-                        
+                            break
+
                     if count != number_of_nodes:
                         raise ValueError("Expected {0} elements but got {1} elements.".format(number_of_nodes,count))
                     if s != "$EndNodeData":
@@ -297,135 +292,131 @@ class GmshInterface(FileInterfaceImpl):
                 if s == "$ElementData":
 
                     from collections import OrderedDict
-                    gmsh_interface._element_data = OrderedDict()                                           
-                    gmsh_interface.data_type = "element"                    
-                    gmsh_interface._withData = True                    
-            
+                    gmsh_interface._element_data = OrderedDict()
+                    gmsh_interface.data_type = "element"
+                    gmsh_interface._withData = True
+
                     # read number of string tags
                     s = f.readline().rstrip()
-                        
+
                     try:
                         number_of_string_tags = int(s)
                     except:
                         raise ValueError("Expected integer, got {0}".format(s))
-                        
-                    # read string tags    
-                    count = 0  
+
+                    # read string tags
+                    count = 0
 
                     if count > number_of_string_tags:
                         pass
                     else:
                         s = f.readline().rstrip()
-                        
+
                         if count == 1:
                             gmsh_interface._element_data['label'] = s
                         elif count == 2: # here should be interpolation scheme (not used because always n_str_t = 1)
-                            interpolation_scheme = s                    
+                            interpolation_scheme = s
                         else:
                             pass
-                            
+
                     # read number of real tags (always one tag)
                     s = f.readline().rstrip()
-                        
+
                     try:
                         number_of_real_tags = int(s)
                     except:
                         raise ValueError("Expected integer, got {0}".format(s))
-                        
+
                     # read one real tag --- time step (not used because _node_data has not this field)
                     s = f.readline().rstrip()
-                        
+
                     try:
                         time_value = int(s)
                     except:
                         raise ValueError("Expected integer, got {0}".format(s))
-                                    
-                        
+
                     # read number of integer tags
                     s = f.readline().rstrip()
-                        
+
                     try:
                         number_of_integer_tags = int(s)
                     except:
                         raise ValueError("Expected integer, got {0}".format(s))
-                            
-                        
+
                     # read integer tags (always 4 tags now)
-                    count = 0    
+                    count = 0
                     number_of_field_components = 0
                     number_of_elements = 0
-                               
+
                     while count < number_of_integer_tags:
                         s = f.readline().rstrip()
                         count += 1
-                            
+
                         # read time step
                         if count == 1:
                             try:
                                 time_step_index = int(s)
                             except:
                                 raise ValueError("Expected integer, got {0}".format(s))
-                        
+
                         # read number of field components
                         elif count == 2:
                             try:
                                 number_of_field_components = int(s)
                             except:
                                 raise ValueError("Expected integer, got {0}".format(s))
-                        
+
                         # read number of nodes
                         elif count == 3:
                             try:
                                 number_of_elements = int(s)
                             except:
                                 raise ValueError("Expected integer, got {0}".format(s))
-                            
+
                         # read partition index
                         elif count == 4:
                             try:
                                 partition_index = int(s)
                             except:
                                 raise ValueError("Expected integer, got {0}".format(s))
-                            
+
                         # no more data
                         else:
                             pass
-                        
-                    
-                    # read node data                    
+
+                    # read node data
                     count = 0
-                        
+
                     s = f.readline().rstrip()
 
                     gmsh_interface._element_data['data'] = OrderedDict()
-                            
+
                     while s != "$EndElementData":
                         tokens = s.split()
-                        
+
                         if len(tokens) != number_of_field_components + 1:
                             raise ValueError("Unsupported format for element data in string {0}".format(s))
-                        
+
                         local_element_data = []
-                    
+
                         for i in range (1,number_of_field_components+1):
                             local_element_data.append(complex(tokens[i]))
-                        
-                        
+
                         gmsh_interface._element_data['data'][int(tokens[0])] = np.array(local_element_data, dtype = complex)    
                         #node_data[tokens[0]] = np.array(local_node_data, dtype = float)
-                        
+
                         s = f.readline().rstrip()
-                            
+
                         count += 1
-                        
+
                         if count == number_of_elements:
-                            break                  
-                        
+                            break
+
                     if count != number_of_elements:
                         raise ValueError("Expected {0} elements but got {1} elements.".format(number_of_elements,count))
                     if s != "$EndElementData":
                         raise ValueError("Expected $EndElementData but got {0}.".format(s))
-                             
+
         return gmsh_interface
 
     def write_vertices(self, f):
@@ -510,4 +501,3 @@ class GmshInterface(FileInterfaceImpl):
 
     def add_element_node_data(self, data, label):
         self._element_node_data = {'label':label, 'data':data}
-

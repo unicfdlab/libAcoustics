@@ -1,28 +1,27 @@
 surfacePressure
 {
     type                soundPressureSampler;
-    functionObjectLibs  ("libAcoustics.so");
+    libs  ("libAcoustics.so");
     writeControl        timeStep;
     writeInterval       1;
-    
+
     outputGeometryFormat gmsh;
-    
+
     fields
     (
         p
     );
-    
+
     pName p;
 
     log   true;
-    
+
     interpolationScheme cellPoint;
 
     surfaces
     (
         triSurfaceSamplingCoarse
         {
-
             type        sampledTriSurfaceMesh;
             surface     sphere_426.stl;
             source      cells;  // What to sample: cells (nearest cell)
@@ -33,7 +32,6 @@ surfacePressure
 
         triSurfaceSamplingFine
         {
-
             type        sampledTriSurfaceMesh;
             surface     sphere_1808.stl;
             source      cells;  // What to sample: cells (nearest cell)

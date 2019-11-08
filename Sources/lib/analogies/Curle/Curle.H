@@ -28,10 +28,10 @@ Group
     grpCurleFunctionObjects
 
 Description
-    
+
 
 SeeAlso
-    
+
 
 SourceFiles
 
@@ -63,19 +63,18 @@ class Curle
 
         //- Center of surface for sampling
         vector c_;
-        
+
         //- Force acting on patch
         tdPrimitive<vector> F_;
-        
+
         //- Force acting on patch
         tdPrimitive<vector> dF_;
-        
+
         //
         List<vector> FF_;
-        
+
         //
         scalar iter_;
-        
 
 protected:
 
@@ -84,10 +83,10 @@ protected:
 
         //- Disallow default bitwise assignment
         void operator=(const Curle&);
-        
+
         //-
         void calcDistances();
-        
+
         //-
         void correct();
 
@@ -107,7 +106,7 @@ public:
             const Time&,
             const dictionary&
         );
-        
+
         //- Construct from given objectRegistry and dictionary.
         Curle
         (
@@ -124,13 +123,13 @@ public:
 
         //- Read the Curle data
         virtual bool read(const dictionary&);
-        
+
         //-
         virtual bool execute();
-        
+
         //- Write the Curle
         virtual bool write();
-        
+
 };
 
 

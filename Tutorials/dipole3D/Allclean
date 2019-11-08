@@ -9,4 +9,8 @@ rm -rf pressureData
 rm -rf complexPressureData
 rm -rf surfaceGeometryData
 
+rm -rf constant/polyMesh
+rm -rf acousticData
+rm -rf dipole3D.foam
+
 # ----------------------------------------------------------------- end-of-file

@@ -43,12 +43,9 @@ geometry
     }
 };
 
-
-
 // Settings for the castellatedMesh generation.
 castellatedMeshControls
 {
-
     // Refinement parameters
     // ~~~~~~~~~~~~~~~~~~~~~
 

@@ -52,7 +52,7 @@ namespace Foam
 namespace functionObjects
 {
     defineTypeNameAndDebug(FfowcsWilliamsHawkings, 0);
-    
+
     addToRunTimeSelectionTable(functionObject, FfowcsWilliamsHawkings, dictionary);
 }
 }
@@ -154,31 +154,31 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::initialize()
             }
         }
     }
-    
+
     vS_.resize(controlSurfaces_.size());
     forAll(controlSurfaces_, iSurf)
     {
         vS_[iSurf].resize(controlSurfaces_[iSurf].Cf().size());
         vS_[iSurf] = vector::zero;
     }
-    
+
     //Allocate pointer to FWH formulation
     if ((formulationType_ == "Farassat1AFormulation") or (formulationType_ == "GTFormulation"))
     {
         if (formulationType_ == "Farassat1AFormulation")
         {
-    	    fwhFormulationPtr_.set
-    	    (
-        	new Farassat1AFormulation(*this)
-    	    );
-    	}
-    	else
-    	{
-    	    fwhFormulationPtr_.set 
-    	    (
-	    	new GTFormulation(*this)
-    	    );
-    	}
+            fwhFormulationPtr_.set
+            (
+                new Farassat1AFormulation(*this)
+            );
+        }
+        else
+        {
+            fwhFormulationPtr_.set 
+            (
+                new GTFormulation(*this)
+            );
+        }
     }
     else
     {
@@ -197,27 +197,27 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::read(const dictionary& dict)
     {
         return false;
     }
-    
+
     dict.lookup("formulationType") >> formulationType_;
-    
+
     dict.lookup("Ufwh") >> Ufwh_;
-    
+
     dict.lookup("U0") >> U0_;
-    
+
     dict.lookup("pInf") >> pInf_;
-    
+
     dict.lookup("interpolationScheme") >> interpolationScheme_;
-    
+
     if (dict.found("nonUniformSurfaceMotion"))
     {
         dict.lookup("nonUniformSurfaceMotion") >> nonUniformSurfaceMotion_;
     }
-    
+
     if (dict.found("fixedResponseDelay"))
     {
         dict.lookup("fixedResponseDelay") >> fixedResponseDelay_;
     }
-    
+
     if (fixedResponseDelay_ && dict.found("responseDelay"))
     {
         dict.lookup("responseDelay") >> responseDelay_;
@@ -226,17 +226,17 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::read(const dictionary& dict)
     {
         fixedResponseDelay_ = false;
     }
-    
+
     dict.lookup("cleanFreq") >> cleanFreq_;
-    
+
     const fvMesh& mesh = refCast<const fvMesh>(obr_);
-    
+
     PtrList<sampledSurface> newList
     (
         dict.lookup("surfaces"),
         sampledSurface::iNew(mesh)
     );
-    
+
     controlSurfaces_.transfer(newList);
     if (Pstream::parRun())
     {
@@ -245,7 +245,7 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::read(const dictionary& dict)
 
     // Ensure all surfaces and merge information are expired
     expire();
-    
+
     if (controlSurfaces_.size())
     {
         Log << "Function object "<< name()<<":" << nl;
@@ -256,11 +256,11 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::read(const dictionary& dict)
         }
         Log << endl;
     }
-    
+
     if (Pstream::master() && debug)
     {
         Pout<< "FWH control surfaces additional info:" << nl << "(" << nl;
-            
+
         forAll(controlSurfaces_, surfI)
         {
             Pout<< "  " << controlSurfaces_.operator[](surfI) << endl;
@@ -283,7 +283,7 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::write()
     {
         return false;
     }
-    
+
     //store old faces
     forAll(controlSurfaces_, iSurf)
     {
@@ -295,7 +295,7 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::write()
             }
         }
     }
-    
+
     return true;
 }
 
@@ -308,7 +308,7 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::correct()
     this->update();
 
     scalar dt   = obr_.time().deltaT().value();
-    
+
     //update surface velocities (if needed)
     forAll(controlSurfaces_, iSurf)
     {
@@ -321,10 +321,10 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::correct()
             vS_[iSurf] = Ufwh_;
         }
     }
-    
+
     //update formulation-specific data
     fwhFormulationPtr_->update();
-    
+
     if (fwhFormulationPtr_.valid())
     {
         forAll(observers_, iObs)
@@ -333,7 +333,7 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::correct()
             if (Pstream::master())
             {
                 SoundObserver& obs = observers_[iObs];
-            
+
                 if (dRef_ > 0.0)
                 {
                     oap /= dRef_;
@@ -386,14 +386,14 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::correct()
 //            }
 //        }
 //    }
-//    
+//
 //    reduce (signalReached, minOp<label>());
-//    
+//
 //    if (signalReached)
 //    {
 //        Log << "Obs " << iObs << " is listening at time " << ct << endl;
 //    }
-//    
+//
 //    return signalReached;
 //}
 
@@ -410,9 +410,9 @@ Foam::tmp<Foam::scalarField> Foam::functionObjects::FfowcsWilliamsHawkings::surf
 Foam::tmp<Foam::vectorField> Foam::functionObjects::FfowcsWilliamsHawkings::surfaceVelocity(const sampledSurface& surface) const
 {
     const volVectorField& U = obr_.lookupObject<volVectorField>("U");
- 
+
     tmp<Field<vector> > USampled;
-    
+
     USampled = sampleOrInterpolate<vector>(U , surface);
 
     return USampled;
@@ -424,11 +424,11 @@ Foam::tmp<Foam::vectorField> Foam::functionObjects::FfowcsWilliamsHawkings::surf
     
     volScalarField p (obr_.lookupObject<volScalarField>("p"));
     volVectorField U (obr_.lookupObject<volVectorField>("U"));
-    
+
     volVectorField gradp = fvc::grad(p);
-    
+
     //Interpolate FWH surface velocity to CFD mesh
-    
+
     volVectorField Ufwh("Ufwh", U*0.0);
     forAll(controlSurfaces_, iSurf)
     {
@@ -436,14 +436,14 @@ Foam::tmp<Foam::vectorField> Foam::functionObjects::FfowcsWilliamsHawkings::surf
         {
             //Write data directly to Ufwh
             const sampledPatch& pSurf = refCast<const sampledPatch>(controlSurfaces_[iSurf]);
-            
+
             sampledPatchAccess * spa = new sampledPatchAccess(pSurf);
 
             labelList pIds  = spa->aPatchIDs();
             labelList pAddr = spa->aPatchFaceLabels();
             labelList pStart= spa->aPatchStart();
             const vectorField& vp = vS_[iSurf];
-            
+
             label patchId = -1;
             label startFace = -1;
             label lastFace = -2;
@@ -473,16 +473,16 @@ Foam::tmp<Foam::vectorField> Foam::functionObjects::FfowcsWilliamsHawkings::surf
             //use interpolation procedure
         }
     }
-    
+
     volTensorField momConv = this->rho()()*U*(U-Ufwh);
     volVectorField divMomConv = fvc::div(momConv);
-    
+
     divTSampled = sampleOrInterpolate<vector>(gradp,surface);
     if (p.dimensions() != dimPressure)
     {
         divTSampled.ref() *= rhoRef_;
     }
-    
+
     divTSampled.ref() += sampleOrInterpolate<vector>(divMomConv,surface);
 
     return divTSampled;
@@ -492,16 +492,16 @@ Foam::tmp<Foam::scalarField> Foam::functionObjects::FfowcsWilliamsHawkings::surf
 {
     tmp<Field<scalar> > pSampled;
     const volScalarField& p = obr_.lookupObject<volScalarField>(pName_);
-    
+
     pSampled = sampleOrInterpolate<scalar>(p , surface);
-    
+
     if (p.dimensions() != dimPressure)
     {
         pSampled.ref() *= rhoRef_;
     }
-    
+
     //Info << pSampled() << endl;
-    
+
     return pSampled;
 }
 
@@ -565,7 +565,7 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::update()
     }
 
     const fvMesh& mesh = refCast<const fvMesh>(obr_);
-   
+
     // Dimension as fraction of mesh bounding box
     scalar mergeDim = mergeTol_ * mesh.bounds().mag();
 
@@ -601,11 +601,8 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::update()
             mergeList_[surfI].pointsMap
         );
     }
-    
-
 
     return updated;
 }
-
 
 // ************************************************************************* //

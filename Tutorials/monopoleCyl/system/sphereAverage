@@ -1,11 +1,11 @@
     sphereAverage
     {
-        type            surfaceRegion;
-        libs ("libfieldFunctionObjects.so");
+        type            surfaces;
+//        libs ("libfieldFunctionObjects.so");
 
-        enabled        true;
-        writeControl   timeStep;
-        writeInterval  10;
+        enabled         true;
+        writeControl    timeStep;
+        writeInterval   10;
 
         // Output to log&file (true) or to file only
         log             true;

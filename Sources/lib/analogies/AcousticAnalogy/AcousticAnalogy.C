@@ -78,9 +78,9 @@ void Foam::functionObjects::AcousticAnalogy::makeFile()
             return;
         }
     }
-    
+
     fileName ResultsDir;
-    
+
     if (Pstream::master() && Pstream::parRun())
     {
         ResultsDir = obr_.time().rootPath() + "/" + obr_.time().caseName().path()  + "/acousticData";
@@ -94,11 +94,11 @@ void Foam::functionObjects::AcousticAnalogy::makeFile()
     else
     {
     }
-    
+
     // File update
     if (Pstream::master() || !Pstream::parRun())
     {
-        
+
         analogyOutPtr_.set
         (
             new OFstream
@@ -106,7 +106,7 @@ void Foam::functionObjects::AcousticAnalogy::makeFile()
                 ResultsDir + "/" + (name() + "-time.dat")
             )
         );
-        
+
         analogyOutPtr_() << "Time" << " ";
         forAll(observers_, iObserver)
         {
@@ -119,7 +119,7 @@ void Foam::functionObjects::AcousticAnalogy::makeFile()
 void Foam::functionObjects::AcousticAnalogy::writeFft()
 {
     fileName ResultsDir;
-        
+
     if (Pstream::master() && Pstream::parRun())
     {
         ResultsDir = obr_.time().rootPath() + "/" + obr_.time().caseName().path()  + "/acousticData";
@@ -128,7 +128,7 @@ void Foam::functionObjects::AcousticAnalogy::writeFft()
     {
         ResultsDir = obr_.time().rootPath() + "/" + obr_.time().caseName() + "/acousticData";
     }
-    
+
     if (Pstream::master() || !Pstream::parRun())
     {
         const fvMesh& mesh = refCast<const fvMesh>(obr_);
@@ -136,33 +136,33 @@ void Foam::functionObjects::AcousticAnalogy::writeFft()
         scalar	tau;
         if (mesh.time().startTime().value() > timeStart_)
         {
-    	    tau = (mesh.time().value() - mesh.time().startTime().value());
-    	}
-    	else
-    	{
-    	    tau = (mesh.time().value() - timeStart_);
-    	}    
-    	
+            tau = (mesh.time().value() - mesh.time().startTime().value());
+        }
+        else
+        {
+            tau = (mesh.time().value() - timeStart_);
+        }
+
         forAll(observers_, iObserver)
         {
             SoundObserver& obs = observers_[iObserver];
             autoPtr<List<List<scalar> > > obsFftPtr (obs.fft(tau));
-            
+
             List<List<scalar> >& obsFft = obsFftPtr();
-            
+
             if (obsFft[0].size() > 0)
             {
                 Log << "Executing fft for obs: " << obs.name() << endl;
                 fileName fftFile = ResultsDir + "/fft-" + name() + "-" + obs.name() + ".dat";
-                
+
                 OFstream fftStream (fftFile);
                 fftStream << "Freq p\' spl" << endl;
-                
+
                 forAll(obsFft[0], k)
                 {
                     fftStream << obsFft[0][k] << " " << obsFft[1][k] << " " << obsFft[2][k] << endl;
                 }
-                
+
                 fftStream.flush();
             }
         }
@@ -182,22 +182,22 @@ bool Foam::functionObjects::AcousticAnalogy::read(const dictionary& dict)
     Info << "Reading analogy settings" << endl;
 
     dict.lookup("probeFrequency") >> probeFreq_;
-    
+
     dict.lookup("timeStart") >> timeStart_;
-    
+
     dict.lookup("timeEnd") >> timeEnd_;
-    
+
     dict.lookup("writeFft") >> writeFft_;
-    
+
     dict.lookup("c0") >> c0_;
-    
+
 //    dict.lookup("U0") >> U0_;
-    
+
     dict.lookup("dRef") >> dRef_;
-    
+
     //Ask for rhoRef again, because libforces sometimes do not
     dict.lookup("rhoInf") >> rhoRef_;
-    
+
     //read observers
     {
         const dictionary& obsDict = dict.subDict("observers");
@@ -211,7 +211,7 @@ bool Foam::functionObjects::AcousticAnalogy::read(const dictionary& dict)
             obsDict.subDict(oname).lookup("pRef") >> pref;
             label fftFreq = 1024;
             obsDict.subDict(oname).lookup("fftFreq") >> fftFreq;
-            
+
             observers_.append
             (
                 SoundObserver
@@ -224,9 +224,9 @@ bool Foam::functionObjects::AcousticAnalogy::read(const dictionary& dict)
             );
         }
     }
-    
+
     this->makeFile();
-    
+
     return true;
 }
 
@@ -242,12 +242,12 @@ bool Foam::functionObjects::AcousticAnalogy::write()
     {
         return false;
     }
-    
+
     scalar cTime = obr_.time().value();
     scalar stTime = obr_.time().startTime().value();
-    
+
     probeI_++;
-    
+
     if ( mag(probeI_ % probeFreq_) > VSMALL  )
     {
         return true;
@@ -257,14 +257,14 @@ bool Foam::functionObjects::AcousticAnalogy::write()
         Log << "Starting acoustics probe" << endl;
         probeI_ = 0.0;
     }
-    
+
     if ( (cTime < timeStart_) || (cTime > timeEnd_))
     {
         return true;
     }
-    
+
     correct();
-    
+
     if (Pstream::master() || !Pstream::parRun())
     {
         // time history output
@@ -276,21 +276,21 @@ bool Foam::functionObjects::AcousticAnalogy::write()
         {
             analogyOutPtr_() << (cTime - timeStart_) << " ";
         }
-        
+
         forAll(observers_, iObserver)
         {
             const SoundObserver& obs = observers_[iObserver];
             analogyOutPtr_() << obs.apressure() << " ";
         }
-        
+
         analogyOutPtr_() << endl;
-        
+
         //fft output
         if (writeFft_ == true)
         {
             writeFft();
         }
-        
+
         //output to stdio
         Log << "Acoustic pressure" << endl;
         forAll(observers_, iObserver)
@@ -299,13 +299,10 @@ bool Foam::functionObjects::AcousticAnalogy::write()
             Info << iObserver << " Observer: " << obs.name() << " p\' = " << obs.apressure() << endl;
         }
     }
-    
+
     return true;
 }
-
 
 //
 //END-OF-FILE
 //
-
-

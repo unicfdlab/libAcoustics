@@ -32,7 +32,7 @@ void FileInterface::writeComplexNumber(const complex& number, autoPtr<OFstream>&
     {
         os() << "-";
     }
-    
+
     os() << fabs(number.Im());
     os() << "j";
 }
@@ -69,7 +69,7 @@ autoPtr<List<List<scalar > > > FileInterface::read()
             IStringStream lineStream(line);
 
             while(lineStream >> num)
-            {  
+            {
                 pointI++;
                 data[probeI-1].resize(pointI);
                 data[probeI-1][pointI-1] = num;
@@ -137,7 +137,7 @@ void FileInterface::write(const scalar frequency, const List<complex >& data)
             //real tags
             filePtr()   << "1" << nl            // number of real tags
                         << frequency << nl;     // should be output time (or frequency)
-            
+
             //integer tags
             filePtr()   << "4" << nl            // number of int tags
                         << "0" << nl            // time step index
@@ -168,10 +168,4 @@ void FileInterface::write(const scalar frequency, const List<complex >& data)
 
 } // end namespace Foam
 
-
-
-
-
-
 //END_OF_FILE
-

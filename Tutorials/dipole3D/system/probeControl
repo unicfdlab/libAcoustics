@@ -1,29 +1,29 @@
 probes
 {
-        // Where to load it from
-        functionObjectLibs ( "libsampling.so" );
+    // Where to load it from
+    libs ( "libsampling.so" );
 
-        type            probes;
+    type            probes;
 
-        // Name of the directory for probe data
-        name            probes;
+    // Name of the directory for probe data
+    name            probes;
 
-        // Write at same frequency as fields
-        writeControl   timeStep;
-        writeInterval  1;
+    // Write at same frequency as fields
+    writeControl   timeStep;
+    writeInterval  1;
 
-        // Fields to be probed
-        fields
-        (
-            p U
-        );
+    // Fields to be probed
+    fields
+    (
+        p U
+    );
 
-        probeLocations
-        (
-                (1 0 0)
-                (2 0 0)
-                (3 0 0)
-                (4 0 0)
-                (5 0 0)
-        );
+    probeLocations
+    (
+        (1 0 0)
+        (2 0 0)
+        (3 0 0)
+        (4 0 0)
+        (5 0 0)
+    );
 }

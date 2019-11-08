@@ -1,21 +1,21 @@
 surfacePressure
 {
     type                soundPressureSampler;
-    functionObjectLibs  ("libAcoustics.so");
+    libs  ("libAcoustics.so");
     writeControl        timeStep;
     writeInterval       1;
-    
+
     outputGeometryFormat gmsh;
-    
+
     fields
     (
         p
     );
-    
+
     pName p;
 
     log   true;
-    
+
     interpolationScheme cellPoint;
 
     surfaces

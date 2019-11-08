@@ -1,29 +1,29 @@
-    functionObjectLibs ("libAcoustics.so");
-    
+    libs ("libAcoustics.so");
+
     log             true;
-    
-    writeFft    true;
-    
+
+    writeFft        true;
+
     probeFrequency  1;
-    
+
     timeStart       0;//0.0001;
-    
+
     timeEnd         1;
-    
+
     c0              100;
-    
+
     dRef            9.6953212458e-5;
-    
+
     pName           p;
 
     pInf            101325;
-    
+
     rho             rho;
-    
+
     rhoInf          14.1964771;
-    
+
     CofR (0 0 0);
-    
+
     observers
     {
         R-A

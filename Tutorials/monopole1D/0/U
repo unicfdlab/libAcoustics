@@ -1,13 +1,13 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.3.0                                 |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|  \\    /   O peration     | Version:  1812                                  |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
-    version     2.0;
+    version     1812;
     format      ascii;
     class       volVectorField;
     object      U;
@@ -28,26 +28,14 @@ boundaryField
         rho             rho;
         psi             thermo:psi;
         gamma           1.4;
-        //fieldInf        101325;
-        //lInf            100;
         value           uniform (0 0 0);
     }
 
     sphere
     {
-        type            zeroGradient;//uniformFixedValue;
-/*
-        uniformValue    sine;
-        uniformValueCoeffs
-        {
-            amplitude   0.01;
-            scale       (0 0 1);
-            level       (0 0 0);
-            frequency   constant 100;
-        }
-*/
+        type            zeroGradient;
     }
-    
+
     #include "cyc"
 }
 

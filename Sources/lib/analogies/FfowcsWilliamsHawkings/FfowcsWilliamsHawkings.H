@@ -28,10 +28,10 @@ Group
     grpFfowcsWilliamsHawkingsFunctionObjects
 
 Description
-    
+
 
 SeeAlso
-    
+
 
 SourceFiles
 
@@ -94,7 +94,7 @@ private:
         pointField points;
         faceList   faces;
         labelList  pointsMap;
-    
+
         //- Clear all storage
         void clear()
         {
@@ -106,11 +106,11 @@ private:
 
     //- Tolerance for merging points (fraction of mesh bounding box)
     static scalar mergeTol_;
-    
+
     //types for internal usage
-    
+
     typedef Pair<List<scalar> > pointTimeData;
-    
+
     typedef List<List<List<pointTimeData > > > surfaceTimeData;
 
 
@@ -118,41 +118,41 @@ private:
 
         //-
         word formulationType_;
-        
+
         //-
         Switch fixedResponseDelay_;
-        
+
         //-
         scalar responseDelay_;
 
         //-
         vector Ufwh_;
-        
+
         //Wind Tunnel Velocity Vector for GTFormulation
         //U0 = (0 0 0) for 1AFormulation
         vector U0_;
-        
+
         //-
         bool nonUniformSurfaceMotion_;
-        
+
         //-
         List<vectorField> Cf0_;
-        
+
         //-
         List<vectorField> vS_;
-        
+
         //- undisturbed pressure, in Pa
         scalar pInf_;
-        
+
         //-
         autoPtr<fwhFormulation> fwhFormulationPtr_;
-        
+
         //
         label cleanFreq_;
 
         //- Interpolation scheme to use for sampling
         word interpolationScheme_;
-        
+
         //- surfaces for sampling
         PtrList<sampledSurface> controlSurfaces_;
 
@@ -160,11 +160,11 @@ private:
         List<mergeInfo> mergeList_;
 
 protected:
-    
+
         class sampledPatchAccess : public sampledPatch
         {
         public:
-        
+
             //-
             sampledPatchAccess(const sampledPatch& sp)
             :
@@ -174,17 +174,17 @@ protected:
                 )
             {
             };
-            
+
             ~sampledPatchAccess()
             {
             };
-        
+
             //-
             const labelList& aPatchIDs() const
             {
                 return patchIDs();
             };
-            
+
             //-
             const labelList& aPatchStart() const
             {
@@ -205,7 +205,7 @@ protected:
 
         //- Disallow default bitwise assignment
         void operator=(const FfowcsWilliamsHawkings&);
-        
+
         //-
         void correct();
 
@@ -225,20 +225,18 @@ protected:
 
         //- Returns sampled pressure field
         tmp<scalarField> surfacePressure(const sampledSurface& surface) const;
-        
+
         //
         tmp<vectorField> surfaceStressDivergence(const sampledSurface& surface) const;
-        
+
         //-
         void initialize();
-        
+
         //- Not needed at current time
         //bool signalReachedObserver(const surfaceTimeData& data, label iObs);
 
 
 public:
-
-
 
     //- Runtime type information
     TypeName("FfowcsWilliamsHawkings");
@@ -253,7 +251,7 @@ public:
             const Time&,
             const dictionary&
         );
-        
+
         //- Construct from given objectRegistry and dictionary.
         FfowcsWilliamsHawkings
         (
@@ -270,10 +268,10 @@ public:
 
         //- Read the FfowcsWilliamsHawkings data
         virtual bool read(const dictionary&);
-        
+
         //-
         virtual bool execute();
-        
+
         //- Write the FfowcsWilliamsHawkings
         virtual bool write();
 
@@ -282,7 +280,7 @@ public:
         //  May also free up unneeded data.
         //  Return false if all surfaces were already marked as expired.
         virtual bool expire();
-        
+
         //-
         virtual bool needsUpdate() const; 
 

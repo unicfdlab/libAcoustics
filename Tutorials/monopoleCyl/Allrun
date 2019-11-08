@@ -9,10 +9,11 @@ cd constant && tar xfz polyMesh.tgz && cd ../
 runApplication decomposePar
 
 # Get application directory
+
 application=`getApplication`
+
 runApplication mpirun -np 6 $application -parallel
 
 runApplication reconstructPar
-
 
 # ----------------------------------------------------------------- end-of-file
