@@ -20,7 +20,7 @@ solvers
     "(rho|U|h|p|k|epsilon).*"
     {
         solver          PBiCGStab;
-        preconditioner	DILU;
+        preconditioner  DILU;
         tolerance       1e-015;
         relTol          1e-6;
         maxIter         1000;
@@ -38,8 +38,8 @@ solvers
         mergeLevels     1;
         maxIter         50;
     }
-    
-    cellDisplacement
+
+    "(cellDisplacement|cellDisplacementFinal)"
     {
         $pcorr;
     }
@@ -47,7 +47,6 @@ solvers
 
 PIMPLE
 {
-    
     momentumPredictor           false; //true;
     nCorrectors                 2;
     nOuterCorrectors            1;

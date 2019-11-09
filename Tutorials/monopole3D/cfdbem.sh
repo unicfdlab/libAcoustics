@@ -7,7 +7,7 @@
 # - (0 0 4)
 # - (0 0 5)
 #
-export PYTHONPATH=$PYTHONPATH:../../OpenFOAM-4.1/lib/samplingBEM/python2.7
+export PYTHONPATH=$PYTHONPATH:../../Source/lib/samplingBEM/python2.7
 
 C0=100
 FREQ=100

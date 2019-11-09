@@ -1,5 +1,5 @@
-    functionObjectLibs ("libAcoustics.so");
-    
+    libs ("libAcoustics.so");
+
     log             true;
     writeFft        true;
     probeFrequency  1;
@@ -12,7 +12,7 @@
     rho             rho;
     rhoInf          14.1964771;
     CofR            (0 0 0);
-    
+
     observers
     {
         R-A

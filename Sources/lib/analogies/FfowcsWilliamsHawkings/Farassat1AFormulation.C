@@ -92,7 +92,7 @@ void Foam::functionObjects::Farassat1AFormulation::initialize()
 {
     intFdS_.resize(fwh_.observers_.size());
     intDotQdS_.resize(fwh_.observers_.size());
-    
+
     Lr_.resize(fwh_.observers_.size());
     Mr_.resize(fwh_.observers_.size());
     Un_.resize(fwh_.observers_.size());
@@ -115,7 +115,7 @@ void Foam::functionObjects::Farassat1AFormulation::initialize()
 Foam::scalar Foam::functionObjects::Farassat1AFormulation::observerAcousticPressure(label iObs)
 {
     scalar ct = fwh_.obr_.time().value();
-    
+
         //Farassat 1A
     vector L (vector::zero);
     scalar lr (0.0);
@@ -133,7 +133,7 @@ Foam::scalar Foam::functionObjects::Farassat1AFormulation::observerAcousticPress
     tensor Pf (tensor::zero);
     scalar OneByOneMr(0.0);
     scalar OneByOneMrSq(0.0);
-    
+
     scalar fpart1 (0.0);
     scalar fpart2 (0.0);
     scalar fpart3 (0.0);
@@ -150,16 +150,16 @@ Foam::scalar Foam::functionObjects::Farassat1AFormulation::observerAcousticPress
             Info<< "WARNING: Interpolation for surface " << surf.name() << " is on, turn it off"
                 << endl;
         }
-            
+
         const vectorField& Sf = surf.Sf();
         vectorField uS (fwh_.surfaceVelocity(surf)());
         scalarField rhoS (fwh_.surfaceDensity(surf)());
         scalarField pS (fwh_.surfacePressure(surf)() - fwh_.pInf_);
-        
+
         //Farassat 1A formulation
         forAll(Sf, iFace)
         {
-        
+
             //For observe No iObs
             {
                 r = robs_[iObs][iSurf][iFace];
@@ -167,33 +167,33 @@ Foam::scalar Foam::functionObjects::Farassat1AFormulation::observerAcousticPress
                 rh = r / magr;
                 dS = mag(Sf[iFace]);
                 n = ni_[iSurf].value(iFace);
-    
+
                 M = fwh_.vS_[iSurf][iFace] / fwh_.c0_;
                 Mr = M & rh;
                 magM = mag(M);
 
                 U = (1.0 - rhoS[iFace] / fwh_.rhoRef_) * fwh_.vS_[iSurf][iFace]
-            	    + rhoS[iFace] * uS[iFace] / fwh_.rhoRef_;
-		Pf = pS[iFace]*tensor::I + rhoS[iFace]*uS[iFace]*(uS[iFace] - fwh_.vS_[iSurf][iFace]);
+                    + rhoS[iFace] * uS[iFace] / fwh_.rhoRef_;
+                Pf = pS[iFace]*tensor::I + rhoS[iFace]*uS[iFace]*(uS[iFace] - fwh_.vS_[iSurf][iFace]);
 
                 L = Pf & n;
                 lM = L & M; 
-		lr = L & rh;
+                lr = L & rh;
                 Mr = M & rh;
                 Un = U & n;
-            	
-            	OneByOneMr = 1.0 / (1.0 - Mr);
+
+                OneByOneMr = 1.0 / (1.0 - Mr);
                 OneByOneMrSq = OneByOneMr*OneByOneMr;
-                
+
                 Un_[iObs][iSurf].value(iFace) = Un;
                 Lr_[iObs][iSurf].value(iFace) = lr;
                 Mr_[iObs][iSurf].value(iFace) = Mr; 
-            
+
                 dotlr = Lr_[iObs][iSurf].dot(ct, iFace);
                 dotMr = Mr_[iObs][iSurf].dot(ct, iFace);
                 dotUn = Un_[iObs][iSurf].dot(ct, iFace);
                 dotn = ni_[iSurf].dot(ct, iFace);
-                
+
                 qds_[iObs][iSurf][iFace].first().append(tobs_[iObs][iSurf][iFace]);
                 qds_[iObs][iSurf][iFace].second().append
                 (
@@ -204,22 +204,22 @@ Foam::scalar Foam::functionObjects::Farassat1AFormulation::observerAcousticPress
                         OneByOneMrSq * OneByOneMr / magr / magr
                     )*dS
                 );
-                
+
                 fpart1 = dotlr * (dS / magr / fwh_.c0_) * OneByOneMrSq;
                 fpart2 = (lr - lM) * (dS / magr / magr) * OneByOneMrSq;
                 fpart3 = lr * (dS / magr / magr / fwh_.c0_) * OneByOneMrSq * OneByOneMr * 
                         (magr * dotMr + fwh_.c0_ * Mr - fwh_.c0_ * magM * magM);
-                    
+
                 fds_[iObs][iSurf][iFace].first().append(tobs_[iObs][iSurf][iFace]);
                 fds_[iObs][iSurf][iFace].second().append
                 (
                         fpart1 + fpart2 + fpart3
                 );
-                
+
             }//observer
         } //For Sf
     } // for controlSurfaces_
-    
+
     scalar ct1 = ct+fwh_.obr_.time().deltaT().value()*1.0e-6;//slightly increase time to get inside of time step
 
     scalar retv = 0.0;
@@ -231,7 +231,7 @@ Foam::scalar Foam::functionObjects::Farassat1AFormulation::observerAcousticPress
         forAll(qds_[iObs][iSurf], iFace)
         {
             retv = valueAt(qds_, iObs, iSurf, iFace, ct1);
-                
+
             //Code to check bisection
             /*
             scalar retv2 = 0.0;
@@ -279,7 +279,7 @@ Foam::scalar Foam::functionObjects::Farassat1AFormulation::observerAcousticPress
                 }
             }
             */
-            
+
             intDotQdS_.value(iObs) += retv;
             retv = valueAt(fds_, iObs, iSurf, iFace, ct1);
             intFdS_.value(iObs) += retv;
@@ -290,7 +290,7 @@ Foam::scalar Foam::functionObjects::Farassat1AFormulation::observerAcousticPress
     reduce (intFdS_.value(iObs), sumOp<scalar>());
 
     scalar coeff1 = 1. / 4. / Foam::constant::mathematical::pi;
-    
+
     return (intDotQdS_.value(iObs) + intFdS_.value(iObs))*coeff1;
 }
 
@@ -309,5 +309,3 @@ void Foam::functionObjects::Farassat1AFormulation::clearExpiredData()
 //
 //END OF FILE
 //
-
-

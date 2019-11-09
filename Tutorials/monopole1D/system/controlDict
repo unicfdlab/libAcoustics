@@ -1,13 +1,13 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  3.0.0                                 |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|  \\    /   O peration     | Version:  1812                                  |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
-    version     2.0;
+    version     1812;
     format      ascii;
     class       dictionary;
     location    "system";
@@ -15,49 +15,49 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     rhoCentralFoam;
+application          rhoCentralFoam;
 
-startFrom       startTime; //latestTime;
+startFrom            latestTime;
 
-startTime       0;
+startTime            0;
 
-stopAt          endTime;
+stopAt               endTime;
 
-endTime         0.1;
+endTime              0.1;
 
-deltaT          2.5e-6;
+deltaT               2.5e-6;
 
-writeControl    adjustableRunTime;
+writeControl         adjustableRunTime;
 
-writeInterval   5e-3;
+writeInterval        5e-3;
 
-purgeWrite      200;
+purgeWrite           200;
 
-writeFormat     ascii;
+writeFormat          ascii;
 
-writePrecision  9;
+writePrecision       9;
 
-writeCompression compressed;
+writeCompression     on;
 
-timeFormat      general;
+timeFormat           general;
 
-timePrecision   6;
+timePrecision        6;
 
-runTimeModifiable true;
+runTimeModifiable    true;
 
-adjustTimeStep  false;
+adjustTimeStep       false;
 
-maxCo           0.5;
+maxCo                0.5;
 
-maxDeltaT       1e-5;
+maxDeltaT            1e-5;
 
-CourantType	cellCourant;
+CourantType          cellCourant;
 
 functions
 {
     #include "probeControl"
-    #include "fwhControl"
     #include "sphereAverage"
+    #include "fwhControl"
 }
 
 // ************************************************************************* //

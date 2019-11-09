@@ -1,13 +1,13 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.3.0                                 |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|  \\    /   O peration     | Version:  1812                                  |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
-    version     2.0;
+    version     1812;
     format      ascii;
     class       dictionary;
     object      blockMeshDict;
@@ -18,14 +18,14 @@ convertToMeters 0.1;
 
 vertices
 (
-    (-0.0174524064373 -0.0174524064373 0.999847695156)
-    ( 0.0174524064373 -0.0174524064373 0.999847695156)
-    ( 0.0174524064373  0.0174524064373 0.999847695156)
-    (-0.0174524064373  0.0174524064373 0.999847695156)
-    (-2.61786096559   -2.61786096559   149.977154273 )
-    ( 2.61786096559   -2.61786096559   149.977154273 )
-    ( 2.61786096559    2.61786096559   149.977154273 )
-    (-2.61786096559    2.61786096559   149.977154273 )
+    (-0.0174524064373 -0.0174524064373    0.999847695156)        //0
+    ( 0.0174524064373 -0.0174524064373    0.999847695156)        //1
+    ( 0.0174524064373  0.0174524064373    0.999847695156)        //2
+    (-0.0174524064373  0.0174524064373    0.999847695156)        //3
+    (-2.61786096559   -2.61786096559    149.977154273   )        //4
+    ( 2.61786096559   -2.61786096559    149.977154273   )        //5
+    ( 2.61786096559    2.61786096559    149.977154273   )        //6
+    (-2.61786096559    2.61786096559    149.977154273   )        //7
 );
 
 blocks
@@ -55,9 +55,9 @@ boundary
         (
             (0 1 5 4)
         );
-        transform rotational;
-        rotationAxis (1 0 0);
-        rotationCentre (0 0 0);
+        transform       rotational;
+        rotationAxis       (1 0 0);
+        rotationCentre     (0 0 0);
         matchTolerance        1e-8;
     }
     cyc2
@@ -68,9 +68,9 @@ boundary
         (
             (2 3 7 6)
         );
-        transform rotational;
-        rotationAxis (1 0 0);
-        rotationCentre (0 0 0);
+        transform       rotational;
+        rotationAxis       (1 0 0);
+        rotationCentre     (0 0 0);
         matchTolerance        1e-8;
     }
     cyc3
@@ -81,9 +81,9 @@ boundary
         (
             (0 3 7 4)
         );
-        transform rotational;
-        rotationAxis (1 0 0);
-        rotationCentre (0 0 0);
+        transform       rotational;
+        rotationAxis       (1 0 0);
+        rotationCentre     (0 0 0);
         matchTolerance        1e-8;
     }
     cyc4
@@ -94,9 +94,9 @@ boundary
         (
             (1 2 6 5)
         );
-        transform rotational;
-        rotationAxis (0 1 0);
-        rotationCentre (0 0 0);
+        transform       rotational;
+        rotationAxis       (0 1 0);
+        rotationCentre     (0 0 0);
         matchTolerance        1e-8;
     }
     sphere

@@ -41,7 +41,7 @@ public:
 
     //- write data to file
     void write(const scalar frequency, const List<complex >& data);
-    
+
     //- destructor
     ~FileInterface();
 

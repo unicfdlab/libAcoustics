@@ -39,7 +39,7 @@ Foam::tmp<Foam::Field<Type> > Foam::functionObjects::FfowcsWilliamsHawkings::sam
 {
     // interpolator for this field
     autoPtr<interpolation<Type> > interpolatorPtr;
-   
+
     tmp<Field<Type> > values;
 
     if (surface.interpolate())

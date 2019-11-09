@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     #include "addDictOption.H"
     #include "setRootCase.H"
     #include "createTime.H"
-    
+
     #include "createFields.H"
 
     Info<< "Reading data file..." << endl;
@@ -237,27 +237,26 @@ int main(int argc, char *argv[])
             fileName dataFile = freqDirectory + "/nodeData.msh";
 
             FileInterface outputFile(dataFile);
-            
+
             outputFile.write(freq[freqI],allComplexPressures[freqI]);
         }
-        
+
         Info << "---------------\n";
         Info << "Frequency: " << freq[freqI] << nl;
-        
+
         scalar maxAbs = 0.0;
-        
+
         forAll(allComplexPressures[freqI],k)
         {
             complex currentCA = allComplexPressures[freqI][k];
             scalar currentAbs = Foam::sqrt( pow(currentCA.Re(),2) + pow(currentCA.Im(),2) );
-            
+
             if (maxAbs < currentAbs)
             {
                 maxAbs = currentAbs;
             }
-            
         }
-        
+
         Info << "Max abs: " << maxAbs << nl;
 
         controlFilePtr() << freq[freqI] << ' ' << maxAbs << nl;

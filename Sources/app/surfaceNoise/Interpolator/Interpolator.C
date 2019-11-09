@@ -49,7 +49,7 @@ autoPtr<List<scalar> > Interpolator::interpolate(const List<scalar> &tSampled, c
         }
 
         dataInterpolated[j] = linearInterpolation(cTimeInt,tSampled[tI],data[tI],tSampled[tI-1],data[tI-1]);
-            
+
         cTimeInt += deltaIntT;
     }
 

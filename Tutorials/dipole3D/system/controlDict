@@ -15,9 +15,9 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     rhoPimpleDyMFoam;
+application     rhoPimpleFoam;
 
-startFrom       startTime; //latestTime;
+startFrom       latestTime;
 
 startTime       0;
 
@@ -37,7 +37,7 @@ writeFormat     ascii;
 
 writePrecision  9;
 
-writeCompression compressed;
+writeCompression on;
 
 timeFormat      general;
 
@@ -53,10 +53,10 @@ maxDeltaT       1e-5;
 
 functions
 {
-        include "probeControl"
-        include "fwhControl"
-        include "sphereAverage"
-        include "soundPressureSampling"
+        #include "probeControl"
+        #include "fwhControl"
+        #include "sphereAverage"
+        #include "soundPressureSampling"
 }
 
 // ************************************************************************* //

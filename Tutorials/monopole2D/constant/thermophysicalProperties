@@ -1,13 +1,13 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.3.0                                 |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|  \\    /   O peration     | Version:  1812                                  |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
-    version     2.0;
+    version     1812;
     format      ascii;
     class       dictionary;
     location    "constant";
@@ -17,33 +17,32 @@ FoamFile
 
 thermoType
 {
-    type            hePsiThermo;
-    mixture         pureMixture;
-    transport       const;
-    thermo          hConst;
-    equationOfState perfectGas;
-    specie          specie;
-    energy          sensibleEnthalpy;
+    type               hePsiThermo;
+    mixture            pureMixture;
+    transport          const;
+    thermo             hConst;
+    equationOfState    perfectGas;
+    specie             specie;
+    energy             sensibleEnthalpy;
 }
 
 mixture
 {
     specie
     {
-        nMoles      1;
-        molWeight   28.9;
+        nMoles         1;
+        molWeight      28.9;
     }
     thermodynamics
     {
-        Cp          1005;
-        Hf          0;
+        Cp             1005;
+        Hf             0;
     }
     transport
     {
-        mu          0.0; //1.8e-05;
-        Pr          0.7;
+        mu             0.0; //1.8e-05;
+        Pr             0.7;
     }
 }
-
 
 // ************************************************************************* //

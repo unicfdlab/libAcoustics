@@ -32,25 +32,25 @@ protected:
 
         //-
         label probeFreq_;
-        
+
         //-
         scalar timeStart_;
-        
+
         //-
         scalar timeEnd_;
-        
+
         //-
         bool writeFft_;
-        
+
         //- Sonic speed, m/s
         scalar c0_;
-        
+
         //- Domain depth, m for 2D simulations
         scalar dRef_;
-        
+
         //- List of observers
         List<SoundObserver> observers_;
-        
+
         //-
         label probeI_;
 
@@ -58,13 +58,12 @@ protected:
 
         //-
         void makeFile();
-        
+
         //-
         void writeFft();
-        
+
         //-
         virtual void correct();
-        
 
 public:
 
@@ -73,24 +72,24 @@ public:
     {
 
     private:
-    
+
         //-
         scalar prevt_;
-        
+
         //-
         scalar deltat_;
 
         //-
         List<T> new_;
-    
+
         //-
         List<T> old_;
-        
+
         //-
         List<T> oldOld_;
-        
+
     public:
-    
+
         //-
         tdPrimitive(T initv, scalar tprev)
         :
@@ -111,22 +110,22 @@ public:
             old_(0),
             oldOld_(0)
         {
-        };    
+        };
 
         ~tdPrimitive()
         {
         };
-        
+
         void resize(label newsz)
         {
             new_.resize(newsz);
         }
-        
+
         label size() const
         {
             return new_.size();
         }
-        
+
         const T& value(label idx) const
         {
             return new_[idx];
@@ -140,7 +139,7 @@ public:
         T dot(scalar newt, label idx)
         {
             T dvdt (pTraits<T>::zero);
-            
+
             if (newt > prevt_)
             {
                 deltat_ = newt - prevt_;
@@ -176,13 +175,13 @@ public:
             return dvdt;
         }
 
-    };  
+    };
 
         //- Runtime type information
         TypeName("AcousticAnalogy");
-    
+
         // Constructors
-    
+
         //- Construct from given Time and dictionary.
         AcousticAnalogy
         (
@@ -190,7 +189,7 @@ public:
             const Time&,
             const dictionary&
         );
-    
+
         //- Construct from given objectRegistry and dictionary.
         AcousticAnalogy
         (
@@ -198,7 +197,7 @@ public:
             const objectRegistry&,
             const dictionary&
         );
-    
+
         //- Destructor
         virtual ~AcousticAnalogy();
 
@@ -206,7 +205,7 @@ public:
 
         //- Read the Curle data
         virtual bool read(const dictionary&);
-        
+
         //-
         virtual bool write();
 

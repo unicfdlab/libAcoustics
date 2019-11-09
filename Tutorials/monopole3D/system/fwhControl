@@ -4,11 +4,11 @@ sphereMonopole1AFassarat
     #include            "fwhCommonSettings";
     patches             ("sphere");
     formulationType     Farassat1AFormulation;
-    U0                  (.0 .0 .0);
+    U0                  (0.0 0.0 0.0);
     cleanFreq           100;
 
-    // interpolationScheme cell;
-    
+    interpolationScheme cell;
+
     surfaces
     (
         sphere
@@ -18,9 +18,9 @@ sphereMonopole1AFassarat
             interpolate     false;
         }
     );
-    
+
     nonUniformSurfaceMotion false;
-    Ufwh                    (.0 .0 .0);
+    Ufwh                    (0.0 0.0 0.0);
 
     fixedResponseDelay  true;
     responseDelay       1e-3;
@@ -32,11 +32,11 @@ sphereMonopole1AFassaratStl
     #include            "fwhCommonSettings";
     patches             ("sphere");
     formulationType     Farassat1AFormulation;
-    U0                  (.0 .0 .0);
+    U0                  (0.0 0.0 0.0);
     cleanFreq           100;
-    
-    // interpolationScheme cell;
-    
+
+    interpolationScheme cell;
+
     surfaces
     (
         sphere
@@ -47,12 +47,10 @@ sphereMonopole1AFassaratStl
             interpolate     false;
         }
     );
-    
+
     nonUniformSurfaceMotion false;
-    Ufwh                    (.0 .0 .0);
-    
-    
-    
+    Ufwh                    (0.0 0.0 0.0);
+
     fixedResponseDelay  true;
     responseDelay       1e-3;
 }

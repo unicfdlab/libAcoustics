@@ -5,9 +5,9 @@ dipoleFwhFarassatTest
         patches ("sphere");
         interpolationScheme cell;
         formulationType Farassat1AFormulation;
-        U0		(0.0 0.0 0.0);
+        U0              (.0 .0 .0);
         cleanFreq       100;
-        
+
         surfaces
         (
                 sphere
@@ -17,9 +17,9 @@ dipoleFwhFarassatTest
                     interpolate     false;
                 }
         );
-        
+
         nonUniformSurfaceMotion false;
-        Ufwh		(.0 .0 .0);
+        Ufwh             (.0 .0 .0);
 
 }
 

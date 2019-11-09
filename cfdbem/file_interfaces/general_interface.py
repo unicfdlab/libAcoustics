@@ -36,7 +36,7 @@ class FileReader(object):
         self._file_to_vertex_indices = OrderedDict()
         self._element_indices_to_file = None
         self._file_to_element_indices = OrderedDict()
-        
+
         self._node_data = None
         self._element_data = None
 
@@ -65,7 +65,7 @@ class FileReader(object):
                 file_key = self._element_insertion_indices_to_file[insertion_index]
                 self._element_indices_to_file[index] = file_key
                 self._file_to_element_indices[file_key] = index
-                
+
             for vertex in self._grid.leaf_view.entity_iterator(2):
                 index = index_set.entity_index(vertex)
                 insertion_index = self._grid.vertex_insertion_index(vertex)
@@ -74,7 +74,7 @@ class FileReader(object):
                 self._file_to_vertex_indices[file_key] = index
 
             # Match data in nodes or elements
-            
+
             if self._impl.withData:
                 if self._impl.data_type == 'node':
                     node_data_from_file = self._impl._node_data['data']
@@ -227,13 +227,13 @@ def export(**kwargs):
         fname = kwargs['file_name']
     else:
         raise ValueError("file_name must be specified.")
-    
+
     extension = os.path.splitext(fname)[1].lower()
 
     if extension=='.msh':
         from bempp.api.file_interfaces import gmsh
         interface = gmsh.GmshInterface()
-    
+
     if int('grid' in kwargs) + int('grid_function' in kwargs) != 1:
         raise ValueError("Exactly one of 'grid' or 'grid_function' must be specified")
 
@@ -350,11 +350,9 @@ class FileInterfaceImpl(object):
     @property
     def default_data_type(self):
         return 'node'
-        
 
     vertices = property(lambda self: self.__vertices)
     elements = property(lambda self: self.__elements)
-    
 
 class Vertex(object):
 
@@ -395,7 +393,7 @@ def three_planes_view(file_name, lower_left, upper_right, ndims, evaluator):
     """
     import bempp.api
     import os
-    
+
     fname, extension = os.path.splitext(file_name)
 
     #pylint: disable=invalid-name

@@ -36,7 +36,7 @@ namespace Foam
 namespace functionObjects
 {
     defineTypeNameAndDebug(Curle, 0);
-    
+
     addToRunTimeSelectionTable(functionObject, Curle, dictionary);
 }
 }
@@ -93,12 +93,10 @@ Foam::functionObjects::Curle::Curle
     F_.resize(1);
 }
 
-
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 Foam::functionObjects::Curle::~Curle()
 {}
-
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
@@ -108,7 +106,7 @@ bool Foam::functionObjects::Curle::read(const dictionary& dict)
     {
         return false;
     }
-    
+
     calcDistances();
 
     return true;
@@ -116,16 +114,15 @@ bool Foam::functionObjects::Curle::read(const dictionary& dict)
 
 void Foam::functionObjects::Curle::calcDistances()
 {
-
     const fvMesh& mesh = refCast<const fvMesh>(obr_);
-    
+
     vectorField ci(0);
     scalar ni = 0;
-    
+
     forAllConstIter(labelHashSet, patchSet_, iter)
     {
         label patchi = iter.key();
-        
+
         ci.append(mesh.boundary()[patchi].Cf());
         ni += scalar(ci.size());
     }
@@ -145,7 +142,7 @@ bool Foam::functionObjects::Curle::write()
     {
         return false;
     }
-    
+
     return true;
 }
 
@@ -154,52 +151,50 @@ void Foam::functionObjects::Curle::correct()
     iter_ += 1;
     F_.value(0) = forceEff();
     vector F1_= vector::zero;
-    
+
     FF_.setSize(iter_);
     FF_[iter_ - 1] = F_.value(0);
     forAll(FF_, I)
     {
-	F1_ += FF_[I];
+        F1_ += FF_[I];
     }
     vector Fav_ = F1_ / FF_.size();
 
     dF_.value(0) = F_.value(0) - Fav_; 
-    
+
     vector dotF = F_.dot(obr_.time().value(), 0);
     vector dotdF = dF_.dot(obr_.time().value(), 0);
-    
+
     if (Pstream::master() || !Pstream::parRun())
     {
         scalar coeff1_3d = 1. / 4. / Foam::constant::mathematical::pi / c0_;
-        
+
         scalar coeff1_2d = 1. / 2.828427 / Foam::constant::mathematical::pi / sqrt(c0_);
         scalar coeff2_2d = 1. / 2. / Foam::constant::mathematical::pi;
         scalar coeff3_2d = sqrt(c0_) / 5.656854 / Foam::constant::mathematical::pi;
-        
+
         forAll (observers_, iObs)
         {
             SoundObserver& obs = observers_[iObs];
             vector l = obs.position() - c_;
             scalar r = mag(l);
             scalar oap = 0;
-            
+
             if (dRef_ > 0.0)
             {
-        	scalar A1 = l & (dotF) * coeff1_2d / sqrt(r) / r;
-        	scalar B1 = l & (Fav_) * coeff2_2d / r / r;
-        	scalar C1 = l & (dotdF) * coeff3_2d / sqrt(r) / r / r;
-        	oap = A1 + B1 + C1;
-        	oap /= dRef_;
-    	    }
-    	    else
-    	    {
-    		oap = l & (dotF + c0_ * F_.value(0) / r) * coeff1_3d / r / r;
+                scalar A1 = l & (dotF) * coeff1_2d / sqrt(r) / r;
+                scalar B1 = l & (Fav_) * coeff2_2d / r / r;
+                scalar C1 = l & (dotdF) * coeff3_2d / sqrt(r) / r / r;
+                oap = A1 + B1 + C1;
+                oap /= dRef_;
+            }
+            else
+            {
+                oap = l & (dotF + c0_ * F_.value(0) / r) * coeff1_3d / r / r;
             }
             obs.apressure(oap);
         }
     }
 }
-
-
 
 // ************************************************************************* //
