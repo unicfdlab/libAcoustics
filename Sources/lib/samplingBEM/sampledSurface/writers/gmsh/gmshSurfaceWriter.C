@@ -28,19 +28,27 @@ License
 #include "OFstream.H"
 #include "OSspecific.H"
 
-#include "makeSurfaceWriterMethods.H"
+#include "surfaceWriterMethods.H"
+#include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    makeSurfaceWriterType(gmshSurfaceWriter);
+namespace surfaceWriters
+{
+//    makeSurfaceWriterType(gmshSurfaceWriter);
+
+    defineTypeName(gmshSurfaceWriter);
+    addToRunTimeSelectionTable(surfaceWriter, gmshSurfaceWriter, word);
+    addToRunTimeSelectionTable(surfaceWriter, gmshSurfaceWriter, wordDict);
+}
 }
 
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-void Foam::gmshSurfaceWriter::writeGeometry
+void Foam::surfaceWriters::gmshSurfaceWriter::writeGeometry
 (
     Ostream& os,
     const pointField& points,
@@ -95,134 +103,10 @@ void Foam::gmshSurfaceWriter::writeGeometry
     os  << "$EndElements" << nl;
 }
 
-
-namespace Foam
-{
-
-    template<>
-    void Foam::gmshSurfaceWriter::writeData
-    (
-        Ostream& os,
-        const Field<scalar>& values
-    )
-    {
-        os  
-            << "1" << nl            // how many field components
-            << values.size() << nl // number of entities (nodes or elements)
-            << "0" << nl;
-
-        forAll(values, elemI)
-        {
-            os  << elemI + 1 << ' ' 
-                << float(values[elemI]) 
-                << nl;
-        }
-    }
-
-
-    template<>
-    void Foam::gmshSurfaceWriter::writeData
-    (
-        Ostream& os,
-        const Field<vector>& values
-    )
-    {
-        os  
-            << "3" << nl            // how many field components
-            << values.size() << nl // number of entities (nodes or elements)
-            << "0" << nl;
-
-        forAll(values, elemI)
-        {
-            const vector& v = values[elemI];
-            os  << elemI + 1 << ' '
-                << float(v[0]) << ' ' << float(v[1]) << ' ' << float(v[2])
-                << nl;
-        }
-    }
-
-
-    template<>
-    void Foam::gmshSurfaceWriter::writeData
-    (
-        Ostream& os,
-        const Field<sphericalTensor>& values
-    )
-    {
-        os  
-            << "1" << nl            // how many field components
-            << values.size() << nl // number of entities (nodes or elements)
-            << "0" << nl;
-
-        forAll(values, elemI)
-        {
-            const sphericalTensor& v = values[elemI];
-            os  << elemI + 1 << ' '
-                << float(v[0]) 
-                << nl;
-        }
-    }
-
-
-    template<>
-    void Foam::gmshSurfaceWriter::writeData
-    (
-        Ostream& os,
-        const Field<symmTensor>& values
-    )
-    {
-        os  
-            << "6" << nl            // how many field components
-            << values.size() << nl // number of entities (nodes or elements)
-            << "0" << nl;
-       
-        forAll(values, elemI)
-        {
-            const symmTensor& v = values[elemI];
-            os  << elemI + 1 << ' '
-                << float(v[0]) << ' ' << float(v[1]) << ' ' << float(v[2])
-                << ' '
-                << float(v[3]) << ' ' << float(v[4]) << ' ' << float(v[5])
-                << nl;
-
-        }
-    }
-
-
-    template<>
-    void Foam::gmshSurfaceWriter::writeData
-    (
-        Ostream& os,
-        const Field<tensor>& values
-    )
-    {
-        os  
-            << "9" << nl            // how many field components
-            << values.size() << nl // number of entities (nodes or elements)
-            << "0" << nl;
-
-        forAll(values, elemI)
-        {
-            const tensor& v = values[elemI];
-            os  << elemI + 1 << ' '
-                << float(v[0]) << ' ' << float(v[1]) << ' ' << float(v[2])
-                << ' '
-                << float(v[3]) << ' ' << float(v[4]) << ' ' << float(v[5])
-                << ' '
-                << float(v[6]) << ' ' << float(v[7]) << ' ' << float(v[8])
-                << nl;
-        }
-    }
-
-}
-
-
-// Write generic field in gmsh format
-template<class Type>
-void Foam::gmshSurfaceWriter::writeData
+void Foam::surfaceWriters::gmshSurfaceWriter::writeData
 (
     Ostream& os,
-    const Field<Type>& values
+    const Field<scalar>& values
 )
 {
     os  
@@ -232,25 +116,134 @@ void Foam::gmshSurfaceWriter::writeData
 
     forAll(values, elemI)
     {
+        os  << elemI + 1 << ' ' 
+            << float(values[elemI]) 
+            << nl;
+    }
+}
+
+void Foam::surfaceWriters::gmshSurfaceWriter::writeData
+(
+    Ostream& os,
+    const Field<label>& values
+)
+{
+    os  
+        << "1" << nl            // how many field components
+        << values.size() << nl // number of entities (nodes or elements)
+        << "0" << nl;
+
+    forAll(values, elemI)
+    {
+        os  << elemI + 1 << ' ' 
+            << label(values[elemI]) 
+            << nl;
+    }
+}
+
+void Foam::surfaceWriters::gmshSurfaceWriter::writeData
+(
+    Ostream& os,
+    const Field<vector>& values
+)
+{
+    os  
+        << "3" << nl            // how many field components
+        << values.size() << nl // number of entities (nodes or elements)
+        << "0" << nl;
+
+    forAll(values, elemI)
+    {
+        const vector& v = values[elemI];
         os  << elemI + 1 << ' '
-            << float(0) 
+            << float(v[0]) << ' ' << float(v[1]) << ' ' << float(v[2])
+            << nl;
+    }
+}
+
+
+void Foam::surfaceWriters::gmshSurfaceWriter::writeData
+(
+    Ostream& os,
+    const Field<sphericalTensor>& values
+)
+{
+    os  
+        << "1" << nl            // how many field components
+        << values.size() << nl // number of entities (nodes or elements)
+        << "0" << nl;
+
+    forAll(values, elemI)
+    {
+        const sphericalTensor& v = values[elemI];
+        os  << elemI + 1 << ' '
+            << float(v[0]) 
+            << nl;
+    }
+}
+
+
+void Foam::surfaceWriters::gmshSurfaceWriter::writeData
+(
+    Ostream& os,
+    const Field<symmTensor>& values
+)
+{
+    os  
+        << "6" << nl            // how many field components
+        << values.size() << nl // number of entities (nodes or elements)
+        << "0" << nl;
+   
+    forAll(values, elemI)
+    {
+        const symmTensor& v = values[elemI];
+        os  << elemI + 1 << ' '
+            << float(v[0]) << ' ' << float(v[1]) << ' ' << float(v[2])
+            << ' '
+            << float(v[3]) << ' ' << float(v[4]) << ' ' << float(v[5])
+            << nl;
+    }
+}
+
+
+
+void Foam::surfaceWriters::gmshSurfaceWriter::writeData
+(
+    Ostream& os,
+    const Field<tensor>& values
+)
+{
+    os  
+        << "9" << nl            // how many field components
+        << values.size() << nl // number of entities (nodes or elements)
+        << "0" << nl;
+
+    forAll(values, elemI)
+    {
+        const tensor& v = values[elemI];
+        os  << elemI + 1 << ' '
+            << float(v[0]) << ' ' << float(v[1]) << ' ' << float(v[2])
+            << ' '
+            << float(v[3]) << ' ' << float(v[4]) << ' ' << float(v[5])
+            << ' '
+            << float(v[6]) << ' ' << float(v[7]) << ' ' << float(v[8])
             << nl;
     }
 }
 
 
 template<class Type>
-Foam::fileName Foam::gmshSurfaceWriter::writeTemplate
+Foam::fileName Foam::surfaceWriters::gmshSurfaceWriter::writeTemplate
 (
-    const fileName& outputDir,
-    const fileName& surfaceName,
-    const meshedSurf& surf,
     const word& fieldName,
-    const Field<Type>& values,
-    const bool isNodeValues,
-    const bool verbose
+    const Field<Type>& values
 ) const
 {
+    const fileName outputDir   = this->outputPath_;
+    const fileName surfaceName = this->outputPath_.name();
+    const meshedSurf& surf     = this->surf_;
+    const bool isNodeValues    = this->isPointData();
+    
     if (!isDir(outputDir))
     {
         mkDir(outputDir);
@@ -258,7 +251,7 @@ Foam::fileName Foam::gmshSurfaceWriter::writeTemplate
 
     OFstream os(outputDir/fieldName + '_' + surfaceName + ".msh");
 
-    if (verbose)
+    if (verbose())
     {
         Info<< "Writing field " << fieldName << " to " << os.name() << endl;
     }
@@ -305,51 +298,70 @@ Foam::fileName Foam::gmshSurfaceWriter::writeTemplate
     return os.name();
 }
 
-
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::gmshSurfaceWriter::gmshSurfaceWriter()
+Foam::surfaceWriters::gmshSurfaceWriter::gmshSurfaceWriter()
 :
     surfaceWriter()
+{}
+
+Foam::surfaceWriters::gmshSurfaceWriter::gmshSurfaceWriter(const dictionary& dict)
+:
+    surfaceWriter(dict)
 {}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::gmshSurfaceWriter::~gmshSurfaceWriter()
+Foam::surfaceWriters::gmshSurfaceWriter::~gmshSurfaceWriter()
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::fileName Foam::gmshSurfaceWriter::write
-(
-    const fileName& outputDir,
-    const fileName& surfaceName,
-    const meshedSurf& surf,
-    const bool verbose
-) const
+Foam::fileName Foam::surfaceWriters::gmshSurfaceWriter::write()
 {
+    checkOpen();
+    
+    fileName outputDir = outputPath_;
+    fileName outputFile= outputPath_.path() / timeName() / outputPath_.name();
+    outputFile.ext("msh");
+    
     if (!isDir(outputDir))
     {
         mkDir(outputDir);
     }
 
-    OFstream os(outputDir/surfaceName + ".msh");
+    const meshedSurf& surf = surface();
 
-    if (verbose)
+    if (Pstream::master() || !parallel_)
     {
-        Info<< "Writing geometry to " << os.name() << endl;
-    }
+        if (!isDir(outputFile.path()))
+        {
+            mkDir(outputFile.path());
+        }
+        
+        OFstream os
+        (
+            outputFile,
+            IOstream::ASCII,
+            IOstream::currentVersion
+        );
 
-    writeGeometry(os, surf.points(), surf.faces());
+        if (verbose())
+        {
+            Info<< "Writing geometry to " << os.name() << endl;
+        }
+
+        writeGeometry(os, surf.points(), surf.faces());
+    }
     
-    return os.name();
+    wroteGeom_ = true;
+    return outputFile;
 }
 
-
 // create write methods
-defineSurfaceWriterWriteFields(Foam::gmshSurfaceWriter);
+defineSurfaceWriterWriteFields(Foam::surfaceWriters::gmshSurfaceWriter);
 
 
 // ************************************************************************* //

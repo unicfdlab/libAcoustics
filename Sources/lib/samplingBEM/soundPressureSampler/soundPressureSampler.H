@@ -173,7 +173,7 @@ private:
 
 
         //- Write geometry only
-        void writeGeometry() const;
+        void writeGeometry();
 
 
         //- If the soundPressureSampler file has not been created create it

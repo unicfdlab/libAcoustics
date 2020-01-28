@@ -41,7 +41,7 @@ Foam::autoPtr<Foam::List<Foam::complex> > Foam::FoamFftwDriver::simpleComplexFor
     
     out_resPtr.set
     (
-        new List<complex>(N, complex::zero)
+        new List<complex>(N, pTraits<complex>::zero)
     );
     
     List<complex>& out_res = out_resPtr();

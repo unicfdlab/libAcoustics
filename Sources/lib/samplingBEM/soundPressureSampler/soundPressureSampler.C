@@ -60,7 +60,7 @@ Foam::scalar Foam::soundPressureSampler::mergeTol_ = 1e-10;
 // * * * * * * * * * * * * * Private Member Functions * * * * * * * * * * * //
 
 
-void Foam::soundPressureSampler::writeGeometry() const
+void Foam::soundPressureSampler::writeGeometry()
 {
     const fileName outputDir = "surfaceGeometryData";
 
@@ -82,32 +82,28 @@ void Foam::soundPressureSampler::writeGeometry() const
 
             if (Pstream::master() && mergeList_[surfI].faces.size())
             {
-                formatter_->write
+                formatter_->open
                 (
-                    outputDir,
-                    s.name(),
-                    meshedSurfRef
-                    (
-                        mergeList_[surfI].points,
-                        mergeList_[surfI].faces
-                    )
+                    mergeList_[surfI].points,
+                    mergeList_[surfI].faces,
+                    outputDir+"/"+s.name(),
+                    true
                 );
+                formatter_->write();
             }
         }
         else if (s.points().size())
         {
             Info << s.points().size() << nl;
 
-            formatter_->write
+            formatter_->open
             (
-                outputDir,
-                s.name(),
-                meshedSurfRef
-                (
-                    s.points(),
-                    s.faces()
-                )
+                s.points(),
+                s.faces(),
+                outputDir+"/"+s.name(),
+                false
             );
+            formatter_->write();
         }
         else
         {
