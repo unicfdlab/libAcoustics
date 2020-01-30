@@ -321,6 +321,7 @@ Foam::surfaceWriters::gmshSurfaceWriter::~gmshSurfaceWriter()
 
 Foam::fileName Foam::surfaceWriters::gmshSurfaceWriter::write()
 {
+    Info << "Checking surface" << endl;
     checkOpen();
     
     fileName outputDir = outputPath_;

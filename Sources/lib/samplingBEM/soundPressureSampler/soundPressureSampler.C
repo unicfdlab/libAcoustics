@@ -63,31 +63,29 @@ Foam::scalar Foam::soundPressureSampler::mergeTol_ = 1e-10;
 void Foam::soundPressureSampler::writeGeometry()
 {
     const fileName outputDir = "surfaceGeometryData";
-
+    
     Info << "write geometry \n";
-
+    
     Info << controlSurfaces_.size() << nl;
-
-
+    
     forAll(controlSurfaces_, surfI)
     {
         Info << "in surfaces list\n";        
         
         const sampledSurface& s = controlSurfaces_.operator[](surfI);
         
-
         if (Pstream::parRun())
         {
             Info << "surfI size = " << mergeList_[surfI].points.size() << nl;
 
-            if (Pstream::master() && mergeList_[surfI].faces.size())
+            if (Pstream::master() && mergeList_[surfI].points.size())
             {
                 formatter_->open
                 (
                     mergeList_[surfI].points,
                     mergeList_[surfI].faces,
                     outputDir+"/"+s.name(),
-                    true
+                    false
                 );
                 formatter_->write();
             }

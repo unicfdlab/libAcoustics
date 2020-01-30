@@ -47,8 +47,6 @@ void Foam::soundPressureSampler::sampleAndWrite
 
     const sampledSurface& surface = controlSurfaces_.operator[](surfI);
 
-
-    
     if (surface.interpolate())
     {
         if (interpolatorPtr.empty())
@@ -73,7 +71,7 @@ void Foam::soundPressureSampler::sampleAndWrite
         }
         values = surface.sample(interpolatorPtr());
     }
-
+    
     writeSurface(values, surfI, os, cTime);
 }
 
@@ -122,7 +120,7 @@ void Foam::soundPressureSampler::writeSurface
                     os() << cTime;
                     
                     forAll(allValues,i)
-                    {                  
+                    {
                         os() << " " << allValues[i];
                     }
                     
@@ -134,8 +132,6 @@ void Foam::soundPressureSampler::writeSurface
     }
     else
     {
-        //Info << "size = " << values.size() << nl;
-
         if (os.valid())
         {
             os() << cTime;
