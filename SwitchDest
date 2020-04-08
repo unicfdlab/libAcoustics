@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# Use this script to switch destination of compiled
+# OpenFOAM sources in all folder descent to this one:
+# - to swith destination to FOAM_APPBIN and FOAM_LIBBIN run:
+# ./SwitchDest
+# - to switch desctination to FOAM_USER_APPBIN and FOAM_USER_LIBBIN run:
+# ./SwitchDest USER
+#
+
+export FROM="FOAM_USER"
+export TO="FOAM"
+
+if [ "$1" = "USER" ]
+then
+    FROM="FOAM"
+    TO="FOAM_USER"
+fi
+
+changeDist()
+{
+    local locDIR=$1
+    cd $locDIR
+    local locFILES=`ls .`
+    for locF in $locFILES
+    do
+        if [ -d $locF ]
+        then
+            if [ "$locF" = "Make" ]
+            then
+                echo $locDIR
+                sed -i "s/$FROM/$TO/g" Make/options
+                sed -i "s/$FROM/$TO/g" Make/files
+            else
+                changeDist $locF
+            fi
+        fi
+    done
+    cd ../
+}
+
+changeDist $PWD
+
+#
+#END-OF-FILE
+#
+
+
