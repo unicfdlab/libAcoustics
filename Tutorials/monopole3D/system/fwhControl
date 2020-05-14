@@ -1,0 +1,59 @@
+sphereMonopole1AFassarat
+{
+    type                FfowcsWilliamsHawkings;
+    #include            "fwhCommonSettings";
+    patches             ("sphere");
+    formulationType     Farassat1AFormulation;
+    U0                  (0.0 0.0 0.0);
+    cleanFreq           100;
+
+    interpolationScheme cell;
+
+    surfaces
+    (
+        sphere
+        {
+            type            patch;
+            patches         ("sphere");
+            interpolate     false;
+        }
+    );
+
+    nonUniformSurfaceMotion false;
+    Ufwh                    (0.0 0.0 0.0);
+
+    fixedResponseDelay  true;
+    responseDelay       1e-3;
+}
+
+sphereMonopole1AFassaratStl
+{
+    type                FfowcsWilliamsHawkings;
+    #include            "fwhCommonSettings";
+    patches             ("sphere");
+    formulationType     Farassat1AFormulation;
+    U0                  (0.0 0.0 0.0);
+    cleanFreq           100;
+
+    interpolationScheme cell;
+
+    surfaces
+    (
+        sphere
+        {
+            type            sampledTriSurfaceMesh;
+            surface         sphere_1808.stl;
+            source          cells;
+            interpolate     false;
+        }
+    );
+
+    nonUniformSurfaceMotion false;
+    Ufwh                    (0.0 0.0 0.0);
+
+    fixedResponseDelay  true;
+    responseDelay       1e-3;
+}
+
+
+

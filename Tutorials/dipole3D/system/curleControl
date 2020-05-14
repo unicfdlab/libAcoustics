@@ -1,0 +1,6 @@
+dipoleCurleTest
+{
+    #include    "commonSettings"
+    type        Curle;
+    patches     ("sphere");
+}

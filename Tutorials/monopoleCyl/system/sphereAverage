@@ -1,0 +1,33 @@
+    sphereAverage
+    {
+        type            surfaces;
+//        libs ("libfieldFunctionObjects.so");
+
+        enabled         true;
+        writeControl    timeStep;
+        writeInterval   10;
+
+        // Output to log&file (true) or to file only
+        log             true;
+
+        // Output field values as well
+        writeFields     false;
+
+        // Type of region: patch/faceZone/sampledSurface
+        regionType      patch;
+
+        // if patch or faceZone: name of patch or faceZone
+        name            sphere;
+
+        // Operation: areaAverage/sum/weightedAverage ...
+        operation       areaAverage;
+
+        fields
+        (
+            p
+            U
+        );
+    }
+
+
+// ************************************************************************* //

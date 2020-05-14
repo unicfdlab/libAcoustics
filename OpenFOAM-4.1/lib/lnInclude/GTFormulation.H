@@ -1,1 +1,0 @@
-../analogies/FfowcsWilliamsHawkings/GTFormulation.H
