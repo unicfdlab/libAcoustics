@@ -72,8 +72,8 @@ Foam::functionObjects::Farassat1AFormulation::Farassat1AFormulation
 :
     fwhFormulation(fwh),
     Un_(0),
-    Lr_(0),
-    Mr_(0),
+    L_(0),
+    M_(0),
 
     intDotQdS_(0.0, fwh_.obr_.time().value()),
     intFdS_(0.0, fwh_.obr_.time().value())
@@ -93,20 +93,20 @@ void Foam::functionObjects::Farassat1AFormulation::initialize()
     intFdS_.resize(fwh_.observers_.size());
     intDotQdS_.resize(fwh_.observers_.size());
 
-    Lr_.resize(fwh_.observers_.size());
-    Mr_.resize(fwh_.observers_.size());
+    L_.resize(fwh_.observers_.size());
+    M_.resize(fwh_.observers_.size());
     Un_.resize(fwh_.observers_.size());
 
-    forAll(Lr_, iObs)
+    forAll(L_, iObs)
     {
-        Lr_[iObs].resize(fwh_.controlSurfaces_.size());
-        Mr_[iObs].resize(fwh_.controlSurfaces_.size());
+        L_[iObs].resize(fwh_.controlSurfaces_.size());
+        M_[iObs].resize(fwh_.controlSurfaces_.size());
         Un_[iObs].resize(fwh_.controlSurfaces_.size());
 
-        forAll(Lr_[iObs], iSurf)
+        forAll(L_[iObs], iSurf)
         {
-            Lr_[iObs][iSurf].resize(fwh_.controlSurfaces_[iSurf].Cf().size());
-            Mr_[iObs][iSurf].resize(fwh_.controlSurfaces_[iSurf].Cf().size());
+            L_[iObs][iSurf].resize(fwh_.controlSurfaces_[iSurf].Cf().size());
+            M_[iObs][iSurf].resize(fwh_.controlSurfaces_[iSurf].Cf().size());
             Un_[iObs][iSurf].resize(fwh_.controlSurfaces_[iSurf].Cf().size());
         }
     }
@@ -179,18 +179,17 @@ Foam::scalar Foam::functionObjects::Farassat1AFormulation::observerAcousticPress
                 L = Pf & n;
                 lM = L & M; 
                 lr = L & rh;
-                Mr = M & rh;
                 Un = U & n;
 
                 OneByOneMr = 1.0 / (1.0 - Mr);
                 OneByOneMrSq = OneByOneMr*OneByOneMr;
 
                 Un_[iObs][iSurf].value(iFace) = Un;
-                Lr_[iObs][iSurf].value(iFace) = lr;
-                Mr_[iObs][iSurf].value(iFace) = Mr; 
+                L_[iObs][iSurf].value(iFace) = L;
+                M_[iObs][iSurf].value(iFace) = M; 
 
-                dotlr = Lr_[iObs][iSurf].dot(ct, iFace);
-                dotMr = Mr_[iObs][iSurf].dot(ct, iFace);
+                dotlr = L_[iObs][iSurf].dot(ct, iFace) & rh;
+                dotMr = M_[iObs][iSurf].dot(ct, iFace) & rh;
                 dotUn = Un_[iObs][iSurf].dot(ct, iFace);
                 dotn = ni_[iSurf].dot(ct, iFace);
 
@@ -198,7 +197,7 @@ Foam::scalar Foam::functionObjects::Farassat1AFormulation::observerAcousticPress
                 qds_[iObs][iSurf][iFace].second().append
                 (
                     (
-                        fwh_.rhoRef_ * (dotUn + (U & dotn)) * OneByOneMrSq / magr
+                        fwh_.rhoRef_ * (dotUn) * OneByOneMrSq / magr
                         +
                         fwh_.rhoRef_ * Un * (magr * dotMr + fwh_.c0_ * (Mr - magM*magM)) *
                         OneByOneMrSq * OneByOneMr / magr / magr
