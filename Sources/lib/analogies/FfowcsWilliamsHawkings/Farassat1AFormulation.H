@@ -33,10 +33,10 @@ private:
     List<List<tdPrimitive<scalar> > > Un_;
 
     //-
-    List<List<tdPrimitive<scalar> > > Lr_;
+    List<List<tdPrimitive<vector> > > L_;
 
     //-
-    List<List<tdPrimitive<scalar> > > Mr_;
+    List<List<tdPrimitive<vector> > > M_;
 
     //-
     tdPrimitive<scalar> intDotQdS_;
