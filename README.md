@@ -16,7 +16,7 @@ The library is available for next OpenFOAM versions:
 
 * OpenFOAM+ v.1912 is in the digitef-dev-1912 branch of the repository
 
-When using this library in your research, please cite next articles:
+If you have found the software useful for your research, please cite next sources:
 
 * [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3878439.svg)](https://doi.org/10.5281/zenodo.3878439) 
  
