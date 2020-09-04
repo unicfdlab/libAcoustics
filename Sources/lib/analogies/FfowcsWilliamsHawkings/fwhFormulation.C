@@ -92,7 +92,7 @@ void Foam::functionObjects::fwhFormulation::initialize()
         }
         reduce(rMax_[iObs], maxOp<scalar>());
         tauMax_[iObs] = rMax_[iObs] / fwh_.c0_;
-        reduce(tauMax_[iObs], maxOp<scalar>());
+        
     }
     
     if (fwh_.fixedResponseDelay_)
@@ -115,9 +115,8 @@ void Foam::functionObjects::fwhFormulation::initialize()
                     }
                 }
             }
-            tauMin_[iObs] = rMin_[iObs] / fwh_.c0_;
             reduce(rMin_[iObs], minOp<scalar>());
-            reduce(tauMin_[iObs], minOp<scalar>());
+            tauMin_[iObs] = rMin_[iObs] / fwh_.c0_;
         }
     }
 
@@ -169,7 +168,6 @@ void Foam::functionObjects::fwhFormulation::clearExpiredData()
     reduce(ct, minOp<scalar>());
     
     fwhProbeI_++;
-    
     if ( mag(fwhProbeI_ % fwh_.cleanFreq_) > VSMALL  )
     {
         
@@ -204,6 +202,7 @@ void Foam::functionObjects::fwhFormulation::clearExpiredData()
                         
                         //clean qds
                         pointTimeData newPointData;
+                        
                         newPointData.first().resize(newsize);
                         newPointData.second().resize(newsize);
                         for(label iTime=expiredIndex+1; iTime<qdsOldPointData.first().size(); iTime++)
@@ -263,15 +262,13 @@ void Foam::functionObjects::fwhFormulation::update()
                     }
                 }
             }
-            tauMax_[iObs] = rMax_[iObs] / fwh_.c0_;
-            reduce(tauMax_[iObs], maxOp<scalar>());
             reduce(rMax_[iObs], maxOp<scalar>());
-            tauMin_ = max(tauMax_);
+            tauMax_[iObs] = rMax_[iObs] / fwh_.c0_;
+            
             if (tauMin_.size())
             {
-                tauMin_[iObs] = rMin_[iObs] / fwh_.c0_;
-                reduce(tauMin_[iObs], minOp<scalar>());
                 reduce(rMin_[iObs], minOp<scalar>());
+                tauMin_[iObs] = rMin_[iObs] / fwh_.c0_;
             }
         }
         
@@ -289,9 +286,6 @@ void Foam::functionObjects::fwhFormulation::update()
     
     forAll(fwh_.observers_, iObs)
     {
-    //    Info << "iObs = " << iObs << " tauMax = " << tauMax_[iObs] << endl;
-    //    Info << "iObs = " << iObs << " tauMin = " << tauMin_[iObs] << endl;
-    //    Info << "iObs = " << iObs << " Delta  = " << (tauMax_[iObs] - tauMin_[iObs]) << endl;
         forAll(fwh_.controlSurfaces_, iSurf)
         {
             const sampledSurface& surf = fwh_.controlSurfaces_[iSurf];
@@ -363,9 +357,12 @@ Foam::label Foam::functionObjects::fwhFormulation::findExpiredIndex
         );
     }
     
-    if (timeData.first()[ui] < expiredTime)
+    if (ui < timeData.size())
     {
-        return ui;
+        if (timeData.first()[ui] < expiredTime)
+        {
+            return ui;
+        }
     }
     
     return li;
