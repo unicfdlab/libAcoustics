@@ -21,7 +21,7 @@ changeDist()
 {
     local locDIR=$1
     cd $locDIR
-    local locFILES=`ls .`
+    locFILES=`ls .`
     for locF in $locFILES
     do
         if [ -d $locF ]
