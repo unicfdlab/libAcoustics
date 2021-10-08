@@ -42,6 +42,7 @@ The library is available for next OpenFOAM versions:
 |[Coupled CFD-based Shape Optimization of a Wing of Reusable Space Vehicle of Tourist Class](https://www.researchgate.net/publication/338372884_Coupled_CFD-based_Shape_Optimization_of_a_Wing_of_Reusable_Space_Vehicle_of_Tourist_Class/figures):  **Article**|![Computational scheme](https://www.researchgate.net/publication/338372884/figure/fig1/AS:843306078568450@1578071245982/Design-variables-of-the-wing_W640.jpg)|
 |[Transient cavitating flow structure and acoustic analysis of a hydrofoil with whalelike wavy leading edge](https://www.researchgate.net/publication/341124148_Transient_cavitating_flow_structure_and_acoustic_analysis_of_a_hydrofoil_with_whalelike_wavy_leading_edge):  **Article**|![Flow fields around wing](https://www.researchgate.net/profile/Zehao-Li-3/publication/341124148/figure/fig12/AS:890182240837633@1589247393515/Pressure-coefficient-C-p-and-limiting-streamline-colored-by-velocity-in-flow_W640.jpg)|
 |[A proposed wavy shield for suppression of supersonic jet noise utilizing reflections](https://www.researchgate.net/publication/348451623_A_proposed_wavy_shield_for_suppression_of_supersonic_jet_noise_utilizing_reflections)|---|
+|[Numerical Study of Flow-Induced Noise around Cylinder and Rod-NACA0012 Hydrofoil](https://onepetro.org/ISOPEIOPEC/proceedings-abstract/ISOPE21/All-ISOPE21/ISOPE-I-21-1191/464451)|---|
 
 
 # For citation
