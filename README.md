@@ -1,5 +1,9 @@
 # Contents
 
+1. [libAcoustics library brief](#libAcoustics-library-brief)
+2. [Published papers related to QGDsolver technology](#Published-papers-related-to-QGDsolver-technology)
+3. [Available versions of the library](#Available-versions-of-the-library)
+4. [For citation](#For-citation)
 
 # libAcoustics library brief
 [To the contents](#Contents)
@@ -13,6 +17,7 @@ libAcoustics - library for far-field noise computation. At current time contains
 3. **CFD-BEM coupling** 
 
 # Available versions of the library 
+[To the contents](#Contents)
 
 The library is available for next OpenFOAM versions:
 
@@ -20,6 +25,13 @@ The library is available for next OpenFOAM versions:
 * OpenFOAM+ v.1812 is in the digitef-dev-1812 branch of the repository
 * OpenFOAM+ v.1912 is in the digitef-dev-1912 branch of the repository
 * OpenFOAM+ v.2012 is in the digitef-dev-2012 branch of the repository
+
+# Published papers related to libAcoustics library
+[To the contents](#Contents)
+
+| Title | Description |
+|------|-------------|
+| (Numerical Study of Iced Airfoil Aeroacoustics Using IDDES)[https://www.researchgate.net/publication/342020749_Numerical_Study_of_Iced_Airfoil_Aeroacoustics_Using_IDDES]| --- |
 
 # For citation
 [To the contents](#Contents)
