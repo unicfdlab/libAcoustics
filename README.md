@@ -31,7 +31,7 @@ The library is available for next OpenFOAM versions:
 
 | Title | Description |
 |------|-------------|
-| (Numerical Study of Iced Airfoil Aeroacoustics Using IDDES)[https://www.researchgate.net/publication/342020749_Numerical_Study_of_Iced_Airfoil_Aeroacoustics_Using_IDDES]| --- |
+| [Numerical Study of Iced Airfoil Aeroacoustics Using IDDES](https://www.researchgate.net/publication/342020749_Numerical_Study_of_Iced_Airfoil_Aeroacoustics_Using_IDDES)| --- |
 
 # For citation
 [To the contents](#Contents)
