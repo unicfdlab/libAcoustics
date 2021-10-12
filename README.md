@@ -50,6 +50,7 @@ The library is available for next OpenFOAM versions:
 |[Analysis Methods and Design Measures for the Reduction of Noise and Vibration Induced by Marine Propellers](http://pub.dega-akustik.de/ICA2019/data/articles/001556.pdf): **Article**|![Vortices after propeller thruster](https://github.com/unicfdlab/libAcoustics/blob/master/PT-vortices.png)|
 |[Prediction of Noise Associated with an Isolated UAV Propeller](https://commons.erau.edu/edt/463/): **MSc Thesis**|![Velocity vectors around wing](https://github.com/unicfdlab/libAcoustics/blob/master/wing-velocityfield.png)|
 |[High-Fidelity Simulations of Noise Generation in a Propeller-Driven Unmanned Aerial Vehicle](https://arc.aiaa.org/doi/abs/10.2514/1.J059117): **Article**|---|
+|[Análise e validação de modelo de simulação numérica para previsão de ruído aerodinâmico utilizando OpenFOAM e Libacoustics](https://repositorio.ufsc.br/handle/123456789/228458?show=full)|![acoustic field around tandem](https://github.com/unicfdlab/libAcoustics/blob/master/Tandem-acoustic-field.png)|
 
 
 
