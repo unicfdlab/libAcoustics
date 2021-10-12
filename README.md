@@ -1,7 +1,7 @@
 # Contents
 
 1. [libAcoustics library brief](#libAcoustics-library-brief)
-2. [Published papers related to QGDsolver technology](#Published-papers-related-to-QGDsolver-technology)
+2. [Published papers related to libAcoustics technology](#Published-papers-related-to-libAcoustics-technology)
 3. [Available versions of the library](#Available-versions-of-the-library)
 4. [For citation](#For-citation)
 
