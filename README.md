@@ -51,6 +51,7 @@ The library is available for next OpenFOAM versions:
 |[Prediction of Noise Associated with an Isolated UAV Propeller](https://commons.erau.edu/edt/463/): **MSc Thesis**|![Velocity vectors around wing](https://github.com/unicfdlab/libAcoustics/blob/master/wing-velocityfield.png)|
 |[High-Fidelity Simulations of Noise Generation in a Propeller-Driven Unmanned Aerial Vehicle](https://arc.aiaa.org/doi/abs/10.2514/1.J059117): **Article**|---|
 |[Análise e validação de modelo de simulação numérica para previsão de ruído aerodinâmico utilizando OpenFOAM e Libacoustics](https://repositorio.ufsc.br/handle/123456789/228458?show=full): **MSc Thesis**|![acoustic field around tandem](https://github.com/unicfdlab/libAcoustics/blob/master/Tandem-acoustic-field.png)|
+|[A Computational Study on the Aeroacoustics of a Multi-Rotor Unmanned Aerial System](https://www.researchgate.net/publication/355396901_A_Computational_Study_on_the_Aeroacoustics_of_a_Multi-Rotor_Unmanned_Aerial_System)|![Unmanned Aerial System](https://github.com/unicfdlab/libAcoustics/blob/master/Unmanned-Aerial-System.png)|
 
 
 
