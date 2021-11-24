@@ -31,6 +31,7 @@ The library is available for next OpenFOAM versions:
 
 | Title | Description |
 |------|-------------|
+|[Influence of the elastic cavity walls on cavity flow noise](https://www.researchgate.net/publication/356458463_Influence_of_the_elastic_cavity_walls_on_cavity_flow_noise):  **Article** |![flexible cavity instant velocity field](https://github.com/unicfdlab/libAcoustics/blob/master/flex-cavity-U.png)|
 |[A Computational Study on the Aeroacoustics of a Multi-Rotor Unmanned Aerial System](https://www.researchgate.net/publication/355396901_A_Computational_Study_on_the_Aeroacoustics_of_a_Multi-Rotor_Unmanned_Aerial_System):  **Article** |![Unmanned Aerial System](https://github.com/unicfdlab/libAcoustics/blob/master/Unmanned-Aerial-System.png)|
 | [Numerical Study of Iced Airfoil Aeroacoustics Using IDDES](https://www.researchgate.net/publication/342020749_Numerical_Study_of_Iced_Airfoil_Aeroacoustics_Using_IDDES):  **Article** | ![Q-criterion around wing](https://github.com/unicfdlab/libAcoustics/blob/master/L0.2Pc_Qcriterion.png) |
 |[Wall-modeled large-eddy simulation of a trailing-edge serration–finlet configuration](https://www.researchgate.net/publication/352381522_Wall-Modeled_Large-Eddy_Simulation_of_a_Trailing-Edge_Serration-Finlet_Configuration):  **Article** |![Streamwise vector plots in the serration–finlet configuration](https://aip.scitation.org/na101/home/literatum/publisher/aip/journals/content/adv/2021/adv.2021.11.issue-6/5.0049181/20210613/images/medium/5.0049181.figures.online.f30.jpg)|
