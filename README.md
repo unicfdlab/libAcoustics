@@ -16,6 +16,8 @@ libAcoustics - library for far-field noise computation. At current time contains
 
 3. **CFD-BEM coupling** 
 
+libAcoustics source code tutorial, which was prepared in Chalmers University: http://www.tfd.chalmers.se/~hani/kurser/OS_CFD_2021/DebarsheeGhosh/OSCFD21_FinalPresentation.pdf
+
 # Available versions of the library 
 [To the contents](#Contents)
 
