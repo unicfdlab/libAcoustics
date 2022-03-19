@@ -26,7 +26,7 @@ The library is available for next OpenFOAM versions:
 * OpenFOAM+ v.1912 is in the digitef-dev-1912 branch of the repository
 * OpenFOAM+ v.2012 is in the digitef-dev-2012 branch of the repository
 
-# Published papers related to libAcoustics library
+# Published materials related to libAcoustics library
 [To the contents](#Contents)
 
 | Title | Description |
