@@ -23,10 +23,10 @@ libAcoustics source code tutorial, which was prepared in Chalmers University: ht
 
 The library is available for next OpenFOAM versions:
 
-* OpenFOAM 3.0, 4.1 versions are stored in the master branch
-* OpenFOAM+ v.1812 is in the digitef-dev-1812 branch of the repository
-* OpenFOAM+ v.1912 is in the digitef-dev-1912 branch of the repository
-* OpenFOAM+ v.2012 is in the digitef-dev-2012 branch of the repository
+* OpenFOAM 3.0, 4.1 versions are stored in the [master branch](https://github.com/unicfdlab/libAcoustics/tree/master)
+* OpenFOAM+ v.1812 is in the [digitef-dev-1812 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-1812) of the repository
+* OpenFOAM+ v.1912 is in the [digitef-dev-1912 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-1912) of the repository
+* OpenFOAM+ v.2012 is in the [digitef-dev-2012 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-2012) of the repository
 
 # Published materials related to libAcoustics library
 [To the contents](#Contents)
