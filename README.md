@@ -8,7 +8,7 @@
 # libAcoustics library brief
 [To the contents](#Contents)
 
-libAcoustics - library for far-field noise computation. At current time contains 3 kind of far-field predictions:
+libAcoustics - library for far-field noise computation. At current time contains 3 kind of far-field prediction models:
 
 1. **Curle analogy**
 
