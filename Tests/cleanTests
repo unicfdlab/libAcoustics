@@ -1,0 +1,30 @@
+#!/bin/bash
+
+echo 'Clean testLibraryFoam'
+cd app/testLibraryFoam/
+wclean
+
+echo 'Clean unit tests'
+cd ../../unit/
+./cleanUnitTests
+
+echo 'Clean integration tests'
+cd ../integration/
+./cleanIntegrationTests
+
+echo 'Clean integration tests'
+cd ../system/
+./cleanSystemTests
+
+cd ../
+
+rm -rf successful.txt
+rm -rf failed.txt
+rm -rf summary.log
+rm -rf total.log
+#
+#END-OF-FILE
+#
+
+
+

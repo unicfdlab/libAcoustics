@@ -1,0 +1,22 @@
+#!/bin/bash
+cd testFormulationFunctions/
+wclean
+rm -rf acousticData/
+rm -rf utils/
+
+cd ../testMonopoleSource/
+wclean
+rm -rf acousticData/
+rm -rf utils/
+
+cd ../testDipoleSource/
+wclean
+rm -rf acousticData/
+rm -rf utils/
+
+cd ../
+
+#
+#END-OF-FILE
+#
+

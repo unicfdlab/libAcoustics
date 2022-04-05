@@ -1,0 +1,13 @@
+#!/bin/bash
+cd testExpiredFunction/
+wmake
+
+cd ../testValueAt/
+wmake
+
+cd ../
+
+#
+#END-OF-FILE
+#
+

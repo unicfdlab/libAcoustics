@@ -1,0 +1,17 @@
+CurleAnalogyCylinder
+{
+        type            CurleAnalogy;
+        #include        "commonSettings";
+        patches (cylinder);
+}
+
+
+
+
+
+
+
+
+
+
+

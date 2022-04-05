@@ -1,0 +1,16 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+
+# meshing
+runApplication blockMesh
+
+runApplication snappyHexMesh -overwrite
+
+runApplication renumberMesh -overwrite
+
+# create the inlet/outlet and AMI patches
+runApplication createPatch -overwrite
+
+#------------------------------------------------------------------------------

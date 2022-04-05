@@ -1,0 +1,54 @@
+Farassat1A-Patch
+{
+        type            FfowcsWilliamsHawkings;
+        formulationType Farassat1AFormulation;
+        #include        "commonSettings";
+        patches ();
+        interpolationScheme cell;
+
+        surfaces
+        (
+                cylinder
+                {
+                    type            patch;
+                    patches         (cylinder);
+                    interpolate     false;
+                }
+        );
+        cleanFreq       100;
+        fixedResponseDelay false;
+        responseDelay   0.1;
+        nonUniformSurfaceMotion false;
+        Ufwh    (.0 .0 .0);
+        U0      (.0 .0 .0);
+}
+
+Farassat1A-triSurface
+{
+        type            FfowcsWilliamsHawkings;
+        formulationType Farassat1AFormulation;
+        #include        "commonSettings";
+        patches ();
+        interpolationScheme cellPointFace;
+
+        surfaces
+        (
+                cylinder
+                {
+                     type               sampledTriSurfaceMesh;
+                     surface            cylinderSurface.stl; //stl on cylinder patch
+                     source             cells;
+                     interpolate        false;
+                }
+        );
+        
+        cleanFreq       100;
+        fixedResponseDelay false;
+        responseDelay   0.1;
+        
+        nonUniformSurfaceMotion false;
+        Ufwh    (.0 .0 .0);
+        U0      (.0 .0 .0);
+}
+
+

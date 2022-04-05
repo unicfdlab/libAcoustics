@@ -1,0 +1,10 @@
+Summary
+1) Vortex street generated from flow over a cylinder
+2) Acoustic pressure is calculated based on:
+ - OpenFOAM Curle's analogy
+ - libAcoustics FW-H analogy
+ - libAcoustics Curle's analogy
+ 
+NOTE
+The Curle function object is implemented incorrectly in OpenFOAM v2012, please use v2112
+

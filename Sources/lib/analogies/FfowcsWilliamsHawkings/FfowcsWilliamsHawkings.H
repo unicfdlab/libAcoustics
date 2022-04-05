@@ -46,6 +46,7 @@ SourceFiles
 #include "surfaceWriter.H"
 #include "surfaceFieldsFwd.H"
 #include "sampledPatch.H"
+#include "fwhFormulation.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -208,6 +209,9 @@ protected:
 
         //-
         void correct();
+        
+        //-
+        void updateSurfaceCf();
 
         //- Sample and write a particular volume field
         template<class Type>
@@ -265,7 +269,8 @@ public:
 
 
     // Member Functions
-
+        PtrList<sampledSurface>& getSampledSurface();
+        
         //- Read the FfowcsWilliamsHawkings data
         virtual bool read(const dictionary&);
 

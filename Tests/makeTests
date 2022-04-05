@@ -1,0 +1,22 @@
+#!/bin/bash
+
+echo 'Make testLibraryFoam'
+cd app/testLibraryFoam/
+wmake
+
+echo 'Make unit tests'
+cd ../../unit/
+./makeUnitTests
+
+echo 'Make integration tests'
+cd ../integration/
+./makeIntegrationTests
+
+cd ../
+
+#
+#END-OF-FILE
+#
+
+
+

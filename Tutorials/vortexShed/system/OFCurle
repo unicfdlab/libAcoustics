@@ -1,0 +1,29 @@
+    curlePoint
+    {
+        // Mandatory entries
+        type            Curle;
+        libs            (fieldFunctionObjects);
+        patches         (cylinder);
+        c0              343;
+        input           point;
+        output          point;
+        observerPositions
+        (
+            (0.20 1 -0.01) // N1-0
+            (1 0.3 -0.01) // E1-1
+            (0.20 5 -0.01) // N2-2
+            (5 0.3 -0.01) // E2-3
+            (0.20 50 -0.01) // N3-4
+            (50 0.3 -0.01) // E3-5
+        );
+
+        // Optional (inherited) entries
+        p               p;
+        region          region0;
+        enabled         true;
+        log             true;
+        timeStart       100;
+        timeEnd         1000;
+        executeControl  timeStep;
+        executeInterval 1;
+    }

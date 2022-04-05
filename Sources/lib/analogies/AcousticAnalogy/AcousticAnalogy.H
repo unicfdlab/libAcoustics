@@ -45,9 +45,6 @@ protected:
         //- Sonic speed, m/s
         scalar c0_;
 
-        //- Domain depth, m for 2D simulations
-        scalar dRef_;
-
         //- List of observers
         List<SoundObserver> observers_;
 
@@ -64,6 +61,9 @@ protected:
 
         //-
         virtual void correct();
+        
+        //-
+        virtual void updateSurfaceCf();
 
 public:
 
@@ -72,6 +72,9 @@ public:
     {
 
     private:
+
+        //-
+        bool varTimeStep_;
 
         //-
         scalar prevt_;
@@ -93,6 +96,7 @@ public:
         //-
         tdPrimitive(T initv, scalar tprev)
         :
+            varTimeStep_(false),
             prevt_(tprev),
             deltat_(tprev),
             new_(1, initv),
@@ -102,16 +106,18 @@ public:
         };
 
         //-
+    
         tdPrimitive()
         :
+            varTimeStep_(false),
             prevt_(0.0),
-            deltat_(SMALL),
+            deltat_(GREAT),
             new_(1, pTraits<T>::zero),
             old_(0),
             oldOld_(0)
         {
         };
-
+        
         ~tdPrimitive()
         {
         };
@@ -119,6 +125,11 @@ public:
         void resize(label newsz)
         {
             new_.resize(newsz);
+        }
+        
+        void setTimeStepVariable(bool adjustTimeStep)
+        {
+            varTimeStep_ = adjustTimeStep;
         }
 
         label size() const
@@ -154,16 +165,16 @@ public:
             }
             else
             {
-                if (oldOld_.size() <= idx)
+                if ((oldOld_.size() <= idx) || (varTimeStep_))
                 {
                     dvdt = (new_[idx] - old_[idx])/deltat_;
-
                     oldOld_.resize
                     (
                         idx+1
                     );
                     oldOld_[idx] = old_[idx];
                     old_[idx] = new_[idx];
+
                 }
                 else
                 {
@@ -202,6 +213,8 @@ public:
         virtual ~AcousticAnalogy();
 
 public:
+        //- Get observers list
+        List<SoundObserver> getSoundObservers();
 
         //- Read the Curle data
         virtual bool read(const dictionary&);
