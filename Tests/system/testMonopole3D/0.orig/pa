@@ -1,0 +1,54 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [1 -1 -2 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    outlet
+    {
+        type            acousticWaveTransmissive;
+        advectiveSpeed  343;
+        value           $internalField;       
+    }
+
+    sphere
+    {
+        type codedFixedValue;
+        value uniform 0;
+        redirectType   acousticPressure;
+
+        code
+        #{
+             const scalar t = db().time().timeOutputValue();
+             scalar rho_ = 1.2;
+             scalar r0_ = 0.2;
+             scalar r = r0_;
+             scalar c0_ = 343;
+             scalar U0_ = 1;
+             scalar freq = 100;
+             scalar k = freq * 2.0* constant::mathematical::pi / c0_;
+             operator==(r0_*r0_*c0_*k*U0_*rho_*(r0_*k*Foam::cos(k*(r0_ - r + c0_*t)) - Foam::sin(k*(r0_ - r + c0_*t))) / (r + r0_*r0_*k*k*r));
+        #};
+        codeInclude #{#};
+        codeOptions #{#};
+        codeLibs #{#};
+    }
+}
+
+// ************************************************************************* //

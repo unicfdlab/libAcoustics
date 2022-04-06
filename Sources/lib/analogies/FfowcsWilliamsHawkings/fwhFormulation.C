@@ -42,7 +42,7 @@ void Foam::functionObjects::fwhFormulation::initialize()
         tobs_[iObs].resize(fwh_.controlSurfaces_.size());
         forAll(fwh_.controlSurfaces_, iSurf)
         {
-            tobs_[iObs][iSurf].resize(fwh_.controlSurfaces_[iSurf].Cf().size());
+            tobs_[iObs][iSurf].resize(fwh_.controlSurfaces_[iSurf].Cf().size(), 0.0);
         }
     }
     
@@ -69,20 +69,11 @@ void Foam::functionObjects::fwhFormulation::initialize()
                 robs_[iObs][iSurf][i] = obs.position() - Cf[i];
                 vector r = robs_[iObs][iSurf][i];
                 scalar R_ = sqrt
-            	    (
-            		sqr(r[0]) 
-            		+ 
-            		( 1 - sqr(mag(fwh_.U0_)/fwh_.c0_))
-            		*
-            		( sqr(r[1]) + sqr(r[2]) )
-            	    );
-            	
+                (
+                    sqr(r[0])+( 1 - sqr(mag(fwh_.U0_)/fwh_.c0_))*(sqr(r[1]) + sqr(r[2]))
+                );
 //                magrobs_[iObs][iSurf][i] = mag(robs_[iObs][iSurf][i]);
-		magrobs_[iObs][iSurf][i] = 
-		    (
-			-(mag(fwh_.U0_)/fwh_.c0_) * r[0] + R_
-		    ) /	(1 - sqr(mag(fwh_.U0_)/fwh_.c0_));
-		     
+                magrobs_[iObs][iSurf][i] = (-(mag(fwh_.U0_)/fwh_.c0_) * r[0] + R_)/(1 - sqr(mag(fwh_.U0_)/fwh_.c0_));
 
                 if (magrobs_[iObs][iSurf][i] > rMax_[iObs])
                 {
@@ -140,6 +131,7 @@ void Foam::functionObjects::fwhFormulation::initialize()
         {
             magSf = mag(Sf[iFace]);
             ni_[iSurf].value(iFace) = Sf[iFace]/magSf;
+
             if ( ((Cf[iFace] - Cs[iSurf]) & ni_[iSurf].value(iFace)) > 0 )
             {
                 nl_[iSurf][iFace] = 1.0;
@@ -157,7 +149,16 @@ Foam::functionObjects::fwhFormulation::~fwhFormulation()
 {
 }
 
-Foam::scalar Foam::functionObjects::fwhFormulation::observerAcousticPressure(label iObs)
+Foam::scalar Foam::functionObjects::fwhFormulation::observerAcousticPressure
+(
+    const vectorField& Sf,
+    const vectorField& uS,
+    const scalarField& rhoS,
+    const scalarField& pS,
+    label iObs,
+    label iSurf,
+    scalar ct
+)
 {
     return 0.0;
 }
@@ -177,7 +178,7 @@ void Foam::functionObjects::fwhFormulation::clearExpiredData()
         fwhProbeI_ = 0;
         scalar expiredTime = 0.0;
         label  expiredIndex= -1;
-        label  newsize     = 0;
+
         forAll(qds_, iObs)
         {
             forAll(qds_[iObs], iSurf)
@@ -194,35 +195,11 @@ void Foam::functionObjects::fwhFormulation::clearExpiredData()
                     }
                     const pointTimeData& qdsOldPointData = qds_[iObs][iSurf][iFace];
                     expiredIndex= findExpiredIndex(qdsOldPointData, expiredTime);
-                    
                     // -1 - if nothing found, from 0 to (size-1) for indices to remove
                     if (expiredIndex > -1)
                     {
-                        newsize = qdsOldPointData.first().size() - (expiredIndex + 1);
-                        
-                        //clean qds
-                        pointTimeData newPointData;
-                        
-                        newPointData.first().resize(newsize);
-                        newPointData.second().resize(newsize);
-                        for(label iTime=expiredIndex+1; iTime<qdsOldPointData.first().size(); iTime++)
-                        {
-                            newPointData.first() [iTime-(expiredIndex+1)] = qdsOldPointData.first()[iTime];
-                            newPointData.second()[iTime-(expiredIndex+1)] = qdsOldPointData.second()[iTime];
-                        }
-                        qds_[iObs][iSurf][iFace].first().operator=(newPointData.first());
-                        qds_[iObs][iSurf][iFace].second().operator=(newPointData.second());
-                        
-                        //clean fds
-                        const pointTimeData& fdsOldPointData = fds_[iObs][iSurf][iFace];
-                        for(label iTime=expiredIndex+1; iTime<fdsOldPointData.first().size(); iTime++)
-                        {
-                            newPointData.first()[iTime-(expiredIndex+1)] = fdsOldPointData.first()[iTime];
-                            newPointData.second()[iTime-(expiredIndex+1)] = fdsOldPointData.second()[iTime];
-                        }
-                        
-                        fds_[iObs][iSurf][iFace].first().operator=(newPointData.first());
-                        fds_[iObs][iSurf][iFace].second().operator=(newPointData.second());
+                        qds_[iObs][iSurf][iFace].operator=(getNewPointData(qds_[iObs][iSurf][iFace], expiredIndex));
+                        fds_[iObs][iSurf][iFace].operator=(getNewPointData(fds_[iObs][iSurf][iFace], expiredIndex));
                     }
                 }
             }
@@ -232,10 +209,11 @@ void Foam::functionObjects::fwhFormulation::clearExpiredData()
 
 void Foam::functionObjects::fwhFormulation::update()
 {
-    scalar ct   = fwh_.obr_.time().value();
-    
+    scalar ct = fwh_.obr_.time().value();
+
     if (mag(fwh_.Ufwh_) > SMALL || fwh_.nonUniformSurfaceMotion_)
     {
+        //Update distance to observers
         forAll(fwh_.observers_, iObs)
         {
             rMax_[iObs] = 0.0;
@@ -250,12 +228,18 @@ void Foam::functionObjects::fwhFormulation::update()
                 forAll(Cf, i)
                 {
                     robs_[iObs][iSurf][i] = fwh_.observers_[iObs].position() - Cf[i];
-                    magrobs_[iObs][iSurf][i] = mag(robs_[iObs][iSurf][i]);
+                    vector r = robs_[iObs][iSurf][i];
+                    scalar R_ = sqrt
+                    (
+                        sqr(r[0])+( 1 - sqr(mag(fwh_.U0_)/fwh_.c0_))*(sqr(r[1]) + sqr(r[2]))
+                    );
+                    // magrobs_[iObs][iSurf][i] = mag(robs_[iObs][iSurf][i]);
+                    magrobs_[iObs][iSurf][i] = (-(mag(fwh_.U0_)/fwh_.c0_) * r[0] + R_)/(1 - sqr(mag(fwh_.U0_)/fwh_.c0_));
+
                     if (magrobs_[iObs][iSurf][i] > rMax_[iObs])
                     {
                         rMax_[iObs] = magrobs_[iObs][iSurf][i];
                     }
-                    
                     if (rMin_.size() && (magrobs_[iObs][iSurf][i] < rMin_[iObs]))
                     {
                         rMin_[iObs] = magrobs_[iObs][iSurf][i];
@@ -264,26 +248,45 @@ void Foam::functionObjects::fwhFormulation::update()
             }
             reduce(rMax_[iObs], maxOp<scalar>());
             tauMax_[iObs] = rMax_[iObs] / fwh_.c0_;
-            
+
             if (tauMin_.size())
             {
                 reduce(rMin_[iObs], minOp<scalar>());
                 tauMin_[iObs] = rMin_[iObs] / fwh_.c0_;
             }
         }
-        
+
+        //Update normals
+        List<vector> Cs(fwh_.controlSurfaces_.size());
         forAll(ni_, iSurf)
         {
             const vectorField& Sf = fwh_.controlSurfaces_[iSurf].Sf();
+            const vectorField& Cf = fwh_.controlSurfaces_[iSurf].Cf();
+            Cs[iSurf] = gSum(Cf);
+            scalar surfSize = scalar(Cf.size());
+            reduce (surfSize, sumOp<scalar>());
+            Cs[iSurf] /= surfSize;
             scalar magSf = 0.0;
+            
             forAll(ni_[iSurf], iFace)
             {
                 magSf = mag(Sf[iFace]);
-                ni_[iSurf].value(iFace) = nl_[iSurf][iFace]*Sf[iFace]/magSf;
+                ni_[iSurf].value(iFace) = Sf[iFace]/magSf;
+
+                if ( ((Cf[iFace] - Cs[iSurf]) & ni_[iSurf].value(iFace)) > 0 )
+                {
+                    nl_[iSurf][iFace] = 1.0;
+                }
+                else
+                {
+                    nl_[iSurf][iFace] = -1.0;
+                }
+                ni_[iSurf].value(iFace) *= nl_[iSurf][iFace];
             }
         }
     }
     
+    //Update retarted time
     forAll(fwh_.observers_, iObs)
     {
         forAll(fwh_.controlSurfaces_, iSurf)
@@ -313,9 +316,18 @@ Foam::label Foam::functionObjects::fwhFormulation::findExpiredIndex
     label ui = timeData.first().size();
     label li = 0;
     label mi = (ui + li) / 2;
+
     if (ui < 1)
     {
         return -1;
+    }
+    else
+    {
+        if ((timeData.first()[ui-1] < expiredTime) && (mi > 1))
+        {
+            Info << "WARNING: ExpiredTime is out of bounds." << endl;
+            return -1;
+        }
     }
     if (mi < 1)
     {
@@ -394,6 +406,7 @@ Foam::scalar Foam::functionObjects::fwhFormulation::valueAt
         (tau > timeData.first()[ui-1])
        )
     {
+    //    Info<< "WARNING: Time is out of bounds." << endl;
         return 0.0;
     }
     //exit if tau is at bounds
@@ -438,6 +451,42 @@ Foam::scalar Foam::functionObjects::fwhFormulation::valueAt
         (timeData.first()[ui] - timeData.first()[li])
     ) * (tau - timeData.first()[li]);
 }
+
+Foam::functionObjects::fwhFormulation::pointTimeData Foam::functionObjects::fwhFormulation::getNewPointData 
+(
+    const pointTimeData& timeData, 
+    label expiredIndex
+)
+{
+    if (expiredIndex > -1)
+    {
+        pointTimeData newPointData;
+        label newsize = timeData.first().size() - (expiredIndex + 1);
+        newPointData.first().resize(newsize);
+        newPointData.second().resize(newsize);
+        for(label iTime=expiredIndex+1; iTime<timeData.first().size(); iTime++)
+        {
+            newPointData.first() [iTime-(expiredIndex+1)] = timeData.first()[iTime];
+            newPointData.second()[iTime-(expiredIndex+1)] = timeData.second()[iTime];
+        }
+        return newPointData;
+    }
+    else
+    {
+        return timeData;
+    }
+}
+
+Foam::functionObjects::fwhFormulation::surfaceTimeData Foam::functionObjects::fwhFormulation::getQdsData()
+{
+    return qds_;
+}
+
+Foam::functionObjects::fwhFormulation::surfaceTimeData Foam::functionObjects::fwhFormulation::getFdsData()
+{
+    return fds_;
+}
+
 
 //
 //END-OF-FILE

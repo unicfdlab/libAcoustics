@@ -1,0 +1,48 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # Run from this directory
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+errors=0
+
+echo $'===== Running AllRun =====\n' > total.log
+
+if [ -d "0.orig" ]; then
+    rm -rf 0
+    cp -rf 0.orig/ 0/
+fi
+blockMesh >> total.log 2>&1
+rc=$?
+if [ "$rc" = "0" ]; then
+    echo $'===== blockMesh		OK =====\n' >> total.log
+else
+    errors=$errors+1
+    echo $'===== blockMesh		FAILED =====\n' >> total.log
+fi
+snappyHexMesh -overwrite >> total.log 2>&1
+rc=$?
+if [ "$rc" = "0" ]; then
+    echo $'===== SnappyHexMesh		OK =====\n' >> total.log
+else
+    errors=$errors+1
+    echo $'===== SnappyHexMesh		FAILED =====\n' >> total.log
+fi
+$(getApplication) >> total.log 2>&1
+rc=$?
+if [ "$rc" = "0" ]; then
+    echo $'===== runApplication		OK =====\n' >> total.log
+else
+    errors=$errors+1
+    echo $'===== runApplication		FAILED =====\n' >> total.log
+fi
+# check case results
+
+if [ "$errors" = "0" ]; then
+    echo $errors > successful.txt
+else
+    echo $errors > failed.txt
+fi 
+
+
+#------------------------------------------------------------------

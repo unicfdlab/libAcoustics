@@ -93,6 +93,7 @@ Foam::functionObjects::FfowcsWilliamsHawkings::FfowcsWilliamsHawkings
     controlSurfaces_(0),
     mergeList_(0)
 {
+    Info << "Name = " << name << endl;
     this->read(dict);
     this->update();
     this->initialize();
@@ -200,9 +201,10 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::read(const dictionary& dict)
 
     dict.lookup("formulationType") >> formulationType_;
 
-    dict.lookup("Ufwh") >> Ufwh_;
+    Ufwh_ = dict.lookupOrDefault("Ufwh",vector::zero);
+    Info << Ufwh_ << endl;
 
-    dict.lookup("U0") >> U0_;
+    U0_ = dict.lookupOrDefault("U0",vector::zero);
 
     dict.lookup("pInf") >> pInf_;
 
@@ -227,7 +229,7 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::read(const dictionary& dict)
         fixedResponseDelay_ = false;
     }
 
-    dict.lookup("cleanFreq") >> cleanFreq_;
+    cleanFreq_ = dict.lookupOrDefault("cleanFreq",100);
 
     const fvMesh& mesh = refCast<const fvMesh>(obr_);
 
@@ -283,11 +285,17 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::write()
     {
         return false;
     }
+    
+    return true;
+}
 
-    //store old faces
-    forAll(controlSurfaces_, iSurf)
+void Foam::functionObjects::FfowcsWilliamsHawkings::updateSurfaceCf()
+{
+    if (nonUniformSurfaceMotion_)
     {
-        if (nonUniformSurfaceMotion_)
+        this->expire();
+        this->update();
+        forAll(controlSurfaces_, iSurf)
         {
             forAll(Cf0_[iSurf], iF)
             {
@@ -295,8 +303,6 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::write()
             }
         }
     }
-
-    return true;
 }
 
 void Foam::functionObjects::FfowcsWilliamsHawkings::correct()
@@ -307,7 +313,8 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::correct()
     }
     this->update();
 
-    scalar dt   = obr_.time().deltaT().value();
+    scalar dt = obr_.time().deltaT().value();
+    scalar ct = obr_.time().value();
 
     //update surface velocities (if needed)
     forAll(controlSurfaces_, iSurf)
@@ -329,17 +336,28 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::correct()
     {
         forAll(observers_, iObs)
         {
-            scalar oap = fwhFormulationPtr_->observerAcousticPressure(iObs);
-            if (Pstream::master())
+            forAll(controlSurfaces_, iSurf)
             {
-                SoundObserver& obs = observers_[iObs];
-
-                if (dRef_ > 0.0)
+                const sampledSurface& surf = controlSurfaces_[iSurf];
+                if (surf.interpolate())
                 {
-                    oap /= dRef_;
+                    Info<< "WARNING: Interpolation for surface " << surf.name() << " is on, turn it off"
+                    << endl;
                 }
-                obs.apressure(oap); //appends new calculated acoustic pressure
-                Log<<"OAP = "<< oap <<nl;
+
+                const vectorField& Sf = surf.Sf();
+                const vectorField uS (surfaceVelocity(surf)());
+                const scalarField rhoS (surfaceDensity(surf)());
+                const scalarField pS (surfacePressure(surf)() - pInf_);
+
+                scalar oap = fwhFormulationPtr_->observerAcousticPressure(Sf, uS, rhoS, pS, iObs, iSurf, ct);
+
+                if (Pstream::master())
+                {
+                    SoundObserver& obs = observers_[iObs];
+                    obs.apressure(oap); //appends new calculated acoustic pressure
+                    Log<<"OAP = "<< oap <<nl;
+                }
             }
         }
     }
@@ -354,7 +372,6 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::correct()
             }
         }
     }
-
     //Remove old data if needed
     if (fwhFormulationPtr_.valid())
     {
@@ -362,40 +379,6 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::correct()
     }
 }
 
-//bool Foam::functionObjects::FfowcsWilliamsHawkings::signalReachedObserver(const surfaceTimeData& data, label iObs)
-//{
-//    scalar ct = obr_.time().value();
-//    label lasttau = 0;
-//    label signalReached = 1;
-//    Info << "in signalReachedObserver" << endl;
-//    forAll(data[iObs], iSurf)
-//    {
-//        forAll(data[iObs][iSurf],iFace)
-//        {
-//            lasttau = data[iObs][iSurf][iFace].first().size() - 1;
-//            if (lasttau < 0)
-//            {
-//                signalReached = 0;
-//                break;
-//            }
-//            if (ct < data[iObs][iSurf][iFace].first()[lasttau])
-//            {
-//                signalReached = 0;
-//                Info << "ct = " << ct << " lasttm = " << data[iObs][iSurf][iFace].first()[lasttau] << endl;
-//                break;
-//            }
-//        }
-//    }
-//
-//    reduce (signalReached, minOp<label>());
-//
-//    if (signalReached)
-//    {
-//        Log << "Obs " << iObs << " is listening at time " << ct << endl;
-//    }
-//
-//    return signalReached;
-//}
 
 Foam::tmp<Foam::scalarField> Foam::functionObjects::FfowcsWilliamsHawkings::surfaceDensity(const sampledSurface& surface) const
 {
@@ -500,15 +483,12 @@ Foam::tmp<Foam::scalarField> Foam::functionObjects::FfowcsWilliamsHawkings::surf
         pSampled.ref() *= rhoRef_;
     }
 
-    //Info << pSampled() << endl;
-
     return pSampled;
 }
 
 bool Foam::functionObjects::FfowcsWilliamsHawkings::expire()
 {
     bool justExpired = false;
-
     forAll(controlSurfaces_, surfI)
     {
         if (controlSurfaces_.operator[](surfI).expire())
@@ -551,6 +531,7 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::update()
 
     // Serial: quick and easy, no merging required
     // Just like sampledSurfaces
+
     if (!Pstream::parRun())
     {
         forAll(controlSurfaces_, surfI)
@@ -603,6 +584,11 @@ bool Foam::functionObjects::FfowcsWilliamsHawkings::update()
     }
 
     return updated;
+}
+
+Foam::PtrList<Foam::sampledSurface>& Foam::functionObjects::FfowcsWilliamsHawkings::getSampledSurface()
+{
+    return controlSurfaces_;
 }
 
 // ************************************************************************* //

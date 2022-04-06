@@ -1,0 +1,67 @@
+        functionObjectLibs ("libAcoustics.so");
+        
+        log             true;
+        
+        probeFrequency  1;
+        
+        timeStart       100;
+        
+        timeEnd         200;
+        
+        writeFft        false;
+        
+        c0              343;
+        
+        pName           p;
+
+        pInf            0;//for pisoFoam
+        
+        rhoName         rho;
+        
+        rho             rhoInf;
+        
+        rhoInf          1;
+        
+        CofR (0 0 0);
+        
+        observers
+        {
+            N1
+            {
+                position (0.20 1 -0.01);
+                pRef 0.000020;
+                fftFreq 1024;
+            }
+            E1
+            {
+                position (1 0.3 -0.01);
+                pRef 0.000020;
+                fftFreq 1024;
+            }
+            N2
+            {
+                position (0.20 5 -0.01);
+                pRef 0.000020;
+                fftFreq 1024;
+            }
+            E2
+            {
+                position (5 0.3 -0.01);
+                pRef 0.000020;
+                fftFreq 1024;
+            }
+            N3
+            {
+                position (0.20 50 -0.01);
+                pRef 0.000020;
+                fftFreq 1024;
+            }
+            E3
+            {
+                position (50 0.3 -0.01);
+                pRef 0.000020;
+                fftFreq 1024;
+            }
+        }
+
+

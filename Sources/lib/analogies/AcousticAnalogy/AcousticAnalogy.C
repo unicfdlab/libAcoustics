@@ -35,7 +35,6 @@ Foam::functionObjects::AcousticAnalogy::AcousticAnalogy
     timeEnd_(-1.0),
     writeFft_(true),
     c0_(300.0),
-    dRef_(-1.0),
     observers_(0),
     probeI_(0)
 {
@@ -60,7 +59,6 @@ Foam::functionObjects::AcousticAnalogy::AcousticAnalogy
     timeEnd_(-1.0),
     writeFft_(true),
     c0_(300.0),
-    dRef_(-1.0),
     observers_(0),
     probeI_(0)
 {
@@ -173,6 +171,10 @@ void Foam::functionObjects::AcousticAnalogy::correct()
 {
 }
 
+void Foam::functionObjects::AcousticAnalogy::updateSurfaceCf()
+{
+}
+
 bool Foam::functionObjects::AcousticAnalogy::read(const dictionary& dict)
 {
     if (!forces::read(dict))
@@ -181,19 +183,15 @@ bool Foam::functionObjects::AcousticAnalogy::read(const dictionary& dict)
     }
     Info << "Reading analogy settings" << endl;
 
-    dict.lookup("probeFrequency") >> probeFreq_;
+    probeFreq_ = dict.lookupOrDefault("probeFrequency",1);
 
     dict.lookup("timeStart") >> timeStart_;
 
     dict.lookup("timeEnd") >> timeEnd_;
 
-    dict.lookup("writeFft") >> writeFft_;
+    writeFft_ = dict.lookupOrDefault("writeFft", false);
 
     dict.lookup("c0") >> c0_;
-
-//    dict.lookup("U0") >> U0_;
-
-    dict.lookup("dRef") >> dRef_;
 
     //Ask for rhoRef again, because libforces sometimes do not
     dict.lookup("rhoInf") >> rhoRef_;
@@ -207,10 +205,8 @@ bool Foam::functionObjects::AcousticAnalogy::read(const dictionary& dict)
             word oname = obsNames[obsI];
             vector opos (vector::zero);
             obsDict.subDict(oname).lookup("position") >> opos;
-            scalar pref = 1.0e-5;
-            obsDict.subDict(oname).lookup("pRef") >> pref;
-            label fftFreq = 1024;
-            obsDict.subDict(oname).lookup("fftFreq") >> fftFreq;
+            scalar pref = obsDict.subDict(oname).lookupOrDefault("pRef",2e-05);
+            label fftFreq = obsDict.subDict(oname).lookupOrDefault("fftFreq",1024);
 
             observers_.append
             (
@@ -250,6 +246,7 @@ bool Foam::functionObjects::AcousticAnalogy::write()
 
     if ( mag(probeI_ % probeFreq_) > VSMALL  )
     {
+        updateSurfaceCf();
         return true;
     }
     else
@@ -303,6 +300,10 @@ bool Foam::functionObjects::AcousticAnalogy::write()
     return true;
 }
 
+Foam::List<Foam::SoundObserver> Foam::functionObjects::AcousticAnalogy::getSoundObservers()
+{
+    return observers_;
+}
 //
 //END-OF-FILE
 //

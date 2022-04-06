@@ -1,0 +1,51 @@
+FwhSurfacesSphere-Patch
+{
+        type            FfowcsWilliamsHawkings;
+        formulationType Farassat1AFormulation;
+        #include        "commonSettings";
+        patches ();
+        interpolationScheme cellPoint;
+
+        surfaces
+        (
+                sphere
+                {
+                    type            patch;
+                    patches         (sphere);
+                    interpolate     false;
+                }
+        );
+        
+        cleanFreq       100;
+        nonUniformSurfaceMotion true;
+        Ufwh    (.0 .0 .0);
+        U0      (.0 .0 .0);
+        fixedResponseDelay false;
+        responseDelay   0.01;
+}
+
+FwhSurfacesSphere_PatchFixedDelay
+{
+        type            FfowcsWilliamsHawkings;
+        formulationType Farassat1AFormulation;
+        #include        "commonSettings";
+        patches ();
+        interpolationScheme cellPoint;
+
+        surfaces
+        (
+                sphere
+                {
+                    type            patch;
+                    patches         (sphere);
+                    interpolate     false;
+                }
+        );
+
+        cleanFreq       100;
+        nonUniformSurfaceMotion true;
+        Ufwh    (.0 .0 .0);
+        U0      (.0 .0 .0);
+        fixedResponseDelay true;
+        responseDelay   0.01;
+}

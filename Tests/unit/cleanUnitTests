@@ -1,0 +1,19 @@
+#!/bin/bash
+cd testExpiredFunction/
+wclean
+rm -rf acousticData/
+rm -rf utils/
+rm -rf Test/
+
+cd ../testValueAt/
+wclean
+rm -rf acousticData/
+rm -rf utils/
+rm -rf Test/
+
+cd ../
+
+#
+#END-OF-FILE
+#
+

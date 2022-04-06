@@ -1,0 +1,16 @@
+#!/bin/bash
+cd testFormulationFunctions/
+testFormulationFunctions
+
+cd ../testMonopoleSource/
+testMonopoleSource
+
+cd ../testDipoleSource/
+testDipoleSource
+
+cd ../
+
+#
+#END-OF-FILE
+#
+

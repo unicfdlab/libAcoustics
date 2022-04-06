@@ -1,0 +1,13 @@
+#!/bin/bash
+cd testExpiredFunction/
+testExpiredFunction
+
+cd ../testValueAt/
+testValueAt
+
+cd ../
+
+#
+#END-OF-FILE
+#
+
