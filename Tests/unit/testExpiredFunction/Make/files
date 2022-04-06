@@ -1,0 +1,4 @@
+../../utils/CatchMain.C
+testExpiredFunction.C
+
+EXE = $(FOAM_USER_APPBIN)/testExpiredFunction

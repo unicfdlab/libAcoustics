@@ -75,11 +75,7 @@ protected:
     //-
     void initialize();
 
-    //-
-    scalar valueAt (const surfaceTimeData& data, label iObs, label iSurf, label iFace, scalar tau);
-    
-    //-
-    label findExpiredIndex (const pointTimeData& timeData, scalar expiredTime);
+
 
     
 private:
@@ -98,7 +94,22 @@ public:
     virtual ~fwhFormulation();
     
     //-
-    virtual scalar observerAcousticPressure(label iObs);
+    scalar valueAt (const surfaceTimeData& data, label iObs, label iSurf, label iFace, scalar tau);
+    
+    //-
+    label findExpiredIndex (const pointTimeData& timeData, scalar expiredTime);
+    
+    //-
+    pointTimeData getNewPointData (const pointTimeData& timeData, label expiredIndex);
+    
+    //-
+    surfaceTimeData getQdsData();
+    
+    //-
+    surfaceTimeData getFdsData();
+    
+    //-
+    virtual  scalar observerAcousticPressure (const vectorField& Sf, const vectorField& uS, const scalarField& rhoS, const scalarField& pS, label iObs, label iSurf, scalar ct);
     
     //-
     virtual void update();

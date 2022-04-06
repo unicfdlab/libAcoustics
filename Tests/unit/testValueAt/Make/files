@@ -1,0 +1,4 @@
+../../utils/CatchMain.C
+testValueAt.C
+
+EXE = $(FOAM_USER_APPBIN)/testValueAt

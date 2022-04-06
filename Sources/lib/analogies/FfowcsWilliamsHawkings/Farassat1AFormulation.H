@@ -61,7 +61,10 @@ public:
     ~Farassat1AFormulation();
 
     //-
-    scalar observerAcousticPressure(label iObs);
+    scalar observerAcousticPressure (const vectorField& Sf, const vectorField& uS, const scalarField& rhoS, const scalarField& pS, label iObs, label iSurf, scalar ct);
+    
+    //-
+    inline void calculateAcousticPressure (const vectorField& Sf, const vectorField& uS, const scalarField& rhoS, const scalarField& pS, label iObs, label iSurf, scalar ct);
 
     //-
     void clearExpiredData();

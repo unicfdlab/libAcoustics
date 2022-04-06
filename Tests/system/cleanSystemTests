@@ -1,0 +1,13 @@
+#!/bin/bash
+cd testMonopole3D/
+./Allclean
+
+cd ../testDipole3D/
+./Allclean
+
+cd ../
+
+#
+#END-OF-FILE
+#
+

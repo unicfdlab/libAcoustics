@@ -1,0 +1,54 @@
+    libs ("libAcoustics.so");
+
+    log             true;
+    writeFft        false;
+    probeFrequency  1;
+    timeStart       0.001;
+    timeEnd         1;
+    c0              343;
+    p               pa;
+    pInf            0;
+    rho             rhoInf;
+    rhoInf          1.2;
+    CofR            (0 0 0);
+
+    observers
+    {
+        R-A
+        {
+            position    (0 0 1);
+            pRef        2.0e-5;
+            fftFreq     1024;
+        }
+        R-B
+        {
+            position    (0 1 0);
+            pRef        2.0e-5;
+            fftFreq     1024;
+        }
+        R-C
+        {
+            position    (-1 0 0);
+            pRef        2.0e-5;
+            fftFreq     1024;
+        }
+        R-D
+        {
+            position    (1 0 0);
+            pRef        2.0e-5;
+            fftFreq     1024;
+        }
+        R-E
+        {
+            position    (0.7 0.7 0);
+            pRef        2.0e-5;
+            fftFreq     1024;
+        }
+        R-F
+        {
+            position    (0.7 -0.7 0);
+            pRef        2.0e-5;
+            fftFreq     1024;
+        }
+    }
+

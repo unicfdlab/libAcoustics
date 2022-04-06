@@ -1,0 +1,62 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    outlet
+    {
+        type            zeroGradient;
+    }
+
+    sphere
+    {
+        type codedFixedValue;
+        value uniform (0 0 0);
+        redirectType    UMonopole;
+
+        code
+        #{
+             const scalar t = db().time().timeOutputValue();
+             scalar c0_ = 343;
+             scalar U0_ = 1;
+             scalar r0_ = 0.2;
+             scalar r = r0_;
+             scalar freq = 100;
+             scalar k = freq * 2.0* constant::mathematical::pi / c0_;
+             label patchID = this->patch().boundaryMesh().findPatchID("sphere");
+             vectorField& UField = *this;
+             const vectorField& USf = this->patch().boundaryMesh()[patchID].Sf();
+             const scalarField& magUSf = this->patch().boundaryMesh()[patchID].magSf();
+
+             forAll (USf, iFace)
+             {
+                vector normals = -USf[iFace]/magUSf[iFace];
+                UField[iFace] = (r0_*r0_*U0_*((1.0 + k*k*r0_*r)*Foam::cos(k*(r0_ - r + c0_*t)) + k*(r0_ - r)*Foam::sin(k*(r0_ - r + c0_*t))) / ((1.0 + r0_*r0_*k*k)*r*r))*normals;
+             }
+             operator==(UField);
+        #};
+
+        codeInclude #{#};
+        codeOptions #{#};
+        codeLibs #{#};
+    }
+}
+
+// ************************************************************************* //

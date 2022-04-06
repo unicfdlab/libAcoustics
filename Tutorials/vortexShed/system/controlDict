@@ -1,0 +1,98 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     pimpleFoam;
+
+startFrom       startTime;
+
+startTime       100;
+
+stopAt          endTime;
+
+endTime         200;
+
+deltaT          1e-2;
+
+writeControl    timeStep;
+
+writeInterval   2000; // every 20s
+
+purgeWrite      50;
+
+writeFormat     ascii;
+
+writePrecision  8;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable false;
+
+
+functions
+{
+    #include "CurleControl"
+    #include "fwhControl"
+
+    #include "OFCurle" //OpenFOAM Curle analogy
+
+    forces
+    {
+        type            forces;
+        libs            (forces);
+        writeControl    writeTime;
+        timeStart       100;
+
+        patches         (cylinder);
+        CofR            (0.20 0.3 -0.01);
+        writeFields     yes;
+
+        rho             rhoInf;
+        rhoInf          1;
+    }
+    
+    cuttingPlane
+    {
+        type            surfaces;
+        libs            (sampling);
+        writeControl    writeTime;
+        surfaceFormat   vtk;
+        timeStart       100;
+        fields          (p U);
+        interpolationScheme cellPoint;
+        surfaces
+        {
+            zNormal
+            {
+                type            cuttingPlane;
+                planeType       pointAndNormal;
+                pointAndNormalDict
+                {
+                    point           (0 0 -0.01);
+                    normal          (0 0 1);
+                }
+                interpolate     false;
+            }
+        }
+    }
+}
+
+
+// ************************************************************************* //

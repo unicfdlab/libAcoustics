@@ -1,0 +1,63 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    outlet
+    {
+        type            zeroGradient;
+    }
+
+    sphere
+    {
+        type codedFixedValue;
+        value uniform (0 0 0);
+        redirectType    UDipole;
+
+        code
+        #{
+             const scalar t = db().time().timeOutputValue();
+             scalar c0 = 343;
+             scalar U0 = 1;
+             scalar r0 = 0.2;
+             scalar freq = 100;
+             scalar k = freq * 2.0* constant::mathematical::pi / c0;
+             label patchID = this->patch().boundaryMesh().findPatchID("sphere");
+             vectorField& UField = *this;
+             const vectorField& USf = this->patch().boundaryMesh()[patchID].Sf();
+             const scalarField& magUSf = this->patch().boundaryMesh()[patchID].magSf();
+             const vectorField& Cf = this->patch().boundaryMesh()[patchID].Cf();
+
+             forAll (USf, iFace)
+             {
+                scalar cosTet = Cf[iFace][0]/r0;
+                vector normals = -USf[iFace]/magUSf[iFace];
+                UField[iFace] = (r0*r0*r0*U0*cosTet*((4.0 + k*k*(4.0*r0*r0-2.0*r0*r0+r0*r0*(-2.0 + k*k*r0*r0)))*Foam::cos(k*(r0-r0 + c0*t)) + 2.0*k*(r0-r0)*(2.0 +k*k*r0*r0)*Foam::sin(k*(r0-r0+c0*t)))/((4.0 + r0*r0*r0*r0*k*k*k*k)*r0*r0*r0))*normals;
+             }
+             operator==(UField);
+        #};
+
+        codeInclude #{#};
+        codeOptions #{#};
+        codeLibs #{#};
+    }
+}
+
+// ************************************************************************* //

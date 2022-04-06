@@ -1,0 +1,62 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [1 -1 -2 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    outlet
+    {
+        type            acousticWaveTransmissive;
+        advectiveSpeed  343;
+        value           $internalField;       
+    }
+
+    sphere
+    {
+        type codedFixedValue;
+        value uniform 0;
+        redirectType   acousticPressure;
+
+        code
+        #{
+             const scalar t = db().time().timeOutputValue();
+             scalar rho = 1.2;
+             scalar r0 = 0.2;
+             scalar c0 = 343;
+             scalar U0 = 1;
+             scalar freq = 100;
+             scalar k = freq * 2.0* constant::mathematical::pi / c0;
+             label patchID = this->patch().boundaryMesh().findPatchID("sphere");
+             
+             scalarField& pField = *this;
+             const vectorField& Cf = this->patch().boundaryMesh()[patchID].Cf();
+             forAll (Cf, iFace)
+             {
+                 scalar cosTet = Cf[iFace][0]/r0;
+                 pField[iFace] = r0*r0*r0*c0*k*U0*rho*cosTet*(k*(-2.0*r0 + r0*(2.0+k*k*r0*r0))*Foam::cos(k*(r0-r0+c0*t)) + (-2.0 + k*k*r0*(r0-2.0*r0))*Foam::sin(k*(r0-r0+c0*t)) ) / ((4.0 + r0*r0*r0*r0*k*k*k*k)*r0*r0);
+             }
+             operator==(pField);
+        #};
+        codeInclude #{#};
+        codeOptions #{#};
+        codeLibs #{#};
+    }
+}
+
+// ************************************************************************* //
