@@ -10,7 +10,7 @@ echo $'===== Running All Tests =====\n'> summary.log
 echo $'===== Running All Tests =====\n'> total.log
 
 cd unit/testExpiredFunction/
-testExpiredFunction &>> ../../total.log
+testExpiredFunction >> ../../total.log 2>&1
 rc=$?
 if [ "$rc" = "0" ]; then
     echo $'===== testExpiredFunction		OK =====\n' >> ../../summary.log
@@ -19,7 +19,7 @@ else
     echo $'===== testExpiredFunction		FAILED =====\n' >> ../../summary.log
 fi
 cd ../testValueAt/
-testValueAt &>> ../../total.log
+testValueAt >> ../../total.log 2>&1
 rc=$?
 if [ "$rc" = "0" ]; then
     echo $'===== testValueAt		OK =====\n' >> ../../summary.log
@@ -28,7 +28,7 @@ else
     echo $'===== testValueAt		FAILED =====\n' >> ../../summary.log
 fi
 cd ../../integration/testFormulationFunctions/
-testFormulationFunction &>> ../../total.log
+testFormulationFunction >> ../../total.log 2>&1
 rc=$?
 if [ "$rc" = "0" ]; then
     echo $'===== testFormulationFunctions		OK =====\n' >> ../../summary.log
@@ -37,7 +37,7 @@ else
     echo $'===== testFormulationFunctions		FAILED =====\n' >> ../../summary.log
 fi
 cd ../../integration/testMonopoleSource/
-testMonopoleSource &>> ../../total.log
+testMonopoleSource >> ../../total.log 2>&1
 rc=$?
 if [ "$rc" = "0" ]; then
     echo $'===== testMonopoleSource		OK =====\n' >> ../../summary.log
@@ -46,7 +46,7 @@ else
     echo $'===== testMonopoleSource		FAILED =====\n' >> ../../summary.log
 fi
 cd ../../integration/testDipoleSource/
-testDipoleSource &>> ../../total.log
+testDipoleSource >> ../../total.log 2>&1
 rc=$?
 if [ "$rc" = "0" ]; then
     echo $'===== testDipoleSource		OK =====\n' >> ../../summary.log
@@ -61,4 +61,4 @@ else
     echo $errors > failed.txt
 fi 
 
-#------------------------------------------------------------------------------
+#-----------------------------------------------------------
