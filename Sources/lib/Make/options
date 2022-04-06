@@ -29,5 +29,5 @@ LIB_LIBS = \
     -lmeshTools \
     -lforces \
     -lsurfMesh \
-    -L$(fftw_root)/lib64 \
+    -L$(fftw_root)/lib \
     -lfftw3
