@@ -11,5 +11,5 @@ EXE_LIBS = \
     -lsampling \
     -L$(FOAM_USER_LIBBIN) \
     -lAcoustics \
-    -L$(fftw_root)/lib64 \
+    -L$(fftw_root)/lib \
     -lfftw3
