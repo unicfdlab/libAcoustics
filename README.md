@@ -3,8 +3,8 @@
 1. [About libAcoustics library](#About-libAcoustics-library)
 2. [Available versions of the library](#Available-versions-of-the-library)
 3. [Tutorials and examples](#Tutorials-and-examples)
-4. [Published papers related to libAcoustics technology](#Published-papers-related-to-libAcoustics-technology)
-5. [For citation](#For-citation)
+4. [Published papers related to libAcoustics technology](#Published-materials-related-to-libAcoustics-library)
+6. [For citation](#For-citation)
 
 # About libAcoustics library
 [To the contents](#Contents)
