@@ -1,1 +1,0 @@
-../analogies/Curle_bckup/Curle.C
