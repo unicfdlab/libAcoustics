@@ -1,33 +1,53 @@
 # Contents
 
-1. [libAcoustics library brief](#libAcoustics-library-brief)
-2. [Published papers related to libAcoustics technology](#Published-papers-related-to-libAcoustics-technology)
-3. [Available versions of the library](#Available-versions-of-the-library)
-4. [For citation](#For-citation)
+1. [About libAcoustics library](#About-libAcoustics-library)
+2. [Available versions of the library](#Available-versions-of-the-library)
+3. [Tutorials and examples](#Tutorials-and-examples)
+4. [Published papers related to libAcoustics technology](#Published-papers-related-to-libAcoustics-technology)
+5. [For citation](#For-citation)
 
-# libAcoustics library brief
+# About libAcoustics library
 [To the contents](#Contents)
 
-libAcoustics - library for far-field noise computation. At current time contains 3 kind of far-field prediction models:
+The libAcoustics - library for far-field noise computation. At current time contains 3 kind of far-field prediction models:
 
 1. **Curle analogy**
 
+   Based on equation 3.3 from [Curle N. (1955)](https://royalsocietypublishing.org/doi/10.1098/rspa.1955.0191)
+
 2. **Ffowcs Williams Hawkings analogy**
+
+     
+   * **Farassat 1A integral formulation** [Brentner K. S., & Farassat F. (1998).](https://doi.org/10.2514/2.558)
+   
+   * **Wind-tunnel configuration: formulation GT** [Guillaume Brès et al. (2010)](https://doi.org/10.2514/6.2010-3711)
 
 3. **CFD-BEM coupling** 
 
-libAcoustics source code tutorial, which was prepared in Chalmers University: http://www.tfd.chalmers.se/~hani/kurser/OS_CFD_2021/DebarsheeGhosh/OSCFD21_FinalPresentation.pdf
+# Tutorials and examples
+[To the contents](#Contents)
+
+The libAcoustics source code tutorial, which was prepared in [Chalmers University](http://www.tfd.chalmers.se/~hani/kurser/OS_CFD_2021/DebarsheeGhosh/OSCFD21_FinalPresentation.pdf)
+
+Some examples are presented in the conference paper [Epikhin A.(2021)](https://doi.org/10.5281/zenodo.3878439)
+
+libAcoustics library Wiki (in progress)
 
 # Available versions of the library 
 [To the contents](#Contents)
 
+We currently support the library for the OpenFOAM+ versions. 
+[Current Release](https://github.com/unicfdlab/libAcoustics/releases/tag/digitef-dev-2112)
+
 The library is available for next OpenFOAM versions:
 
-* OpenFOAM 3.0, 4.1 versions are stored in the [master branch](https://github.com/unicfdlab/libAcoustics/tree/master)
+* OpenFOAM 3.0, 4.1 versions are stored in the [openfoam-v4.1 branch](https://github.com/unicfdlab/libAcoustics/tree/openfoam-v4.1)
 * OpenFOAM+ v.1812 is in the [digitef-dev-1812 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-1812) of the repository
 * OpenFOAM+ v.1912 is in the [digitef-dev-1912 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-1912) of the repository
 * OpenFOAM+ v.2012 is in the [digitef-dev-2012 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-2012) of the repository
 * OpenFOAM+ v.2112 is in the [digitef-dev-2112 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-2112) of the repository
+
+Note: Please use the v2012 or v2112 versions because we fixed some bugs in them that were present in earlier implementations.
 
 # Published materials related to libAcoustics library
 [To the contents](#Contents)
@@ -58,8 +78,6 @@ The library is available for next OpenFOAM versions:
 |[Prediction of Noise Associated with an Isolated UAV Propeller](https://commons.erau.edu/edt/463/): **MSc Thesis**|![Velocity vectors around wing](https://github.com/unicfdlab/libAcoustics/blob/master/figures/wing-velocityfield.png)|
 |[High-Fidelity Simulations of Noise Generation in a Propeller-Driven Unmanned Aerial Vehicle](https://arc.aiaa.org/doi/abs/10.2514/1.J059117): **Article**|---|
 |[Análise e validação de modelo de simulação numérica para previsão de ruído aerodinâmico utilizando OpenFOAM e Libacoustics](https://repositorio.ufsc.br/handle/123456789/228458?show=full): **MSc Thesis**|![acoustic field around tandem](https://github.com/unicfdlab/libAcoustics/blob/master/figures/Tandem-acoustic-field.png)|
-
-
 
 
 # For citation
