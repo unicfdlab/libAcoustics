@@ -1,1 +1,0 @@
-../FoamFourierAnalysis/fftw-3.3.3/kernel/cycle.h

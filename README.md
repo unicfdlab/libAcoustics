@@ -1,44 +1,65 @@
 # Contents
 
-1. [libAcoustics library brief](#libAcoustics-library-brief)
-2. [Published papers related to libAcoustics technology](#Published-papers-related-to-libAcoustics-technology)
-3. [Available versions of the library](#Available-versions-of-the-library)
-4. [For citation](#For-citation)
+1. [About libAcoustics library](#About-libAcoustics-library)
+2. [Available versions of the library](#Available-versions-of-the-library)
+3. [Tutorials and examples](#Tutorials-and-examples)
+4. [Published papers related to libAcoustics technology](#Published-materials-related-to-libAcoustics-library)
+6. [For citation](#For-citation)
 
-# libAcoustics library brief
+# About libAcoustics library
 [To the contents](#Contents)
 
-libAcoustics - library for far-field noise computation. At current time contains 3 kind of far-field prediction models:
+The libAcoustics - library for far-field noise computation. At current time contains 3 kind of far-field prediction models:
 
 1. **Curle analogy**
 
+   Based on equation 3.3 from [Curle N. (1955)](https://royalsocietypublishing.org/doi/10.1098/rspa.1955.0191)
+
 2. **Ffowcs Williams Hawkings analogy**
+
+     
+   * **Farassat 1A integral formulation** [Brentner K. S., & Farassat F. (1998).](https://doi.org/10.2514/2.558)
+   
+   * **Wind-tunnel configuration: formulation GT** [Guillaume Brès et al. (2010)](https://doi.org/10.2514/6.2010-3711)
 
 3. **CFD-BEM coupling** 
 
-libAcoustics source code tutorial, which was prepared in Chalmers University: http://www.tfd.chalmers.se/~hani/kurser/OS_CFD_2021/DebarsheeGhosh/OSCFD21_FinalPresentation.pdf
+# Tutorials and examples
+[To the contents](#Contents)
+
+The libAcoustics source code tutorial, which was prepared in [Chalmers University](http://www.tfd.chalmers.se/~hani/kurser/OS_CFD_2021/DebarsheeGhosh/OSCFD21_FinalPresentation.pdf)
+
+Some examples are presented in the conference paper [Epikhin A.(2021)](https://doi.org/10.5281/zenodo.5906668)
+
+libAcoustics library Wiki (in progress)
 
 # Available versions of the library 
 [To the contents](#Contents)
 
+We currently support the library for the OpenFOAM+ versions. 
+[Current Release](https://github.com/unicfdlab/libAcoustics/releases/tag/digitef-dev-2112)
+
 The library is available for next OpenFOAM versions:
 
-* OpenFOAM 3.0, 4.1 versions are stored in the [master branch](https://github.com/unicfdlab/libAcoustics/tree/master)
+* OpenFOAM 3.0, 4.1 versions are stored in the [openfoam-v4.1 branch](https://github.com/unicfdlab/libAcoustics/tree/openfoam-v4.1)
 * OpenFOAM+ v.1812 is in the [digitef-dev-1812 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-1812) of the repository
 * OpenFOAM+ v.1912 is in the [digitef-dev-1912 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-1912) of the repository
 * OpenFOAM+ v.2012 is in the [digitef-dev-2012 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-2012) of the repository
 * OpenFOAM+ v.2112 is in the [digitef-dev-2112 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-2112) of the repository
+
+Note: Please use the v2012 or v2112 versions because we fixed some bugs in them that were present in earlier implementations.
+
 
 # Published materials related to libAcoustics library
 [To the contents](#Contents)
 
 | Title | Description |
 |------|-------------|
-|[Implementation of the FWH aero-acoustic analogy for sector analysis of an axi-symmetric turbomachine](http://www.tfd.chalmers.se/~hani/kurser/OS_CFD_2021/DebarsheeGhosh/OSCFD21_FinalPresentation.pdf): **Tutorial**|![wedge domain](https://github.com/unicfdlab/libAcoustics/blob/master/fan-wedge-domain.png)|
-|[Prediction of infrasound emission from horizontal axus wind turbines](https://github.com/unicfdlab/PhDTheses/blob/main/Thesis_Copy_edited-1.pdf): **MSc Thesis**|![Computational method scketch](https://github.com/unicfdlab/libAcoustics/blob/master/Infra_MScThesis.png)|
-|[Influence of the elastic cavity walls on cavity flow noise](https://www.researchgate.net/publication/356458463_Influence_of_the_elastic_cavity_walls_on_cavity_flow_noise):  **Article** |![flexible cavity instant velocity field](https://github.com/unicfdlab/libAcoustics/blob/master/flex-cavity-U.png)|
-|[A Computational Study on the Aeroacoustics of a Multi-Rotor Unmanned Aerial System](https://www.researchgate.net/publication/355396901_A_Computational_Study_on_the_Aeroacoustics_of_a_Multi-Rotor_Unmanned_Aerial_System):  **Article** |![Unmanned Aerial System](https://github.com/unicfdlab/libAcoustics/blob/master/Unmanned-Aerial-System.png)|
-| [Numerical Study of Iced Airfoil Aeroacoustics Using IDDES](https://www.researchgate.net/publication/342020749_Numerical_Study_of_Iced_Airfoil_Aeroacoustics_Using_IDDES):  **Article** | ![Q-criterion around wing](https://github.com/unicfdlab/libAcoustics/blob/master/L0.2Pc_Qcriterion.png) |
+|[Implementation of the FWH aero-acoustic analogy for sector analysis of an axi-symmetric turbomachine](http://www.tfd.chalmers.se/~hani/kurser/OS_CFD_2021/DebarsheeGhosh/OSCFD21_FinalPresentation.pdf): **Tutorial**|![wedge domain](https://github.com/unicfdlab/libAcoustics/blob/master/figures/fan-wedge-domain.png)|
+|[Prediction of infrasound emission from horizontal axus wind turbines](https://github.com/unicfdlab/PhDTheses/blob/main/Thesis_Copy_edited-1.pdf): **MSc Thesis**|![Computational method scketch](https://github.com/unicfdlab/libAcoustics/blob/master/figures/Infra_MScThesis.png)|
+|[Influence of the elastic cavity walls on cavity flow noise](https://www.researchgate.net/publication/356458463_Influence_of_the_elastic_cavity_walls_on_cavity_flow_noise):  **Article** |![flexible cavity instant velocity field](https://github.com/unicfdlab/libAcoustics/blob/master/figures/flex-cavity-U.png)|
+|[A Computational Study on the Aeroacoustics of a Multi-Rotor Unmanned Aerial System](https://www.researchgate.net/publication/355396901_A_Computational_Study_on_the_Aeroacoustics_of_a_Multi-Rotor_Unmanned_Aerial_System):  **Article** |![Unmanned Aerial System](https://github.com/unicfdlab/libAcoustics/blob/master/figures/Unmanned-Aerial-System.png)|
+| [Numerical Study of Iced Airfoil Aeroacoustics Using IDDES](https://www.researchgate.net/publication/342020749_Numerical_Study_of_Iced_Airfoil_Aeroacoustics_Using_IDDES):  **Article** | ![Q-criterion around wing](https://github.com/unicfdlab/libAcoustics/blob/master/figures/L0.2Pc_Qcriterion.png) |
 |[Wall-modeled large-eddy simulation of a trailing-edge serration–finlet configuration](https://www.researchgate.net/publication/352381522_Wall-Modeled_Large-Eddy_Simulation_of_a_Trailing-Edge_Serration-Finlet_Configuration):  **Article** |![Streamwise vector plots in the serration–finlet configuration](https://aip.scitation.org/na101/home/literatum/publisher/aip/journals/content/adv/2021/adv.2021.11.issue-6/5.0049181/20210613/images/medium/5.0049181.figures.online.f30.jpg)|
 |[The Eulerian–Lagrangian Approach for the Numerical Investigation of an Acoustic Field Generated by a High-Speed Gas-Droplet Flow](https://www.mdpi.com/2311-5521/6/8/274):  **Article** | ![Jet with particles Logo](https://www.mdpi.com/fluids/fluids-06-00274/article_deploy/html/images/fluids-06-00274-ag-550.jpg)|
 |[Jet Noise in Airframe Integration and Shielding](https://www.mdpi.com/2076-3417/10/2/511):  **Article** |![Emittance of acoustic waves by jet near wing](https://www.mdpi.com/applsci/applsci-10-00511/article_deploy/html/images/applsci-10-00511-g003-550.jpg)|
@@ -54,12 +75,10 @@ The library is available for next OpenFOAM versions:
 |[Investigating the Impact of Water Injection on Noise Generation During Rocket Lift-Off](https://www.diva-portal.org/smash/record.jsf?pid=diva2%3A1598708&dswid=4558)|---|
 |[Prediction of the Free Jet Noise Using Quasi-gas Dynamic Equations and Acoustic Analogy](https://link.springer.com/chapter/10.1007/978-3-030-50436-6_16): **Article**|![QGDFoam instant jet velocities](https://media.springernature.com/lw785/springer-static/image/chp%3A10.1007%2F978-3-030-50436-6_16/MediaObjects/500810_1_En_16_Fig5_HTML.png)|
 |[Simulations of Broadband Noise of a Small UAV Propeller](https://arc.aiaa.org/doi/abs/10.2514/6.2020-1493): **Article**|---|
-|[Analysis Methods and Design Measures for the Reduction of Noise and Vibration Induced by Marine Propellers](http://pub.dega-akustik.de/ICA2019/data/articles/001556.pdf): **Article**|![Vortices after propeller thruster](https://github.com/unicfdlab/libAcoustics/blob/master/PT-vortices.png)|
-|[Prediction of Noise Associated with an Isolated UAV Propeller](https://commons.erau.edu/edt/463/): **MSc Thesis**|![Velocity vectors around wing](https://github.com/unicfdlab/libAcoustics/blob/master/wing-velocityfield.png)|
+|[Analysis Methods and Design Measures for the Reduction of Noise and Vibration Induced by Marine Propellers](http://pub.dega-akustik.de/ICA2019/data/articles/001556.pdf): **Article**|![Vortices after propeller thruster](https://github.com/unicfdlab/libAcoustics/blob/master/figures/PT-vortices.png)|
+|[Prediction of Noise Associated with an Isolated UAV Propeller](https://commons.erau.edu/edt/463/): **MSc Thesis**|![Velocity vectors around wing](https://github.com/unicfdlab/libAcoustics/blob/master/figures/wing-velocityfield.png)|
 |[High-Fidelity Simulations of Noise Generation in a Propeller-Driven Unmanned Aerial Vehicle](https://arc.aiaa.org/doi/abs/10.2514/1.J059117): **Article**|---|
-|[Análise e validação de modelo de simulação numérica para previsão de ruído aerodinâmico utilizando OpenFOAM e Libacoustics](https://repositorio.ufsc.br/handle/123456789/228458?show=full): **MSc Thesis**|![acoustic field around tandem](https://github.com/unicfdlab/libAcoustics/blob/master/Tandem-acoustic-field.png)|
-
-
+|[Análise e validação de modelo de simulação numérica para previsão de ruído aerodinâmico utilizando OpenFOAM e Libacoustics](https://repositorio.ufsc.br/handle/123456789/228458?show=full): **MSc Thesis**|![acoustic field around tandem](https://github.com/unicfdlab/libAcoustics/blob/master/figures/Tandem-acoustic-field.png)|
 
 
 # For citation
@@ -67,7 +86,7 @@ The library is available for next OpenFOAM versions:
 
 If you have found the software useful for your research, please cite next sources:
 
-* [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3878439.svg)](https://doi.org/10.5281/zenodo.3878439) 
- 
 * Epikhin, A., Evdokimov, I., Kraposhin, M., Kalugin, M., Strijhak, S. Development of a Dynamic Library for Computational Aeroacoustics Applications Using the OpenFOAM Open Source Package // Procedia Computer ScienceVolume 66, 2015, Pages 150-157
 https://www.sciencedirect.com/science/article/pii/S1877050915033670 , DOI: 10.1016/j.procs.2015.11.018
+
+* [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3878439.svg)](https://doi.org/10.5281/zenodo.3878439) 
