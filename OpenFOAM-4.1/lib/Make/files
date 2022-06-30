@@ -1,0 +1,20 @@
+
+SoundObserver/SoundObserver.C
+FoamFourierAnalysis/FoamFftwDriver.C
+
+/* Acoustic analogies */
+analogies/AcousticAnalogy/AcousticAnalogy.C
+analogies/Curle/Curle.C
+analogies/FfowcsWilliamsHawkings/fwhFormulation.C
+analogies/FfowcsWilliamsHawkings/Farassat1AFormulation.C
+analogies/FfowcsWilliamsHawkings/GTFormulation.C
+analogies/FfowcsWilliamsHawkings/FfowcsWilliamsHawkings.C
+
+/* Coupling with BEM and FFT */
+
+samplingBEM/sampledSurface/writers/gmsh/gmshSurfaceWriter.C
+samplingBEM/soundPressureSampler/soundPressureSampler.C
+
+LIB = $(FOAM_USER_LIBBIN)/libAcoustics
+
+

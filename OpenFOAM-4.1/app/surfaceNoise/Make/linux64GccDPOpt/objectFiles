@@ -1,0 +1,4 @@
+OBJECTS = \
+$(OBJECTS_DIR)/FileInterface.o\
+$(OBJECTS_DIR)/Interpolator.o\
+$(OBJECTS_DIR)/surfaceNoise.o
