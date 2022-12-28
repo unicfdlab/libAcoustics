@@ -55,6 +55,7 @@ Note: Please use the v2012 or v2112 versions because we fixed some bugs in them 
 
 | Title | Description |
 |------|-------------|
+|[Towards a low-noise axial fan for automotive applications](https://www.researchgate.net/publication/366519846_Towards_a_low-noise_axial_fan_for_automotive_applications): **Article**|![Test rig isometry and sketches](https://github.com/mkraposhin/libAcoustics/blob/master/figures/blade-test-rig.png)|
 |[Numerical Study of the Impact of Fluid–Structure Interaction on Flow Noise over a Rectangular Cavity](https://www.mdpi.com/1996-1073/15/21/8017): **Article**|![Modes of a cavity walls](https://github.com/mkraposhin/libAcoustics/blob/master/figures/cav_walls_modes.png)|
 |[Validating Confined Flame Noise Simulation Using External Sensor](https://www.mdpi.com/1424-8220/22/20/8039): **Article**|![Contour of flame temperature](https://www.mdpi.com/sensors/sensors-22-08039/article_deploy/html/images/sensors-22-08039-g006-550.jpg)|
 |[Numerical Study of Cavitation Noise Around 2-D Hydrofoil with Direct Volume Integration](https://onepetro.org/ISOPEIOPEC/proceedings-abstract/ISOPE22/All-ISOPE22/ISOPE-I-22-497/494136): **Article**| --- |
