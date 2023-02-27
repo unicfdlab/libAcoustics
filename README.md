@@ -55,6 +55,7 @@ Note: Please use the v2012 or v2112 versions because we fixed some bugs in them 
 
 | Title | Description |
 |------|-------------|
+|[Aerodynamic and Acoustic Analysis of Multiple Rotors in Different Configurations](https://www.researchgate.net/publication/367313189_Aerodynamic_and_Acoustic_Analysis_of_Multiple_Rotors_in_Different_Configurations): **Article**|---|
 |[Numerical investigation of noise suppression and amplification in forced oscillations of single and tandem cylinders in high Reynolds number turbulent flows](https://www.researchgate.net/publication/366998558_Numerical_investigation_of_noise_suppression_and_amplification_in_forced_oscillations_of_single_and_tandem_cylinders_in_high_Reynolds_number_turbulent_flows)|![Q criterion contours](https://github.com/mkraposhin/libAcoustics/blob/master/figures/noise2.JPG)|
 |[CFD-based Aerodynamic and Aeroacoustic Analysis of Large Payload Multi-Copter Rotors](https://www.researchgate.net/publication/367317951_CFD-based_Aerodynamic_and_Aeroacoustic_Analysis_of_Large_Payload_Multi-Copter_Rotors): **Article**|![TKE plots and spectra](https://github.com/mkraposhin/libAcoustics/blob/master/figures/Naina_Pisharoti.png)|
 |[Simulations of multi-rotor interaction noise at hovering & forward flight conditions](https://www.researchgate.net/publication/367322923_Simulations_of_multi-rotor_interaction_noise_at_hovering_forward_flight_conditions): **Article**|---|
