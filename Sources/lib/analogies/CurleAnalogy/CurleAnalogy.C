@@ -142,7 +142,7 @@ bool Foam::functionObjects::CurleAnalogy::write()
 
 void Foam::functionObjects::CurleAnalogy::correct()
 {
-    calcForcesMoment();
+    calcForcesMoments();
 
     F_.value(0) = forceEff();
     vector dotF = F_.dot(obr_.time().value(), 0);
