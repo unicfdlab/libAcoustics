@@ -55,6 +55,7 @@ Note: Please use the v2012 or v2112 versions because we fixed some bugs in them 
 
 | Title | Description |
 |------|-------------|
+|[Evaluation of Synthetic Jet Flow Control Technique for Modulating Turbulent Jet Noise](https://www.mdpi.com/2311-5521/8/4/110): **Article**|![Coherent structures obtained using Q-criterion](https://github.com/mkraposhin/libAcoustics/blob/master/figures/fluids-08-00110-g013.png)|
 |[Numerical Investigation on Aerodynamic Noise of Flow past a Cylinder with Different Spanwise Lengths](https://aip.scitation.org/doi/abs/10.1063/5.0139731):  **Article**|![A Q-criterion for different size cylinders](https://github.com/mkraposhin/libAcoustics/blob/master/figures/Guanjiang_Chen_1.png)|
 |[Aerodynamic and Acoustic Analysis of Multiple Rotors in Different Configurations](https://www.researchgate.net/publication/367313189_Aerodynamic_and_Acoustic_Analysis_of_Multiple_Rotors_in_Different_Configurations): **Article**|---|
 |[Numerical investigation of noise suppression and amplification in forced oscillations of single and tandem cylinders in high Reynolds number turbulent flows](https://www.researchgate.net/publication/366998558_Numerical_investigation_of_noise_suppression_and_amplification_in_forced_oscillations_of_single_and_tandem_cylinders_in_high_Reynolds_number_turbulent_flows)|![Q criterion contours](https://github.com/mkraposhin/libAcoustics/blob/master/figures/noise2.JPG)|
