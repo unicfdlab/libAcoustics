@@ -55,6 +55,7 @@ Note: Please use the v2012 or v2112 versions because we fixed some bugs in them 
 
 | Title | Description |
 |------|-------------|
+|[Comparison of Porous and Direct Volumetric Integration FW-H Formulation for Acoustic Prediction](https://onepetro.org/ISOPEIOPEC/proceedings-abstract/ISOPE23/All-ISOPE23/524676): **Article**| --- |
 |[Prediction & Active Control of Multi-Rotor Noise](https://commons.erau.edu/edt/732/): **MSc Thesis**|![Schematic of various multi-rotor noise sources](https://github.com/mkraposhin/libAcoustics/blob/master/figures/noise-sources.png)|
 |[Noise prediction of a single-stream under-expanded jet in OpenFOAM](https://arc.aiaa.org/doi/abs/10.2514/6.2023-3349): **Article**|---|
 |[Numerical Simulation of Supersonic Jet Noise Using Open Source Software](https://link.springer.com/chapter/10.1007/978-3-031-36030-5_24): **Article**| --- |
