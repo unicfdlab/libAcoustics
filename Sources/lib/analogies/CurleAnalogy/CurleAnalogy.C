@@ -113,10 +113,8 @@ void Foam::functionObjects::CurleAnalogy::calcDistances()
     vectorField ci(0);
     scalar ni = 0;
 
-    forAllConstIter(labelHashSet, patchSet_, iter)
+    for (const label patchi : patchIDs_)
     {
-        label patchi = iter.key();
-
         ci.append(mesh.boundary()[patchi].Cf());
         ni += scalar(ci.size());
     }
@@ -142,7 +140,7 @@ bool Foam::functionObjects::CurleAnalogy::write()
 
 void Foam::functionObjects::CurleAnalogy::correct()
 {
-    calcForcesMoment();
+    calcForcesMoments();
 
     F_.value(0) = forceEff();
     vector dotF = F_.dot(obr_.time().value(), 0);

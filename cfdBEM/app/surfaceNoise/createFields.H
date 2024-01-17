@@ -1,6 +1,6 @@
     word dictName("surfaceNoiseDict");
 
-    if (args.optionFound("dict"))
+    if (args.found("dict"))
     {
         dictName = args["dict"];
     }

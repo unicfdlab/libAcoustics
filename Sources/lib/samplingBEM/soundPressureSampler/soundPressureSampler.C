@@ -321,7 +321,7 @@ void Foam::soundPressureSampler::makeFile()
                 Info << "File " << pFileName << " is already exists" << nl;
             }
 
-            if (soundPressureSamplerFilePtr_[surfI].empty())
+            if (!bool(soundPressureSamplerFilePtr_[surfI]))
             {
                 // Open new file at start up
                 Info << pFileName << nl;

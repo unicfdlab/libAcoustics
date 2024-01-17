@@ -49,7 +49,7 @@ void Foam::soundPressureSampler::sampleAndWrite
 
     if (surface.interpolate())
     {
-        if (interpolatorPtr.empty())
+        if (!bool(interpolatorPtr))
         {
             interpolatorPtr = interpolation<Type>::New
             (
@@ -61,7 +61,7 @@ void Foam::soundPressureSampler::sampleAndWrite
     }
     else
     {
-        if (interpolatorPtr.empty())
+        if (!bool(interpolatorPtr))
         {
             interpolatorPtr = interpolation<Type>::New
             (

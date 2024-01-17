@@ -60,6 +60,28 @@ Foam::SoundObserver::SoundObserver(const SoundObserver& so)
 {
 }
 
+Foam::SoundObserver::SoundObserver(SoundObserver&& so)
+:
+    name_(so.name_),
+    position_(so.position_),
+    pref_(so.pref_),
+    apressure_(so.apressure_),
+    p_(so.p_),
+    fftFreq_(so.fftFreq_)
+{
+}
+
+const Foam::SoundObserver &Foam::SoundObserver::operator = (const SoundObserver& so)
+{
+    name_ = so.name_;
+    position_ = so.position_;
+    pref_ = so.pref_;
+    apressure_ = so.apressure_;
+    p_ = so.p_;
+    fftFreq_ = so.fftFreq_;
+    return *this;
+}
+
 const Foam::word& Foam::SoundObserver::name() const
 {
     return name_;

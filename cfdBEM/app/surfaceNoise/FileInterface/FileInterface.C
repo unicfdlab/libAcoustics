@@ -43,7 +43,7 @@ autoPtr<List<List<scalar > > > FileInterface::read()
 {
     autoPtr<IFstream> inFilePtr;
 
-    if (inFilePtr.empty())
+    if (!bool(inFilePtr))
     {
         inFilePtr.reset
         (
@@ -116,7 +116,7 @@ void FileInterface::write(const scalar frequency, const List<complex >& data)
         {
             autoPtr<OFstream> filePtr;
 
-            if (filePtr.empty())
+            if (!bool(filePtr))
             {
             // Open new file at start up
                 filePtr.reset

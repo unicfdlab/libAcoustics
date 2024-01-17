@@ -97,7 +97,7 @@ void Foam::functionObjects::AcousticAnalogy::makeFile()
     if (Pstream::master() || !Pstream::parRun())
     {
 
-        analogyOutPtr_.set
+        analogyOutPtr_.reset
         (
             new OFstream
             (
