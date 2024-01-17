@@ -44,7 +44,7 @@ Foam::tmp<Foam::Field<Type> > Foam::functionObjects::FfowcsWilliamsHawkings::sam
 
     if (surface.interpolate())
     {
-        if (interpolatorPtr.empty())
+        if (!bool(interpolatorPtr))
         {
             interpolatorPtr = interpolation<Type>::New
             (
@@ -56,7 +56,7 @@ Foam::tmp<Foam::Field<Type> > Foam::functionObjects::FfowcsWilliamsHawkings::sam
     }
     else
     {
-        if (interpolatorPtr.empty())
+        if (!bool(interpolatorPtr))
         {
             interpolatorPtr = interpolation<Type>::New
             (

@@ -344,9 +344,7 @@ Foam::fileName Foam::surfaceWriters::gmshSurfaceWriter::write()
         
         OFstream os
         (
-            outputFile,
-            IOstream::ASCII,
-            IOstream::currentVersion
+            outputFile
         );
 
         if (verbose())

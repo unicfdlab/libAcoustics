@@ -113,10 +113,8 @@ void Foam::functionObjects::CurleAnalogy::calcDistances()
     vectorField ci(0);
     scalar ni = 0;
 
-    forAllConstIter(labelHashSet, patchSet_, iter)
+    for (const label patchi : patchIDs_)
     {
-        label patchi = iter.key();
-
         ci.append(mesh.boundary()[patchi].Cf());
         ni += scalar(ci.size());
     }

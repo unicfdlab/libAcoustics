@@ -22,8 +22,8 @@ Foam::autoPtr<Foam::List<Foam::complex> > Foam::FoamFftwDriver::simpleComplexFor
     
     label N = in_.size();
     
-    fftw_complex* in = (fftw_complex*) fftw_malloc (N*sizeof(fftw_complex));
-    fftw_complex* out= (fftw_complex*) fftw_malloc (N*sizeof(fftw_complex));
+    fftw_complex* in = static_cast<fftw_complex*>(fftw_malloc (N*sizeof(fftw_complex)));
+    fftw_complex* out= static_cast<fftw_complex*>(fftw_malloc (N*sizeof(fftw_complex)));
     
     forAll(in_, k)
     {
@@ -39,7 +39,7 @@ Foam::autoPtr<Foam::List<Foam::complex> > Foam::FoamFftwDriver::simpleComplexFor
     
     autoPtr<List<complex> > out_resPtr;
     
-    out_resPtr.set
+    out_resPtr.reset
     (
         new List<complex>(N, pTraits<complex>::zero)
     );
@@ -87,8 +87,8 @@ Foam::autoPtr<Foam::Pair<Foam::List<Foam::scalar> > > Foam::FoamFftwDriver::simp
     
     label N = in_.size();
 
-    fftw_complex* in = (fftw_complex*) fftw_malloc (N*sizeof(fftw_complex));
-    fftw_complex* out= (fftw_complex*) fftw_malloc (N*sizeof(fftw_complex));
+    fftw_complex* in = static_cast<fftw_complex*>(fftw_malloc (N*sizeof(fftw_complex)));
+    fftw_complex* out= static_cast<fftw_complex*>(fftw_malloc (N*sizeof(fftw_complex)));
     forAll(in_, k)
     {
         in[k][0] = in_[k];

@@ -83,6 +83,12 @@ public:
     
     //-
     SoundObserver(const SoundObserver&);
+
+    //- move ctor
+    SoundObserver(SoundObserver&&);
+
+    //-
+    const SoundObserver &operator = (const SoundObserver&);
     
     /// Access
     

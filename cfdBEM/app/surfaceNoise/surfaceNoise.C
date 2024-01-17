@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
 
     autoPtr<OFstream> controlFilePtr;
 
-    if (controlFilePtr.empty())
+    if (!bool(controlFilePtr))
     {
         // Open new file at start up
         controlFilePtr.reset
@@ -208,28 +208,7 @@ int main(int argc, char *argv[])
 
         fileName freqDirectory = "complexPressureData/" + outputDirectory + "/" + freqValue;
 
-        //Info << freqDirectory << endl;
-
         mkDir(freqDirectory);
-
-        //write appropriate frequency
-        //fileName freqFile  = freqDirectory + "/frequency";
-
-        //autoPtr<OFstream> freqFilePtr;
-
-        //if (freqFilePtr.empty())
-        //{
-        // Open new file at start up
-        //    freqFilePtr.reset
-        //    (
-        //        new OFstream
-        //        (
-        //            freqFile
-        //        )
-        //    );
-        //}
-
-        //freqFilePtr() << freq[freqI];
 
         //write data to msh file
         if (outputFormat == "gmsh")

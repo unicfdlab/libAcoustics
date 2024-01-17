@@ -168,14 +168,14 @@ void Foam::functionObjects::FfowcsWilliamsHawkings::initialize()
     {
         if (formulationType_ == "Farassat1AFormulation")
         {
-            fwhFormulationPtr_.set
+            fwhFormulationPtr_.reset
             (
                 new Farassat1AFormulation(*this)
             );
         }
         else
         {
-            fwhFormulationPtr_.set 
+            fwhFormulationPtr_.reset 
             (
                 new GTFormulation(*this)
             );
