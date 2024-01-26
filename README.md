@@ -41,11 +41,13 @@ We currently support the library for the OpenFOAM+ versions.
 
 The library is available for next OpenFOAM versions:
 
-* OpenFOAM 3.0, 4.1 versions are stored in the [openfoam-v4.1 branch](https://github.com/unicfdlab/libAcoustics/tree/openfoam-v4.1)
-* OpenFOAM+ v.1812 is in the [digitef-dev-1812 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-1812) of the repository
-* OpenFOAM+ v.1912 is in the [digitef-dev-1912 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-1912) of the repository
-* OpenFOAM+ v.2012 is in the [digitef-dev-2012 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-2012) of the repository
-* OpenFOAM+ v.2112 is in the [digitef-dev-2112 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-2112) of the repository
+* OpenFOAM 3.0, 4.1 versions of the library are stored in the [openfoam-v4.1 branch](https://github.com/unicfdlab/libAcoustics/tree/openfoam-v4.1)
+* OpenFOAM+ v.1812 version of the library is in the [digitef-dev-1812 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-1812) of the repository
+* OpenFOAM+ v.1912 version of the library is in the [digitef-dev-1912 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-1912) of the repository
+* OpenFOAM+ v.2012 version of the library is in the [digitef-dev-2012 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-2012) of the repository
+* OpenFOAM+ v.2112 version of the library is in the [digitef-dev-2112 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-2112) of the repository
+* OpenFOAM+ v.2212 version of the library is in the [digitef-dev-2112 branch](https://github.com/unicfdlab/libAcoustics/tree/v2212) of the repository
+* OpenFOAM+ v.2312 version of the library is in the [digitef-dev-2112 branch](https://github.com/unicfdlab/libAcoustics/tree/v2312) of the repository
 
 Note: Please use the v2012 or v2112 versions because we fixed some bugs in them that were present in earlier implementations.
 
