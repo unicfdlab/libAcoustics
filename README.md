@@ -57,6 +57,10 @@ Note: Please use the v2012 or v2112 versions because we fixed some bugs in them 
 
 | Title | Description |
 |------|-------------|
+|[Investigation of noise reduction effects of individual and combined geometrical modifications on UAM propeller blades](https://iopscience.iop.org/article/10.1088/1742-6596/2716/1/012060/meta): **Article**|![UAM propeller blade geometry](https://github.com/mkraposhin/libAcoustics/blob/master/figures/uam_propeller_blade.png)|
+|[Low-Noise Airfoils for Turbomachinery Applications: Two Examples of Optimization](https://www.mdpi.com/2504-186X/9/1/9): **Article**|![Isosurface for the optimal high-Reynolds airfoil](https://github.com/mkraposhin/libAcoustics/blob/master/figures/ijtpp-09-00009-g006.png)|
+|[Hydroacoustics of turbulent flow over superhydrophobic and oscillating cylinders](https://www.sciencedirect.com/science/article/abs/pii/S002980182400088X): **Article**|![Q-criterion and flow structures](https://github.com/mkraposhin/libAcoustics/blob/master/figures/1-s2.0-S002980182400088X-gr5.jpg)|
+|[Evaluation of different FW-H surfaces and modal decomposition techniques for the acoustic analysis of UAV propellers through detached eddy simulations](https://www.sciencedirect.com/science/article/pii/S1270963824000890): **Article**|![FW-H surfaces: cylinders (in red) and spheres (in blue)](https://github.com/mkraposhin/libAcoustics/blob/master/figures/1-s2.0-S1270963824000890-gr007.jpg)|
 |[Comparison of Porous and Direct Volumetric Integration FW-H Formulation for Acoustic Prediction](https://onepetro.org/ISOPEIOPEC/proceedings-abstract/ISOPE23/All-ISOPE23/524676): **Article**| --- |
 |[Prediction & Active Control of Multi-Rotor Noise](https://commons.erau.edu/edt/732/): **MSc Thesis**|![Schematic of various multi-rotor noise sources](https://github.com/mkraposhin/libAcoustics/blob/master/figures/noise-sources.png)|
 |[Noise prediction of a single-stream under-expanded jet in OpenFOAM](https://arc.aiaa.org/doi/abs/10.2514/6.2023-3349): **Article**|---|
