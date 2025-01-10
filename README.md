@@ -48,6 +48,7 @@ The library is available for next OpenFOAM versions:
 * OpenFOAM+ v.2112 version of the library is in the [digitef-dev-2112 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-2112) of the repository
 * OpenFOAM+ v.2212 version of the library is in the [v2212 branch](https://github.com/unicfdlab/libAcoustics/tree/v2212) of the repository
 * OpenFOAM+ v.2312 version of the library is in the [v2312 branch](https://github.com/unicfdlab/libAcoustics/tree/v2312) of the repository
+* OpenFOAM+ v.2412 version of the library is in the [v2412 branch](https://github.com/unicfdlab/libAcoustics/tree/v2412) of the repository
 
 Note: Please use the v2012 or v2112 versions because we fixed some bugs in them that were present in earlier implementations.
 
@@ -113,5 +114,5 @@ If you have found the software useful for your research, please cite next source
 
 * Epikhin, A., Evdokimov, I., Kraposhin, M., Kalugin, M., Strijhak, S. Development of a Dynamic Library for Computational Aeroacoustics Applications Using the OpenFOAM Open Source Package // Procedia Computer ScienceVolume 66, 2015, Pages 150-157
 https://www.sciencedirect.com/science/article/pii/S1877050915033670 , DOI: 10.1016/j.procs.2015.11.018
-
+* A. Epikhin, Validation of the developed open-source library for far-field noise prediction, in: Proceedings of the 7th International Congress on Sound and Vibration, 2021. DOI: 10.5281/zenodo.5906668
 * [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3878439.svg)](https://doi.org/10.5281/zenodo.3878439) 
