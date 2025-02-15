@@ -48,7 +48,7 @@ The library is available for next OpenFOAM versions:
 * OpenFOAM+ v.2112 version of the library is in the [digitef-dev-2112 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-2112) of the repository
 * OpenFOAM+ v.2212 version of the library is in the [v2212 branch](https://github.com/unicfdlab/libAcoustics/tree/v2212) of the repository
 * OpenFOAM+ v.2312 version of the library is in the [v2312 branch](https://github.com/unicfdlab/libAcoustics/tree/v2312) of the repository
-* OpenFOAM+ v.2412 version of the library is in the [v2312 branch](https://github.com/unicfdlab/libAcoustics/tree/v2412) of the repository
+* OpenFOAM+ v.2412 version of the library is in the [v2412 branch](https://github.com/unicfdlab/libAcoustics/tree/v2412) of the repository
 
 Note: Please use the v2012 or v2112 versions because we fixed some bugs in them that were present in earlier implementations.
 
