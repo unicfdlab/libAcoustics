@@ -63,12 +63,32 @@ Note: Please use the v2012 or v2112 versions because we fixed some bugs in them 
 |[Numerical Investigation of Unsteady Flow Characteristics of Planar Plug Nozzle in Overexpanded Conditions](https://asmedigitalcollection.asme.org/fluidsengineering/article-abstract/147/5/051203/1208662/Numerical-Investigation-of-Unsteady-Flow?redirectedFrom=fulltext)|![Jets Schlieren](https://github.com/mkraposhin/libAcoustics/blob/master/figures/2024-09-09_08-39.png)|
 |[Validation of a Hybrid Approach for Wind Turbine Noise Prediction Using the Linearized Euler Equations](https://link.springer.com/chapter/10.1007/978-3-031-71926-4_16)|![The numerical problem setup](https://github.com/mkraposhin/libAcoustics/blob/master/figures/42405_2020_340_Fig1_HTML.png)|
 
+## <p align="center"> >>>>> 2024 <<<<<  </p>
 | Title | Description |
 |------|-------------|
-|[Investigation of noise reduction effects of individual and combined geometrical modifications on UAM propeller blades](https://iopscience.iop.org/article/10.1088/1742-6596/2716/1/012060/meta): **Article**|![UAM propeller blade geometry](https://github.com/mkraposhin/libAcoustics/blob/master/figures/uam_propeller_blade.png)|
-|[Low-Noise Airfoils for Turbomachinery Applications: Two Examples of Optimization](https://www.mdpi.com/2504-186X/9/1/9): **Article**|![Isosurface for the optimal high-Reynolds airfoil](https://github.com/mkraposhin/libAcoustics/blob/master/figures/ijtpp-09-00009-g006.png)|
-|[Hydroacoustics of turbulent flow over superhydrophobic and oscillating cylinders](https://www.sciencedirect.com/science/article/abs/pii/S002980182400088X): **Article**|![Q-criterion and flow structures](https://github.com/mkraposhin/libAcoustics/blob/master/figures/1-s2.0-S002980182400088X-gr5.jpg)|
+|[Aerodynamic noise generated in three-dimensional lock-in and galloping behavior of square cylinder in high Reynolds number turbulent flows
+]()||
+|[Modeling of hydroacoustic noise from marine propellers with tip vortex cavitation]()||
+|[High fidelity CFD methods]()||
+|[Aerodynamic noise and its passive control of subcritical flow past a cylinder]()||
+|[Acoustic Characteristics of Laminar-Turbulent Transition in a Flat Plate Based on PSE and FW-H]()||
+|[Low Noise Propeller Design Technology for Urban Air Mobility(UAM)](https://www.dbpia.co.kr/Journal/articleDetail?nodeId=NODE11793279)| --- |
 |[Evaluation of different FW-H surfaces and modal decomposition techniques for the acoustic analysis of UAV propellers through detached eddy simulations](https://www.sciencedirect.com/science/article/pii/S1270963824000890): **Article**|![FW-H surfaces: cylinders (in red) and spheres (in blue)](https://github.com/mkraposhin/libAcoustics/blob/master/figures/1-s2.0-S1270963824000890-gr007.jpg)|
+|[Hydroacoustics of turbulent flow over superhydrophobic and oscillating cylinders](https://www.sciencedirect.com/science/article/abs/pii/S002980182400088X): **Article**|![Q-criterion and flow structures](https://github.com/mkraposhin/libAcoustics/blob/master/figures/1-s2.0-S002980182400088X-gr5.jpg)|
+|[Low-Noise Airfoils for Turbomachinery Applications: Two Examples of Optimization](https://www.mdpi.com/2504-186X/9/1/9): **Article**|![Isosurface for the optimal high-Reynolds airfoil](https://github.com/mkraposhin/libAcoustics/blob/master/figures/ijtpp-09-00009-g006.png)|
+|[Investigation of noise reduction effects of individual and combined geometrical modifications on UAM propeller blades](https://iopscience.iop.org/article/10.1088/1742-6596/2716/1/012060/meta): **Article**|![UAM propeller blade geometry](https://github.com/mkraposhin/libAcoustics/blob/master/figures/uam_propeller_blade.png)|
+
+
+
+## <p align="center"> >>>>> 2021 <<<<<  </p>
+| Title | Description |
+|------|-------------|
+|[Quadcopter drones swarm aeroacoustics](https://doi.org/10.1063/5.0052505)|![Flow fields around quadcopters](https://github.com/mkraposhin/libAcoustics/blob/master/figures/images-qcs.png)|
+|[Computational aeroacoustics of quadcopter drones](https://doi.org/10.1016/j.apacoust.2022.108738)|![Flow fields](https://github.com/mkraposhin/libAcoustics/blob/master/figures/1-s2.0-S0003682X22001128-gr5.jpg)|
+
+
+| Title | Description |
+|------|-------------|
 |[Numerical investigation of noise suppression and amplification in forced oscillations of single and tandem cylinders in high Reynolds number turbulent flows](https://www.sciencedirect.com/science/article/abs/pii/S0307904X23000069): **Article**|![Flow fields around cylinders](https://github.com/mkraposhin/libAcoustics/blob/master/figures/1-s2.0-S0307904X23000069-gr4.jpg)|
 |[Numerical Study of Cavitation Noise Around NACA66 (MOD) Hydrofoil with Direct Volume Integration](https://onepetro.org/IJOPE/article-abstract/33/03/294/533531/Numerical-Study-of-Cavitation-Noise-Around-NACA66?redirectedFrom=fulltext): **Article**|![The cavity near hydrofoil](https://github.com/mkraposhin/libAcoustics/blob/master/figures/hydrofoil_w_cavity.png)|
 |[AeroSPEED: a high order acoustic solver for aeroacoustic applications](https://link.springer.com/chapter/10.1007/978-3-031-40864-9_3): **Article**|![AeroSPEED](https://github.com/mkraposhin/libAcoustics/blob/master/figures/aerospeed.png)|
