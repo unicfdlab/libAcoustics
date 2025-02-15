@@ -68,8 +68,7 @@ Note: Please use the v2012 or v2112 versions because we fixed some bugs in them 
 
 | Title | Description |
 |------|-------------|
-|[Aerodynamic noise generated in three-dimensional lock-in and galloping behavior of square cylinder in high Reynolds number turbulent flows
-]()| --- |
+|[Aerodynamic noise generated in three-dimensional lock-in and galloping behavior of square cylinder in high Reynolds number turbulent flows]()| --- |
 |[Modeling of hydroacoustic noise from marine propellers with tip vortex cavitation]()| --- |
 |[High fidelity CFD methods]()| --- |
 |[Aerodynamic noise and its passive control of subcritical flow past a cylinder]()| --- |
