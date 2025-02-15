@@ -48,12 +48,20 @@ The library is available for next OpenFOAM versions:
 * OpenFOAM+ v.2112 version of the library is in the [digitef-dev-2112 branch](https://github.com/unicfdlab/libAcoustics/tree/digitef-dev-2112) of the repository
 * OpenFOAM+ v.2212 version of the library is in the [v2212 branch](https://github.com/unicfdlab/libAcoustics/tree/v2212) of the repository
 * OpenFOAM+ v.2312 version of the library is in the [v2312 branch](https://github.com/unicfdlab/libAcoustics/tree/v2312) of the repository
+* OpenFOAM+ v.2412 version of the library is in the [v2312 branch](https://github.com/unicfdlab/libAcoustics/tree/v2412) of the repository
 
 Note: Please use the v2012 or v2112 versions because we fixed some bugs in them that were present in earlier implementations.
 
 
 # Published materials related to libAcoustics library
 [To the contents](#Contents)
+
+## <p align="center"> >>>>> 2025 <<<<<  </p>
+| Title | Description |
+|------|-------------|
+|[Cavitating wake dynamics and hydroacoustics performance of marine propeller with a nozzle](https://pubs.aip.org/aip/pof/article-abstract/37/1/015128/3329276/Cavitating-wake-dynamics-and-hydroacoustics?redirectedFrom=fulltext)| --- 
+|[Numerical Investigation of Unsteady Flow Characteristics of Planar Plug Nozzle in Overexpanded Conditions](https://asmedigitalcollection.asme.org/fluidsengineering/article-abstract/147/5/051203/1208662/Numerical-Investigation-of-Unsteady-Flow?redirectedFrom=fulltext)|![Jets Schlieren](https://github.com/mkraposhin/libAcoustics/blob/master/figures/2024-09-09_08-39.png)|
+|[Validation of a Hybrid Approach for Wind Turbine Noise Prediction Using the Linearized Euler Equations](https://link.springer.com/chapter/10.1007/978-3-031-71926-4_16)|![The numerical problem setup](https://github.com/mkraposhin/libAcoustics/blob/master/figures/42405_2020_340_Fig1_HTML.png)|
 
 | Title | Description |
 |------|-------------|
