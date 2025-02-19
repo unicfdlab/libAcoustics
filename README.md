@@ -174,8 +174,6 @@ Note: Please use the v2112 or later versions because we fixed some important bug
 |[Broadband noise prediction using large eddy simulation and a frequency domain method](https://www.researchgate.net/publication/309877358_Broadband_noise_prediction_using_large_eddy_simulation_and_a_frequency_domain_method):  **Article**|![Span-wise vorticity contour](https://ars.els-cdn.com/content/image/1-s2.0-S0003682X16304145-gr11.jpg)|
 
 
-
-
 # For citation
 [To the contents](#Contents)
 
@@ -183,5 +181,5 @@ If you have found the software useful for your research, please cite next source
 
 * Epikhin, A., Evdokimov, I., Kraposhin, M., Kalugin, M., Strijhak, S. Development of a Dynamic Library for Computational Aeroacoustics Applications Using the OpenFOAM Open Source Package // Procedia Computer ScienceVolume 66, 2015, Pages 150-157
 https://www.sciencedirect.com/science/article/pii/S1877050915033670 , DOI: 10.1016/j.procs.2015.11.018
-
+* A. Epikhin, Validation of the developed open-source library for far-field noise prediction, in: Proceedings of the 7th International Congress on Sound and Vibration, 2021. DOI: 10.5281/zenodo.5906668
 * [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3878439.svg)](https://doi.org/10.5281/zenodo.3878439) 
