@@ -16,6 +16,20 @@ The library is available for next OpenFOAM versions:
 
 * OpenFOAM+ v.1912 is in the digitef-dev-1912 branch of the repository
 
+## Building ##
+
+This branch is laid out as an OpenFOAM (openfoam.com) plugin.
+
+- Standalone build into user locations (`$FOAM_USER_APPBIN`, `$FOAM_USER_LIBBIN`):
+  ```bash
+  ./Allwmake
+  ```
+- As a plugin: place (or add as a git submodule) this repository in
+  `$WM_PROJECT_DIR/plugins/libAcoustics` and run `./Allwmake-plugins` from
+  `$WM_PROJECT_DIR`. It is then installed into `$FOAM_APPBIN`, `$FOAM_LIBBIN`.
+- Custom location:
+  `./Allwmake -prefix=user|group|openfoam|/some/path`
+
 When using this library in your research, please cite next articles:
 
 DOI: 10.1016/j.procs.2015.11.018 
