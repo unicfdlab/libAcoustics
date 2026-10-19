@@ -1,4 +1,12 @@
-fftw_root=$(FFTW_ARCH_PATH)
+sinclude $(GENERAL_RULES)/module-path-user
+
+/* Failsafe - user locations */
+ifeq (,$(FOAM_MODULE_APPBIN))
+FOAM_MODULE_APPBIN = $(FOAM_USER_APPBIN)
+endif
+ifeq (,$(FOAM_MODULE_LIBBIN))
+FOAM_MODULE_LIBBIN = $(FOAM_USER_LIBBIN)
+endif
 
 EXE_INC = \
     -I$(LIB_SRC)/fileFormats/lnInclude \
@@ -13,7 +21,7 @@ EXE_INC = \
     -I$(LIB_SRC)/meshTools/lnInclude \
     -I$(LIB_SRC)/functionObjects/forces/lnInclude \
     -I$(LIB_SRC)/surfMesh/lnInclude \
-    -I$(fftw_root)/include
+    -I$(FFTW_INC_DIR)
 
 LIB_LIBS = \
     -lcompressibleTransportModels \
@@ -29,5 +37,4 @@ LIB_LIBS = \
     -lmeshTools \
     -lforces \
     -lsurfMesh \
-    -L$(fftw_root)/lib \
-    -lfftw3
+    -L$(FFTW_LIB_DIR) -lfftw3

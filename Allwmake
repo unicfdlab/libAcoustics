@@ -1,0 +1,21 @@
+#!/bin/sh
+cd "${0%/*}" || exit                            # Run from this directory
+targetType=libso                                # Default target type
+. "${WM_PROJECT_DIR:?}"/wmake/scripts/AllwmakeParseArguments
+. "${WM_PROJECT_DIR:?}"/wmake/scripts/have_fftw
+#------------------------------------------------------------------------------
+# Install locations are controlled by FOAM_MODULE_PREFIX (or -prefix=...).
+# Standalone build: user locations ($FOAM_USER_APPBIN, $FOAM_USER_LIBBIN).
+# Built as an OpenFOAM plugin: project locations ($FOAM_APPBIN, $FOAM_LIBBIN).
+
+# Sets FFTW_INC_DIR, FFTW_LIB_DIR for Make/options
+if ! have_fftw
+then
+    echo "==> skip libAcoustics (no FFTW)"
+    exit 0
+fi
+
+wmake $targetType Sources/lib
+wmake cfdBEM/app/surfaceNoise
+
+#------------------------------------------------------------------------------

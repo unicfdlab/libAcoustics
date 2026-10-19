@@ -1,15 +1,22 @@
-fftw_root=$(FFTW_ARCH_PATH)
+sinclude $(GENERAL_RULES)/module-path-user
+
+/* Failsafe - user locations */
+ifeq (,$(FOAM_MODULE_APPBIN))
+FOAM_MODULE_APPBIN = $(FOAM_USER_APPBIN)
+endif
+ifeq (,$(FOAM_MODULE_LIBBIN))
+FOAM_MODULE_LIBBIN = $(FOAM_USER_LIBBIN)
+endif
 
 EXE_INC = \
     -I$(LIB_SRC)/randomProcesses/lnInclude \
     -I$(LIB_SRC)/sampling/lnInclude \
     -I../../../Sources/lib/lnInclude \
-    -I$(fftw_root)/include
+    -I$(FFTW_INC_DIR)
 
 EXE_LIBS = \
     -lrandomProcesses \
     -lsampling \
-    -L$(FOAM_USER_LIBBIN) \
+    -L$(FOAM_MODULE_LIBBIN) \
     -lAcoustics \
-    -L$(fftw_root)/lib \
-    -lfftw3
+    -L$(FFTW_LIB_DIR) -lfftw3
